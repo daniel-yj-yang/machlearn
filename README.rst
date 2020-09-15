@@ -3,7 +3,8 @@
 <hr>
 
 Functions:
+.. csv-table:: a title
+   :header: "identifier", "function", "description"
+   :widths: 20, 20, 10
 
-identifier | functions | description
---- | --- | ---
-model_evaluation | plot_confusion_matrix() | generates an interpretable plot of confusion matrix along with key statistics.
+   "model_evaluation", "plot_confusion_matrix()", "generates an interpretable plot of confusion matrix along with key statistics."
