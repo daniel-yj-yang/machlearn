@@ -1,11 +1,12 @@
 import setuptools
+import machlearn
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="machlearn",
-    version="0.0.1",
+    version=machlearn.__version__,
     author="Daniel Yang",
     author_email="daniel.yj.yang@gmail.com",
     description="Machine Learning Python Library",
