@@ -12,7 +12,7 @@ setuptools.setup(
     description="Machine Learning Python Library",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/daniel-yj-yang/pyml/",
+    url="https://github.com/daniel-yj-yang/machlearn",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
