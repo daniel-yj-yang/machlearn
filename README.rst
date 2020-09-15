@@ -1,6 +1,5 @@
-:title-reference:`Machine Learning Python Library` g
-
-<hr>
+Machine Learning Python Library
+===============================
 
 .. csv-table:: Functions:
    :header: "identifier", "function", "description"
