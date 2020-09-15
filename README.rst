@@ -1,8 +1,12 @@
+===============================
 Machine Learning Python Library
 ===============================
 
-.. csv-table:: Functions:
-   :header: "identifier", "function", "description"
-   :widths: 20, 20, 10
+Module 1: Model Evaluation
+==========================
 
-   "model_evaluation", "plot_confusion_matrix()", "generates an interpretable plot of confusion matrix along with key statistics"
+.. csv-table:: Functions for model evaluation:
+   :header: "function", "description"
+   :widths: 10, 20
+
+   "plot_confusion_matrix()", "generates an interpretable plot of confusion matrix along with key statistics"
