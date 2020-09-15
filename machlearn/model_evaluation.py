@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 
 def plot_confusion_matrix(cm,
                           y_classes=['y=0', 'y=1'],
-                          figsize=(12, 10)):
+                          figsize=(10, 10)):
     """
-    This function produces a more human-interpretable plot of confusion matrix along with key statistics
+    This function generates a more human-interpretable plot of confusion matrix along with key statistics.
 
     Arguments:
     - cm:        A numpy.ndarray, the output from sklearn.metrics.confusion_matrix
