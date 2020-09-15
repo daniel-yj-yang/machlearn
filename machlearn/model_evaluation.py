@@ -60,7 +60,7 @@ def plot_confusion_matrix(cm,
                 cmap='Blues',  # or 'binary' # http://matplotlib.org/examples/color/colormaps_reference.html
                 cbar=False,
                 xticklabels=y_classes,
-                linewidths=0.5,
+                linewidths=1.0,
                 linecolor='black')
 
     ax.set_yticklabels(y_classes,
