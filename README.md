@@ -1,6 +1,8 @@
 
 - <a href="https://pypi.org/project/machlearn/">Machine Learning Python Library</a>
 
+<hr>
+
 Functions:
 
 identifier | functions | description
