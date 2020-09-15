@@ -1,7 +1,11 @@
+# https://packaging.python.org/guides/distributing-packages-using-setuptools/#setup-py
+# https://github.com/pypa/sampleproject/blob/master/setup.py
+
 import setuptools
 import machlearn
 
-with open("README.md", "r") as fh:
+README_file = "README.rst" # "README.md"
+with open(README_file, "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
@@ -11,7 +15,7 @@ setuptools.setup(
     author_email="daniel.yj.yang@gmail.com",
     description="Machine Learning Python Library",
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/x-rst",  # "text/markdown",
     url="https://github.com/daniel-yj-yang/pyml",
     packages=setuptools.find_packages(),
     classifiers=[
