@@ -9,6 +9,8 @@ def plot_confusion_matrix(cm,
     """
     This function generates a more human-interpretable plot of confusion matrix along with key statistics.
 
+    Contributor: Daniel Yang (daniel.yj.yang@gmail.com)
+
     Arguments:
     - cm:        A numpy.ndarray, the output from sklearn.metrics.confusion_matrix
     - y_classes: A list, the y_classes to be displayed
