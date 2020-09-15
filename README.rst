@@ -2,9 +2,7 @@
 
 <hr>
 
-Functions:
-
-.. csv-table:: a title
+.. csv-table:: Functions
    :header: "identifier", "function", "description"
    :widths: 20, 20, 10
 
