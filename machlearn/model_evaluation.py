@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 def plot_confusion_matrix(cm,
                           y_classes=['y=0', 'y=1'],
-                          figsize=(10, 8)):
+                          figsize=(12, 10)):
     """
     This function produces a more human-interpretable plot of confusion matrix along with key statistics
 
@@ -48,6 +48,9 @@ def plot_confusion_matrix(cm,
     else:
         stats_text = "\n\nAccuracy={:0.3f}".format(accuracy)
 
+    old_font_size = plt.rcParams.get('font.size')
+    plt.rcParams.update({'font.size': 20})
+
     # Using seaborn to generate the visualization
     fig, ax = plt.subplots(figsize=figsize)
 
@@ -69,3 +72,6 @@ def plot_confusion_matrix(cm,
     plt.xlabel('y_predicted' + stats_text)
 
     fig.tight_layout()
+    plt.show()
+
+    plt.rcParams.update({'font.size': old_font_size})
