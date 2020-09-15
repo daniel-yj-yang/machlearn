@@ -1,3 +1,5 @@
+|travis-badge|_
+
 ===============================
 Machine Learning Python Library
 ===============================
