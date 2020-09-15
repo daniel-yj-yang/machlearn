@@ -5,7 +5,7 @@ Machine Learning Python Library
 Module 1: Model Evaluation
 ==========================
 
-.. csv-table:: Functions for model evaluation:
+.. csv-table::
    :header: "function", "description"
    :widths: 10, 20
 
