@@ -1,4 +1,4 @@
-## Machine Learning Python Library
+:title-reference:`Machine Learning Python Library` g
 
 <hr>
 
