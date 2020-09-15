@@ -7,7 +7,7 @@ def plot_confusion_matrix(cm,
                           y_classes=['y=0', 'y=1'],
                           figsize=(10, 10)):
     """
-    This function generates a more human-interpretable plot of confusion matrix along with key statistics.
+    This function generates an interpretable plot of confusion matrix along with key statistics.
 
     Contributor: Daniel Yang (daniel.yj.yang@gmail.com)
 
