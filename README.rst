@@ -3,6 +3,7 @@ Machine Learning Python Library
 ===============================
 
 Install
+-------
 
 .. code-block:: bash
 
@@ -11,6 +12,7 @@ Install
 -----
 
 Example
+-------
 
 .. code-block:: python
    
@@ -20,6 +22,7 @@ Example
 -----
 
 Output
+------
 
  +-------------------------------+
  + |image_test_confusion_matrix| + 
