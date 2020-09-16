@@ -17,9 +17,10 @@ Example
    from machlearn import model_evaluation as me
    me.test()
 
-.. image:: examples/model_evaluation/images/test_confusion_matrix.png
-.. image:: examples/model_evaluation/images/test_ROC_curve.png
-.. image:: examples/model_evaluation/images/test_PR_curve.png
+|image1| |image2| |image3|
+.. |image1| image:: examples/model_evaluation/images/test_confusion_matrix.png
+.. |image2| image:: examples/model_evaluation/images/test_ROC_curve.png
+.. |image3| image:: examples/model_evaluation/images/test_PR_curve.png
 
 -----
 
