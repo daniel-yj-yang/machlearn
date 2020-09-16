@@ -41,7 +41,7 @@ def plot_confusion_matrix(cm,
     cell_percentage = ["{0:.2%}".format(val)
                        for val in cm.flatten()/np.sum(cm)]
 
-    cell_text = [f"{x1}{x2}{x3}".strip() for x1, x2, x3 in zip(
+    cell_text = [f"{a}{b}{c}".strip() for a,b,c in zip(
         cell_label, cell_count, cell_percentage)]
     cell_text = np.asarray(cell_text).reshape(cm.shape)
 
@@ -58,7 +58,7 @@ def plot_confusion_matrix(cm,
         # or, 2*precision*recall / (precision + recall)
         f1_score = TP / (TP + 0.5*(FP+FN))
         alpha = FP / (TN+FP)
-        stats_text = "\n\nAccuracy(higher TP and TN) = (TP+TN)/Total = {: 0.3f}\nF1 Score(lower FP and FN) = TP/(TP+0.5*(FP+FN)) = {: 0.3f}\n\nRecall/sensitivity/TPR/power(1-β) = p(y_pred=1 | y_actual=1) = {: 0.3f}\nFPR/α = p(y_pred=1 | y_actual=0) = {: 0.3f}\n\nPrecision(1-FDR) = p(y_actual=1 | y_pred=1) = {: 0.3f}".format(
+        stats_text = "\n\nAccuracy(higher TP and TN) = (TP+TN)/Total = {: 0.3f}\nF1 Score(lower FP and FN) = TP/(TP+0.5*(FP+FN)) = {: 0.3f}\n\nRecall/sensitivity/TPR/power(1-β) = p($y_{{pred}}$=1 | $y_{{actual}}$=1) = {: 0.3f}\nFPR/α = p($y_{{pred}}$=1 | $y_{{actual}}$=0) = {: 0.3f}\n\nPrecision = 1-FDR = p($y_{{actual}}$=1 | $y_{{pred}}$=1) = {: 0.3f}".format(
             accuracy, f1_score, recall, alpha, precision)
     else:
         stats_text = "\n\nAccuracy={:0.3f}".format(accuracy)
@@ -83,8 +83,8 @@ def plot_confusion_matrix(cm,
                        rotation=90,
                        position=(0, 0.28))
 
-    plt.ylabel('y_actual')
-    plt.xlabel('y_predicted' + stats_text)
+    plt.ylabel('$y_{{actual}}$')
+    plt.xlabel('$y_{{predicted}}$' + stats_text)
 
     fig.tight_layout()
     plt.show()
