@@ -9,6 +9,7 @@ Install
    pip install machlearn
 
 -----
+
 Example
 
 .. code-block:: python
