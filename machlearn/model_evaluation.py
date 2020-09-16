@@ -10,6 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# this is for "from machlearn.model_evaluation import *"
 __all__ = ["plot_confusion_matrix", "plot_ROC_curve",
            "plot_PR_curve", "plot_ROC_and_PR_curves",
            "test"]
@@ -30,7 +31,7 @@ def plot_confusion_matrix(cm,
                           y_classes=['y=0', 'y=1'],
                           figsize=(9, 9)):
     """
-    This function generates an interpretable plot of confusion matrix, along with key statistics.
+    This function plots the confusion matrix, along with key statistics.
 
     Arguments:
         - cm_ndarray: A numpy.ndarray, the output from sklearn.metrics.confusion_matrix
@@ -125,6 +126,7 @@ def plot_ROC_curve(y_true,
     plt.rcParams.update({'font.size': __font_size__})
 
     fig = plt.figure(figsize=figsize)
+
     plt.plot(fpr, tpr, color='darkorange', lw=2,
              label=f"{model_name} (AUC = {auc:0.2f})")
     plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
@@ -209,12 +211,12 @@ def plot_ROC_and_PR_curves(fitted_model,
 
 def test():
     """
-    This function tests all the plotting functions in this module.
+    This function tests all the other functions in this module.
     """
     X, y = datasets.make_classification(
-        n_samples=1000, n_features=30, n_classes=2, random_state=123)
+        n_samples=5000, n_features=30, n_classes=2, class_sep=0.8, random_state=123)
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.25, random_state=123)
+        X, y, test_size=0.20, random_state=123)
     model = naive_bayes_Gaussian().fit(X_train, y_train)
     y_pred_score = model.predict_proba(X_test)
     y_pred = model.predict(X_test)

@@ -15,4 +15,5 @@ from machlearn.__about__ import (
     __version__,
 )
 
-__all__ = ["model_evaluation", "naive_bayes"]
+# this is for "from machlearn import *"
+__all__ = ["model_evaluation", "naive_bayes"] 

@@ -10,7 +10,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sklearn.naive_bayes import MultinomialNB, GaussianNB
+# this is for "from machlearn.naive_bayes import *"
+__all__ = ["naive_bayes_Bernoulli", "naive_bayes_multinomial",
+           "naive_bayes_Gaussian"]
+
+from sklearn.naive_bayes import BernoulliNB, MultinomialNB, GaussianNB
+
+
+def naive_bayes_Bernoulli(*args, **kwargs):
+    return BernoulliNB(*args, **kwargs)
 
 
 def naive_bayes_multinomial(*args, **kwargs):
