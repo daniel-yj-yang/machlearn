@@ -17,14 +17,21 @@ Example
    from machlearn import model_evaluation as me
    me.test()
 
-|image1|
-|image2| |image3|
 
-.. |image1| image:: examples/model_evaluation/images/test_confusion_matrix.png
+.. list-table:: 
 
-.. |image2| image:: examples/model_evaluation/images/test_ROC_curve.png
+    * - .. figure:: examples/model_evaluation/images/test_confusion_matrix.png
 
-.. |image3| image:: examples/model_evaluation/images/test_PR_curve.png
+           Fig 1. Representations
+
+      - .. figure:: examples/model_evaluation/images/test_ROC_curve.png
+
+           Fig 2. Transparency
+           
+    * - .. figure:: examples/model_evaluation/images/test_PR_curve.png
+
+           Fig 3. Electrostatics
+
 
 -----
 
