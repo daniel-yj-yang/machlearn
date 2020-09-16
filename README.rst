@@ -3,11 +3,13 @@ Machine Learning Python Library
 ===============================
 
 Install
+
 .. code-block:: bash
 
    pip install machlearn
 
 Example
+
 .. code-block:: python
    
    from machlearn import model_evaluation as me
