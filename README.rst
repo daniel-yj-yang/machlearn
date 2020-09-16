@@ -2,8 +2,6 @@
 Machine Learning Python Library
 ===============================
 
------
-
 Install
 -------
 
@@ -31,6 +29,14 @@ Output
  +------------------------+-----------------------+
  | |image_test_ROC_curve| + |image_test_PR_curve| +
  +------------------------+-----------------------+
+
+.. list-table:: Title
+   :widths: 25 25
+   :header-rows: 1
+
+   * - |image_test_ROC_curve|
+     - |image_test_PR_curve|
+     
 
 .. |image_test_confusion_matrix| image:: https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/test_confusion_matrix.png
    
