@@ -32,11 +32,10 @@ Output
 
 .. list-table:: Title
    :widths: 25 25
-   :header-rows: 1
+   :header-rows: 0
 
    * - a
-     - b
-     
+     - b   
 
 .. |image_test_confusion_matrix| image:: https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/test_confusion_matrix.png
    
