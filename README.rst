@@ -12,4 +12,4 @@ module: model_evaluation
    "plot_ROC_curve()", "plots the ROC (Receiver Operating Characteristic) curve, along with statistics"
    "plot_PR_curve()", "plots the precision-recall curve, along with statistics"
    "plot_ROC_and_PR_curves()", "plots both the ROC and the precision-recall curves, along with statistics"
-   "test()", "tests all the other functions in this module"
+   "test()", "tests all the functions in this module"
