@@ -17,6 +17,7 @@ Example
    from machlearn import model_evaluation as me
    me.test()
 
+
  +-------------------------+-------------------------+
  | |image_test_ROC_curve|  +  |image_test_PR_curve|  +
  +-------------------------+-------------------------+
