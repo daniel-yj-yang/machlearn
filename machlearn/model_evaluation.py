@@ -106,7 +106,7 @@ def plot_ROC_and_PR_curve(fitted_model,
                           figsize=(8, 7),
                           model_name='Binary Classifier'):
     """
-    This function plots the precision-recall curve, along with statistics.
+    This function plots both the ROC and the precision-recall curves, along with statistics.
 
     Contributor: Daniel Yang (daniel.yj.yang@gmail.com)
 

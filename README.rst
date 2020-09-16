@@ -2,8 +2,13 @@
 Machine Learning Python Library
 ===============================
 
-.. csv-table::
-   :header: "module", "function", "description"
-   :widths: 10, 10, 20
+module: model_evaluation
 
-   "model_evaluation", "plot_confusion_matrix()", "generates an interpretable plot of confusion matrix along with key statistics"
+.. csv-table::
+   :header: "function", "description"
+   :widths: 10, 20
+
+   "plot_confusion_matrix()", "generates an interpretable plot of confusion matrix along with key statistics"
+   "plot_PR_curve()", "plots the precision-recall curve, along with statistics"
+   "plot_ROC_curve()", "plots the ROC (Receiver operating characteristic) curve, along with statistics"
+   "plot_ROC_and_PR_curve()", "plots both the ROC and the precision-recall curves, along with statistics"
