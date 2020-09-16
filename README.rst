@@ -17,6 +17,11 @@ Example
    from machlearn import model_evaluation as me
    me.test()
 
+.. image:: examples/model_evaluation/images/test_confusion_matrix.png
+   :width: 500
+
+-----
+
 module: model_evaluation
 
 .. csv-table::
