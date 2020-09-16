@@ -17,115 +17,6 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, roc_auc_score, average_precision_score, plot_precision_recall_curve
 
 
-def plot_PR_curve(fitted_model,
-                  X,
-                  y_true_array,
-                  y_pred_score_array,
-                  y_pos_label=1,
-                  figsize=(8, 7),
-                  model_name='Binary Classifier'):
-    """
-    This function plots the precision-recall curve, along with statistics.
-
-    Contributor: Daniel Yang (daniel.yj.yang@gmail.com)
-
-    Arguments:
-        - fitted_model:       A fitted classifier instance
-        - X:                  A matrix of n_samples x n_features
-        - y_true_array:       The labels could be {0,1}
-        - y_pred_score_array: The probability estimates of the positive class
-        - y_pos_label:        The label of the positive class (default = 1)
-        - figsize:            A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
-        - model_name:         A string
-    """
-
-    AP = average_precision_score(
-        y_true=y_true_array, y_score=y_pred_score_array, pos_label=y_pos_label, average='macro')
-
-    old_font_size = plt.rcParams.get('font.size')
-    plt.rcParams.update({'font.size': 20})
-
-    fig, ax = plt.subplots(figsize=figsize)
-
-    plot_precision_recall_curve(estimator=fitted_model, X=X, y=y_true_array,
-                                response_method='predict_proba', ax=ax, label=f"{model_name} (AP = {AP:0.2f})")
-    ax.set_title('Precision-Recall Curve')
-    ax.set_xlabel('Recall = p($y_{pred}$=1 | $y_{true}$=1)')
-    ax.set_ylabel('Precision = p($y_{true}$=1 | $y_{pred}$=1)')
-
-    plt.rcParams.update({'font.size': old_font_size})
-
-
-def plot_ROC_curve(y_true_array,
-                   y_pred_score_array,
-                   y_pos_label=1,
-                   figsize=(8, 7),
-                   model_name='Binary Classifier'):
-    """
-    This function plots the ROC (Receiver operating characteristic) curve, along with statistics.
-
-    Contributor: Daniel Yang (daniel.yj.yang@gmail.com)
-
-    Arguments:
-        - y_true_array:       The labels could be {0,1}
-        - y_pred_score_array: The probability estimates of the positive class
-        - y_pos_label:        The label of the positive class (default = 1)
-        - figsize:            A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
-        - model_name:         A string
-    """
-
-    fpr, tpr, thresholds = roc_curve(
-        y_true=y_true_array, y_score=y_pred_score_array, pos_label=y_pos_label)
-    auc = roc_auc_score(y_true_array, y_pred_score_array)
-    # auc = np.trapz(tpr,fpr) # alternatively
-
-    old_font_size = plt.rcParams.get('font.size')
-    plt.rcParams.update({'font.size': 20})
-
-    fig = plt.figure(figsize=figsize)
-    plt.plot(fpr, tpr, color='darkorange', lw=2,
-             label=f"{model_name} (AUC = {auc:0.2f})")
-    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-    plt.xlim([-0.05, 1.05])
-    plt.ylim([-0.05, 1.05])
-    plt.legend(loc="lower right")
-    plt.xlabel('False Positive Rate = p($y_{pred}$=1 | $y_{true}$=0)')
-    plt.ylabel('True Positive Rate = p($y_{pred}$=1 | $y_{true}$=1)')
-    plt.title('ROC Curve')
-    fig.tight_layout()
-    plt.show()
-
-    plt.rcParams.update({'font.size': old_font_size})
-
-
-def plot_ROC_and_PR_curve(fitted_model,
-                          X,
-                          y_true_array,
-                          y_pred_score_array,
-                          y_pos_label=1,
-                          figsize=(8, 7),
-                          model_name='Binary Classifier'):
-    """
-    This function plots both the ROC and the precision-recall curves, along with statistics.
-
-    Contributor: Daniel Yang (daniel.yj.yang@gmail.com)
-
-    Arguments:
-        - fitted_model:       A fitted classifier instance
-        - X:                  A matrix of n_samples x n_features
-        - y_true_array:       The labels could be {0,1}
-        - y_pred_score_array: The probability estimates of the positive class
-        - y_pos_label:        The label of the positive class (default = 1)
-        - figsize:            A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
-        - model_name:         A string
-    """
-    plot_ROC_curve(y_true_array=y_true_array, y_pred_score_array=y_pred_score_array,
-                   y_pos_label=y_pos_label, figsize=figsize, model_name=model_name)
-
-    plot_PR_curve(fitted_model=fitted_model, X=X,
-                  y_true_array=y_true_array, y_pred_score_array=y_pred_score_array, y_pos_label=y_pos_label, figsize=figsize, model_name=model_name)
-
-
 def plot_confusion_matrix(cm,
                           y_classes=['y=0', 'y=1'],
                           figsize=(10, 10)):
@@ -200,3 +91,112 @@ def plot_confusion_matrix(cm,
     plt.show()
 
     plt.rcParams.update({'font.size': old_font_size})
+
+
+def plot_ROC_curve(y_true_array,
+                   y_pred_score_array,
+                   y_pos_label=1,
+                   figsize=(8, 7),
+                   model_name='Binary Classifier'):
+    """
+    This function plots the ROC (Receiver operating characteristic) curve, along with statistics.
+
+    Contributor: Daniel Yang (daniel.yj.yang@gmail.com)
+
+    Arguments:
+        - y_true_array:       The labels could be {0,1}
+        - y_pred_score_array: The probability estimates of the positive class
+        - y_pos_label:        The label of the positive class (default = 1)
+        - figsize:            A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
+        - model_name:         A string
+    """
+
+    fpr, tpr, thresholds = roc_curve(
+        y_true=y_true_array, y_score=y_pred_score_array, pos_label=y_pos_label)
+    auc = roc_auc_score(y_true_array, y_pred_score_array)
+    # auc = np.trapz(tpr,fpr) # alternatively
+
+    old_font_size = plt.rcParams.get('font.size')
+    plt.rcParams.update({'font.size': 20})
+
+    fig = plt.figure(figsize=figsize)
+    plt.plot(fpr, tpr, color='darkorange', lw=2,
+             label=f"{model_name} (AUC = {auc:0.2f})")
+    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+    plt.xlim([-0.05, 1.05])
+    plt.ylim([-0.05, 1.05])
+    plt.legend(loc="lower right")
+    plt.xlabel('False Positive Rate = p($y_{pred}$=1 | $y_{true}$=0)')
+    plt.ylabel('True Positive Rate = p($y_{pred}$=1 | $y_{true}$=1)')
+    plt.title('ROC Curve')
+    fig.tight_layout()
+    plt.show()
+
+    plt.rcParams.update({'font.size': old_font_size})
+
+
+def plot_PR_curve(fitted_model,
+                  X,
+                  y_true_array,
+                  y_pred_score_array,
+                  y_pos_label=1,
+                  figsize=(8, 7),
+                  model_name='Binary Classifier'):
+    """
+    This function plots the precision-recall curve, along with statistics.
+
+    Contributor: Daniel Yang (daniel.yj.yang@gmail.com)
+
+    Arguments:
+        - fitted_model:       A fitted classifier instance
+        - X:                  A matrix of n_samples x n_features
+        - y_true_array:       The labels could be {0,1}
+        - y_pred_score_array: The probability estimates of the positive class
+        - y_pos_label:        The label of the positive class (default = 1)
+        - figsize:            A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
+        - model_name:         A string
+    """
+
+    AP = average_precision_score(
+        y_true=y_true_array, y_score=y_pred_score_array, pos_label=y_pos_label, average='macro')
+
+    old_font_size = plt.rcParams.get('font.size')
+    plt.rcParams.update({'font.size': 20})
+
+    fig, ax = plt.subplots(figsize=figsize)
+
+    plot_precision_recall_curve(estimator=fitted_model, X=X, y=y_true_array,
+                                response_method='predict_proba', ax=ax, label=f"{model_name} (AP = {AP:0.2f})")
+    ax.set_title('Precision-Recall Curve')
+    ax.set_xlabel('Recall = p($y_{pred}$=1 | $y_{true}$=1)')
+    ax.set_ylabel('Precision = p($y_{true}$=1 | $y_{pred}$=1)')
+
+    plt.rcParams.update({'font.size': old_font_size})
+
+
+def plot_ROC_and_PR_curves(fitted_model,
+                           X,
+                           y_true_array,
+                           y_pred_score_array,
+                           y_pos_label=1,
+                           figsize=(8, 7),
+                           model_name='Binary Classifier'):
+    """
+    This function plots both the ROC and the precision-recall curves, along with statistics.
+
+    Contributor: Daniel Yang (daniel.yj.yang@gmail.com)
+
+    Arguments:
+        - fitted_model:       A fitted classifier instance
+        - X:                  A matrix of n_samples x n_features
+        - y_true_array:       The labels could be {0,1}
+        - y_pred_score_array: The probability estimates of the positive class
+        - y_pos_label:        The label of the positive class (default = 1)
+        - figsize:            A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
+        - model_name:         A string
+    """
+    plot_ROC_curve(y_true_array=y_true_array, y_pred_score_array=y_pred_score_array,
+                   y_pos_label=y_pos_label, figsize=figsize, model_name=model_name)
+
+    plot_PR_curve(fitted_model=fitted_model, X=X,
+                  y_true_array=y_true_array, y_pred_score_array=y_pred_score_array, y_pos_label=y_pos_label, figsize=figsize, model_name=model_name)
