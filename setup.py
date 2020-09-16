@@ -41,6 +41,7 @@ setuptools.setup(
         'numpy>=1.18.5',
         'seaborn>=0.10.1',
         'matplotlib>=3.2.2',
+        'scikit-learn>=0.23.1',
     ],
     python_requires='>=3.6',
 )
