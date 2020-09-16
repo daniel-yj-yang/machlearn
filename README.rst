@@ -17,7 +17,8 @@ Example
    from machlearn import model_evaluation as me
    me.test()
 
-|image1| |image2| |image3|
+|image1|
+|image2| |image3|
 
 .. |image1| image:: examples/model_evaluation/images/test_confusion_matrix.png
 
