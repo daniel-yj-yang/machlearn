@@ -19,17 +19,19 @@ Example
 
 -----
 
+Output
+
 .. |image_test_confusion_matrix| image:: ./examples/model_evaluation/images/test_confusion_matrix.png
    
 .. |image_test_ROC_curve| image:: ./examples/model_evaluation/images/test_ROC_curve.png
    
 .. |image_test_PR_curve| image:: ./examples/model_evaluation/images/test_PR_curve.png
  
- +-------------------------+-------------------------+
- | |image_test_confusion_matrix|                     +
- +-------------------------+-------------------------+
- | |image_test_ROC_curve|  +  |image_test_PR_curve|  +
- +-------------------------+-------------------------+
+ +-------------------------------+-------------------------+
+ | |image_test_confusion_matrix| +                         +
+ +-------------------------------+-------------------------+
+ | |image_test_ROC_curve|        +  |image_test_PR_curve|  +
+ +-------------------------------+-------------------------+
  
 -----
 
