@@ -18,7 +18,8 @@ Example
    me.test()
 
 .. image:: examples/model_evaluation/images/test_confusion_matrix.png
-   :scale: 25%
+.. image:: examples/model_evaluation/images/test_ROC_curve.png
+.. image:: examples/model_evaluation/images/test_PR_curve.png
 
 -----
 
