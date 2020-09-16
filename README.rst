@@ -2,6 +2,13 @@
 Machine Learning Python Library
 ===============================
 
+Example
+
+.. code-block:: Python
+   
+   from machlearn import model_evaluation as me
+   me.test()
+
 module: model_evaluation
 
 .. csv-table::
