@@ -43,7 +43,7 @@ def plot_confusion_matrix(cm,
 
     cell_text = [f"{x1}{x2}{x3}".strip() for x1, x2, x3 in zip(
         cell_label, cell_count, cell_percentage)]
-    cell_text = np.asarray(cell_text).reshape(cm.shape[0], cm.shape[1])
+    cell_text = np.asarray(cell_text).reshape(cm.shape)
 
     # Key statistics
     accuracy = np.trace(cm) / np.sum(cm)
