@@ -31,7 +31,7 @@ Output
  +------------------------+-----------------------+
 
 .. |image_test_confusion_matrix| image:: ./examples/model_evaluation/images/test_confusion_matrix.png
-:align: center
+   :align: center
    
 .. |image_test_ROC_curve| image:: ./examples/model_evaluation/images/test_ROC_curve.png
    
