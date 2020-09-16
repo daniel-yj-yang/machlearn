@@ -18,7 +18,7 @@ Example
    me.test()
 
 .. image:: examples/model_evaluation/images/test_confusion_matrix.png
-   :width: 500
+   :scale: 25%
 
 -----
 
