@@ -17,6 +17,9 @@ Example
    from machlearn import model_evaluation as me
    me.test()
 
+ +-------------------------+-------------------------+
+ | |image_test_ROC_curve|  +  |image_test_PR_curve|  +
+ +-------------------------+-------------------------+
 
 .. |image_test_confusion_matrix| image:: ./examples/model_evaluation/images/test_confusion_matrix.png
    :width: 20pt
@@ -30,10 +33,6 @@ Example
    :width: 20pt
    :height: 20pt
    
- +-------------------------+-------------------------+
- | |image_test_ROC_curve|  +  |image_test_PR_curve|  +
- +-------------------------+-------------------------+
-
 -----
 
 module: model_evaluation
