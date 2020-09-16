@@ -33,7 +33,7 @@ Output
 .. list-table:: Title
    :widths: 25 25
    :header-rows: 0
-
+   * - |image_test_confusion_matrix|
    * - |image_test_ROC_curve|
      - |image_test_PR_curve| 
 
