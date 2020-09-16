@@ -8,7 +8,7 @@ Install
    pip install machlearn
 
 Example
-.. code-block:: Python
+.. code-block:: python
    
    from machlearn import model_evaluation as me
    me.test()
