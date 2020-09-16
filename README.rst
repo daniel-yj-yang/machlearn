@@ -41,6 +41,7 @@ Output
 -----
 
 module: model_evaluation
+------------------------
 
 .. csv-table::
    :header: "function", "description"
@@ -55,6 +56,7 @@ module: model_evaluation
 -----
 
 module: naive_bayes
+-------------------
 
 .. csv-table::
    :header: "function", "description"
