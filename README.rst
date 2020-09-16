@@ -52,6 +52,8 @@ module: model_evaluation
    "plot_ROC_and_PR_curves()", "plots both the ROC and the precision-recall curves, along with statistics"
    "test()", "tests all the functions in this module"
 
+-----
+
 module: naive_bayes
 
 .. csv-table::
