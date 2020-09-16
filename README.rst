@@ -20,15 +20,15 @@ Example
 
 .. list-table:: 
 
-    * - .. figure:: examples/model_evaluation/images/test_confusion_matrix.png
+    * - .. figure:: ./examples/model_evaluation/images/test_confusion_matrix.png
 
            Fig 1. Representations
 
-      - .. figure:: examples/model_evaluation/images/test_ROC_curve.png
+      - .. figure:: ./examples/model_evaluation/images/test_ROC_curve.png
 
            Fig 2. Transparency
            
-    * - .. figure:: examples/model_evaluation/images/test_PR_curve.png
+    * - .. figure:: ./examples/model_evaluation/images/test_PR_curve.png
 
            Fig 3. Electrostatics
 
