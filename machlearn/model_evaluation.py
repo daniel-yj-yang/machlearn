@@ -104,7 +104,7 @@ def plot_confusion_matrix(cm,
 def plot_ROC_curve(y_true,
                    y_pred_score,
                    y_pos_label=1,
-                   figsize=(7, 6),
+                   figsize=(8, 7),
                    model_name='Binary Classifier'):
     """
     This function plots the ROC (Receiver operating characteristic) curve, along with statistics.
@@ -148,7 +148,7 @@ def plot_PR_curve(fitted_model,
                   y_true,
                   y_pred_score,
                   y_pos_label=1,
-                  figsize=(7, 6),
+                  figsize=(8, 7),
                   model_name='Binary Classifier'):
     """
     This function plots the precision-recall curve, along with statistics.
@@ -211,7 +211,7 @@ def plot_ROC_and_PR_curves(fitted_model,
 
 def test():
     """
-    This function tests all the other functions in this module.
+    This function tests all the functions in this module.
     """
     X, y = datasets.make_classification(
         n_samples=5000, n_features=30, n_classes=2, class_sep=0.8, random_state=123)
