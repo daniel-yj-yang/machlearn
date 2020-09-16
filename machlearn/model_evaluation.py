@@ -93,8 +93,8 @@ def plot_confusion_matrix(cm,
     plt.rcParams.update({'font.size': old_font_size})
 
 
-def plot_ROC_curve(y_true_array,
-                   y_pred_score_array,
+def plot_ROC_curve(y_true,
+                   y_pred_score,
                    y_pos_label=1,
                    figsize=(8, 7),
                    model_name='Binary Classifier'):
@@ -104,16 +104,16 @@ def plot_ROC_curve(y_true_array,
     Contributor: Daniel Yang (daniel.yj.yang@gmail.com)
 
     Arguments:
-        - y_true_array:       The labels could be {0,1}
-        - y_pred_score_array: The probability estimates of the positive class
+        - y_true:       The labels could be {0,1}
+        - y_pred_score: The probability estimates of the positive class
         - y_pos_label:        The label of the positive class (default = 1)
         - figsize:            A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
         - model_name:         A string
     """
 
     fpr, tpr, thresholds = roc_curve(
-        y_true=y_true_array, y_score=y_pred_score_array, pos_label=y_pos_label)
-    auc = roc_auc_score(y_true_array, y_pred_score_array)
+        y_true=y_true, y_score=y_pred_score, pos_label=y_pos_label)
+    auc = roc_auc_score(y_true, y_pred_score)
     # auc = np.trapz(tpr,fpr) # alternatively
 
     old_font_size = plt.rcParams.get('font.size')
@@ -137,8 +137,8 @@ def plot_ROC_curve(y_true_array,
 
 def plot_PR_curve(fitted_model,
                   X,
-                  y_true_array,
-                  y_pred_score_array,
+                  y_true,
+                  y_pred_score,
                   y_pos_label=1,
                   figsize=(8, 7),
                   model_name='Binary Classifier'):
@@ -148,24 +148,24 @@ def plot_PR_curve(fitted_model,
     Contributor: Daniel Yang (daniel.yj.yang@gmail.com)
 
     Arguments:
-        - fitted_model:       A fitted classifier instance
-        - X:                  A matrix of n_samples x n_features
-        - y_true_array:       The labels could be {0,1}
-        - y_pred_score_array: The probability estimates of the positive class
-        - y_pos_label:        The label of the positive class (default = 1)
-        - figsize:            A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
-        - model_name:         A string
+        - fitted_model: A fitted classifier instance
+        - X:            A matrix of m_samples x n_features
+        - y_true:       The labels could be {0,1}
+        - y_pred_score: The probability estimates of the positive class
+        - y_pos_label:  The label of the positive class (default = 1)
+        - figsize:      A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
+        - model_name:   A string
     """
 
     AP = average_precision_score(
-        y_true=y_true_array, y_score=y_pred_score_array, pos_label=y_pos_label, average='macro')
+        y_true=y_true, y_score=y_pred_score, pos_label=y_pos_label, average='macro')
 
     old_font_size = plt.rcParams.get('font.size')
     plt.rcParams.update({'font.size': 20})
 
     fig, ax = plt.subplots(figsize=figsize)
 
-    plot_precision_recall_curve(estimator=fitted_model, X=X, y=y_true_array,
+    plot_precision_recall_curve(estimator=fitted_model, X=X, y=y_true,
                                 response_method='predict_proba', ax=ax, label=f"{model_name} (AP = {AP:0.2f})")
     ax.set_title('Precision-Recall Curve')
     ax.set_xlabel('Recall = p($y_{pred}$=1 | $y_{true}$=1)')
@@ -176,8 +176,8 @@ def plot_PR_curve(fitted_model,
 
 def plot_ROC_and_PR_curves(fitted_model,
                            X,
-                           y_true_array,
-                           y_pred_score_array,
+                           y_true,
+                           y_pred_score,
                            y_pos_label=1,
                            figsize=(8, 7),
                            model_name='Binary Classifier'):
@@ -187,16 +187,16 @@ def plot_ROC_and_PR_curves(fitted_model,
     Contributor: Daniel Yang (daniel.yj.yang@gmail.com)
 
     Arguments:
-        - fitted_model:       A fitted classifier instance
-        - X:                  A matrix of n_samples x n_features
-        - y_true_array:       The labels could be {0,1}
-        - y_pred_score_array: The probability estimates of the positive class
-        - y_pos_label:        The label of the positive class (default = 1)
-        - figsize:            A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
-        - model_name:         A string
+        - fitted_model: A fitted classifier instance
+        - X:            A matrix of m_samples x n_features
+        - y_true:       The labels could be {0,1}
+        - y_pred_score: The probability estimates of the positive class
+        - y_pos_label:  The label of the positive class (default = 1)
+        - figsize:      A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
+        - model_name:   A string
     """
-    plot_ROC_curve(y_true_array=y_true_array, y_pred_score_array=y_pred_score_array,
+    plot_ROC_curve(y_true=y_true, y_pred_score=y_pred_score,
                    y_pos_label=y_pos_label, figsize=figsize, model_name=model_name)
 
     plot_PR_curve(fitted_model=fitted_model, X=X,
-                  y_true_array=y_true_array, y_pred_score_array=y_pred_score_array, y_pos_label=y_pos_label, figsize=figsize, model_name=model_name)
+                  y_true=y_true, y_pred_score=y_pred_score, y_pos_label=y_pos_label, figsize=figsize, model_name=model_name)
