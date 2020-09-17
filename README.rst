@@ -24,20 +24,17 @@ Example
 Output
 ------
 
-.. list-table::
-   :widths: 25 25
-   :header-rows: 0
-   
-   * - |image_test_confusion_matrix|
-     -
-   * - |image_test_ROC_curve|
-     - |image_test_PR_curve| 
+.. raw:: html
 
-.. |image_test_confusion_matrix| image:: https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/test_confusion_matrix.png
-   
-.. |image_test_ROC_curve| image:: https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/test_ROC_curve.png
-   
-.. |image_test_PR_curve| image:: https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/test_PR_curve.png
+   <p align="center">
+   <img src="https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_confusion_matrix.png" width="500px"></td>
+   </p>
+   <table>
+   <tr>
+   <td><img src="https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_ROC_curve.png" width="400px"></td>
+   <td><img src="https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_PR_curve.png" width="400px"></td>
+   </tr>
+   </table>
 
 -----
 
@@ -52,7 +49,7 @@ module: model_evaluation
    "plot_ROC_curve()", "plots the ROC (Receiver Operating Characteristic) curve, along with statistics"
    "plot_PR_curve()", "plots the precision-recall curve, along with statistics"
    "plot_ROC_and_PR_curves()", "plots both the ROC and the precision-recall curves, along with statistics"
-   "test()", "tests all the functions in this module"
+   "demo()", "demos the major functions in this module"
 
 -----
 

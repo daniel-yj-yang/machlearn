@@ -13,7 +13,7 @@
 # this is for "from machlearn.model_evaluation import *"
 __all__ = ["plot_confusion_matrix", "plot_ROC_curve",
            "plot_PR_curve", "plot_ROC_and_PR_curves",
-           "test"]
+           "demo"]
 
 import numpy as np
 import seaborn as sns
@@ -210,9 +210,9 @@ def plot_ROC_and_PR_curves(fitted_model,
                   y_true=y_true, y_pred_score=y_pred_score, y_pos_label=y_pos_label, figsize=figsize, model_name=model_name)
 
 
-def test():
+def demo():
     """
-    This function tests all the functions in this module.
+    This function demos the major functions in this module.
     """
     X, y = datasets.make_classification(
         n_samples=5000, n_features=30, n_classes=2, class_sep=0.8, random_state=123)
