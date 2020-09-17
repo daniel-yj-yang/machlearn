@@ -21,7 +21,6 @@ Example
 
 
 Selected Output:
-
 .. list-table::
    :widths: 25 25
    :header-rows: 0
