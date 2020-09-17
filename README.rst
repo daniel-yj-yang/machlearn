@@ -25,7 +25,7 @@ Output
 ------
 
 .. list-table::
-   :widths: 50
+   :widths: 25
    :header-rows: 0
    
    * - |image_test_confusion_matrix|
