@@ -20,7 +20,7 @@ Example
    me.demo()
 
 
-Output:
+Selected Output:
 
 .. list-table::
    :widths: 25 25
