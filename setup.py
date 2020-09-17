@@ -38,10 +38,10 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=[
-        'numpy>=1.18.5',
-        'seaborn>=0.10.1',
-        'matplotlib>=3.2.2',
-        'scikit-learn>=0.23.1',
+        'scikit-learn>=0.23.2',
+        'numpy>=1.19.2',
+        'seaborn>=0.11.0',
+        'matplotlib>=3.3.2',
     ],
     python_requires='>=3.6',
 )
