@@ -19,23 +19,15 @@ Example
    from machlearn import model_evaluation as me
    me.demo()
 
------
 
-Output
-------
-
-.. list-table::
-   :widths: 50
-   :header-rows: 0
-   
-   * - |image_test_confusion_matrix|
+Output:
 
 .. list-table::
    :widths: 25 25
    :header-rows: 0
 
-   * - |image_test_ROC_curve|
-     - |image_test_PR_curve| 
+   * - |image_test_confusion_matrix|
+     - |image_test_ROC_curve| 
 
 .. |image_test_confusion_matrix| image:: https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_confusion_matrix.png
    :width: 400px
