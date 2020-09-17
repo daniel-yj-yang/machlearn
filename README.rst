@@ -17,7 +17,7 @@ Example
 .. code-block:: python
    
    from machlearn import model_evaluation as me
-   me.test()
+   me.demo()
 
 -----
 
@@ -27,7 +27,7 @@ Output
 .. raw:: html
 
    <p align="center">
-   <img src="https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_confusion_matrix.png" width="400px">
+   <img src="https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_confusion_matrix.png" width="500px">
    </p>
    <p align="center">
    <table>
