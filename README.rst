@@ -24,19 +24,23 @@ Example
 Output
 ------
 
-.. raw:: html
+.. list-table::
+   :widths: 25 25
+   :header-rows: 0
+   
+   * - |image_test_confusion_matrix|
+     -
+   * - |image_test_ROC_curve|
+     - |image_test_PR_curve| 
 
-   <p align="center">
-   <img src="https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_confusion_matrix.png" width="500px">
-   </p>
-   <p align="center">
-   <table>
-   <tr>
-   <td><img src="https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_ROC_curve.png" width="400px"></td>
-   <td><img src="https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_PR_curve.png" width="400px"></td>
-   </tr>
-   </table>
-   </p>
+.. |image_test_confusion_matrix| image:: https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_confusion_matrix.png
+   :width: 400px
+
+.. |image_test_ROC_curve| image:: https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_ROC_curve.png
+   :width: 400px
+   
+.. |image_test_PR_curve| image:: https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_PR_curve.png
+   :width: 400px
 
 -----
 
