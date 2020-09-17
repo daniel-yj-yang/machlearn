@@ -94,6 +94,7 @@ def plot_confusion_matrix(cm,
 
     plt.ylabel('$y_{true}$')
     plt.xlabel('$y_{pred}$' + stats_text)
+    plt.title('Confusion Matrix')
 
     fig.tight_layout()
     plt.show()
