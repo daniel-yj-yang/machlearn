@@ -27,14 +27,16 @@ Output
 .. raw:: html
 
    <p align="center">
-   <img src="https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_confusion_matrix.png" width="500px"></td>
+   <img src="https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_confusion_matrix.png" width="400px">
    </p>
+   <p align="center">
    <table>
    <tr>
    <td><img src="https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_ROC_curve.png" width="400px"></td>
    <td><img src="https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_PR_curve.png" width="400px"></td>
    </tr>
    </table>
+   </p>
 
 -----
 
