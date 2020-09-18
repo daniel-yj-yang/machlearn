@@ -23,7 +23,7 @@ Example 1: Model evaluation
 Selected Output:
 
 .. list-table::
-   :widths: 25
+   :widths: 25 25
    :header-rows: 0
 
    * - |image_demo_confusion_matrix|
@@ -74,7 +74,7 @@ Selected Output:
 
 
 .. list-table::
-   :widths: 50
+   :widths: 25 25
    :header-rows: 0
 
    * - |image_naive_bayes_confusion_matrix|
