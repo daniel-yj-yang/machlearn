@@ -37,7 +37,7 @@ def plot_confusion_matrix(y_true,
     Required arguments:
         - y_true:     An array of shape (m_sample,); the labels could be {0,1}
         - y_pred:     An array of shape (m_sample,); the labels could be {0,1}
-    
+
     Optional arguments:
         - y_classes:  A list, the y_classes to be displayed
         - figsize:    A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
@@ -72,9 +72,9 @@ def plot_confusion_matrix(y_true,
         recall = TP / (TP+FN)
         # or, 2*precision*recall / (precision + recall)
         f1_score = TP / (TP + 0.5*(FP+FN))
-        alpha = FP / (TN+FP)
+        FPR = FP / (TN+FP)
         stats_text = "\n\nAccuracy(higher TP and TN) = (TP+TN)/Total = {:0.3f}\nF1 Score(lower FP and FN) = TP/(TP+0.5*(FP+FN)) = {:0.3f}\n\nTPR/recall/sensitivity = 1-FNR = p($y_{{pred}}$=1 | $y_{{true}}$=1) = {:0.3f}\nFPR = p($y_{{pred}}$=1 | $y_{{true}}$=0) = {:0.3f}\n\nPrecision = 1-FDR = p($y_{{true}}$=1 | $y_{{pred}}$=1) = {:0.3f}".format(
-            accuracy, f1_score, recall, alpha, precision)
+            accuracy, f1_score, recall, FPR, precision)
     else:
         stats_text = "\n\nAccuracy={:0.3f}".format(accuracy)
 
@@ -107,25 +107,27 @@ def plot_confusion_matrix(y_true,
 
     plt.rcParams.update({'font.size': old_font_size})
 
-    return accuracy
+    return accuracy,
 
 
 def plot_ROC_curve(y_true,
                    y_pred_score,
                    y_pos_label=1,
                    figsize=(8, 7),
-                   model_name='Binary Classifier'):
+                   model_name='Binary Classifier',
+                   plot_threshold=True):
     """
     This function plots the ROC (Receiver operating characteristic) curve, along with statistics.
 
     Required arguments:
         - y_true:       An array of shape (m_sample,); the labels could be {0,1}
         - y_pred_score: An array of shape (m_sample,); the probability estimates of the positive class
-    
+
     Optional arguments:
-        - y_pos_label:  The label of the positive class (default = 1)
-        - figsize:      A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
-        - model_name:   A string
+        - y_pos_label:    The label of the positive class (default = 1)
+        - figsize:        A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
+        - model_name:     A string
+        - plot_threshold: A boolean, whether to plot threshold or not
     """
 
     fpr, tpr, thresholds = roc_curve(
@@ -148,6 +150,21 @@ def plot_ROC_curve(y_true,
     plt.ylabel('True Positive Rate = p($y_{pred}$=1 | $y_{true}$=1)')
     plt.title('ROC Curve')
 
+    if plot_threshold:
+        for threshold in (0.001, 0.05, 0.5, 0.95, 0.999):
+            cm = confusion_matrix((y_true == y_pos_label).astype(bool),
+                                (y_pred_score >= threshold).astype(bool))
+            TP = cm[1, 1]
+            TN = cm[0, 0]
+            FP = cm[0, 1]
+            FN = cm[1, 0]
+            TPR = TP / (TP+FN)
+            FPR = FP / (TN+FP)
+            plt.plot([FPR], [TPR], marker='x', markersize=10,
+                    color="red", label=f"d={threshold}")
+            plt.annotate(text=f"d={threshold}", xy=(
+                FPR+0.01, TPR+0.01), color="red")
+
     fig.tight_layout()
     plt.show()
 
@@ -160,7 +177,8 @@ def plot_PR_curve(fitted_model,
                   y_pred_score,
                   y_pos_label=1,
                   figsize=(8, 7),
-                  model_name='Binary Classifier'):
+                  model_name='Binary Classifier',
+                  plot_threshold=True):
     """
     This function plots the precision-recall curve, along with statistics.
 
@@ -169,11 +187,12 @@ def plot_PR_curve(fitted_model,
         - X:            A matrix of m_samples x n_features
         - y_true:       An array of shape (m_sample,); the labels could be {0,1}
         - y_pred_score: An array of shape (m_sample,); the probability estimates of the positive class
-    
+
     Optional arguments:
-        - y_pos_label:  The label of the positive class (default = 1)
-        - figsize:      A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
-        - model_name:   A string
+        - y_pos_label:    The label of the positive class (default = 1)
+        - figsize:        A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
+        - model_name:     A string
+        - plot_threshold: A boolean, whether to plot threshold or not
     """
 
     AP = average_precision_score(
@@ -186,9 +205,26 @@ def plot_PR_curve(fitted_model,
 
     plot_precision_recall_curve(estimator=fitted_model, X=X, y=y_true,
                                 response_method='predict_proba', ax=ax, label=f"{model_name} (AP = {AP:0.2f})")
-    ax.set_title('Precision-Recall Curve')
     ax.set_xlabel('Recall = p($y_{pred}$=1 | $y_{true}$=1)')
     ax.set_ylabel('Precision = p($y_{true}$=1 | $y_{pred}$=1)')
+    ax.set_title('Precision-Recall Curve')
+
+    if plot_threshold:
+        for threshold in (0.001, 0.05, 0.5, 0.95, 0.999):
+            cm = confusion_matrix((y_true == y_pos_label).astype(bool),
+                                (y_pred_score >= threshold).astype(bool))
+            TP = cm[1, 1]
+            TN = cm[0, 0]
+            FP = cm[0, 1]
+            FN = cm[1, 0]
+            TPR = TP / (TP+FN)
+            FPR = FP / (TN+FP)
+            precision = TP / (TP+FP)
+            recall = TP / (TP+FN)
+            plt.plot([recall], [precision], marker='x', markersize=10,
+                    color="red", label=f"d={threshold}")
+            plt.annotate(text=f"d={threshold}", xy=(
+                recall+0.01, precision+0.01), color="red")
 
     fig.tight_layout()
     plt.show()
@@ -202,7 +238,8 @@ def plot_ROC_and_PR_curves(fitted_model,
                            y_pred_score,
                            y_pos_label=1,
                            figsize=(8, 7),
-                           model_name='Binary Classifier'):
+                           model_name='Binary Classifier',
+                           plot_threshold=True):
     """
     This function plots both the ROC and the precision-recall curves, along with statistics.
 
@@ -211,17 +248,19 @@ def plot_ROC_and_PR_curves(fitted_model,
         - X:            A matrix of m_samples x n_features
         - y_true:       An array of shape (m_sample,); the labels could be {0,1}
         - y_pred_score: An array of shape (m_sample,); the probability estimates of the positive class
-    
+
     Optional arguments:
-        - y_pos_label:  The label of the positive class (default = 1)
-        - figsize:      A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
-        - model_name:   A string
+        - y_pos_label:    The label of the positive class (default = 1)
+        - figsize:        A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
+        - model_name:     A string
+        - plot_threshold: A boolean, whether to plot threshold or not
     """
     plot_ROC_curve(y_true=y_true, y_pred_score=y_pred_score,
-                   y_pos_label=y_pos_label, figsize=figsize, model_name=model_name)
+                   y_pos_label=y_pos_label, figsize=figsize, model_name=model_name, plot_threshold=plot_threshold)
 
     plot_PR_curve(fitted_model=fitted_model, X=X,
-                  y_true=y_true, y_pred_score=y_pred_score, y_pos_label=y_pos_label, figsize=figsize, model_name=model_name)
+                  y_true=y_true, y_pred_score=y_pred_score,
+                  y_pos_label=y_pos_label, figsize=figsize, model_name=model_name, plot_threshold=plot_threshold)
 
 
 def demo():
@@ -240,4 +279,4 @@ def demo():
     y_pred = model.predict(X_test)
     accuracy = plot_confusion_matrix(y_true=y_test, y_pred=y_pred)
     plot_ROC_and_PR_curves(fitted_model=model, X=X_test,
-                           y_true=y_test, y_pred_score=y_pred_score[:, 1], model_name='Gaussian NB')
+                           y_true=y_test, y_pred_score=y_pred_score[:, 1], model_name='Gaussian NB', plot_threshold=True)

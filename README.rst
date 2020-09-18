@@ -64,12 +64,13 @@ Selected Output:
    This demo uses a public dataset of SMS spam, which has a total of 5574 messages = 747 spam and 4827 ham (legitimate).
 
    Using test_size = 0.25 and training a multinomial naive bayes model, the best hyperparameters were found to be:
-      (step1) convert from text to count matrix = CountVectorizer(analyzer = __lemmas);
-      (step2) transform count matrix to tf-idf = TfidfTransformer(use_idf = True).
+      Step1: Convert from text to count matrix = CountVectorizer(analyzer = __lemmas);
+      Step2: Transform count matrix to tf-idf = TfidfTransformer(use_idf = True).
 
    Application example:
-      Message: [URGENT! We are trying to contact U. Todays draw shows that you have won a 2000 prize GUARANTEED. Call 090 5809 4507 from a landline. Claim 3030. Valid 12hrs only.]
-      Classification: [spam]
+      - Message: [URGENT! We are trying to contact U. Todays draw shows that you have won a 2000 prize GUARANTEED. Call 090 5809 4507 from a landline. Claim 3030. Valid 12hrs only.]
+      - Probability of class=1 (spam): [0.96]
+      - Classification: [spam]
 
 
 .. list-table::

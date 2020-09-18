@@ -106,8 +106,8 @@ def demo():
     classifier = grid.fit(X_train, y_train)
     print(
         f"Using test_size = {test_size}, the best hyperparameters for a multinomial NB model were found to be:\n"
-        f"(step1) convert from text to count matrix = CountVectorizer(analyzer = {classifier.best_params_['count_matrix_transformer__analyzer'].__name__});\n"
-        f"(step2) transform count matrix to tf-idf = TfidfTransformer(use_idf = {classifier.best_params_['count_matrix_normalizer__use_idf']}).\n")
+        f"Step1: Convert from text to count matrix = CountVectorizer(analyzer = {classifier.best_params_['count_matrix_transformer__analyzer'].__name__});\n"
+        f"Step2: Transform count matrix to tf-idf = TfidfTransformer(use_idf = {classifier.best_params_['count_matrix_normalizer__use_idf']}).\n")
     # model evaluation
     y_pred = classifier.predict(X_test)
     y_score = classifier.predict_proba(X_test)
@@ -119,7 +119,7 @@ def demo():
     custom_message = "URGENT! We are trying to contact U. Todays draw shows that you have won a 2000 prize GUARANTEED. Call 090 5809 4507 from a landline. Claim 3030. Valid 12hrs only."
     custom_results = classifier.predict([custom_message])[0]
     print(
-        f"Application example:\nMessage: [{custom_message}]\nClassification: [{custom_results}]\n")
+        f"Application example:\n- Message: [{custom_message}]\n- Probability of class=1 (spam): [{classifier.predict_proba([custom_message])[0][1]:.2f}]\n- Classification: [{custom_results}]\n")
 
     # True Positive
     #X_test_subset = X_test[y_test == 'spam']
