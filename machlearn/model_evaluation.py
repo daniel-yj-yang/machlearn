@@ -18,10 +18,7 @@ __all__ = ["plot_confusion_matrix", "plot_ROC_curve",
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn import datasets
 from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, average_precision_score, plot_precision_recall_curve
-from sklearn.model_selection import train_test_split
-from .naive_bayes import naive_bayes_Gaussian
 
 
 __font_size__ = 18
@@ -270,10 +267,15 @@ def demo():
     Required arguments:
         None
     """
+    from sklearn import datasets
     X, y = datasets.make_classification(
         n_samples=5000, n_features=30, n_classes=2, class_sep=0.8, random_state=123)
+
+    from sklearn.model_selection import train_test_split
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.20, random_state=123)
+
+    from .naive_bayes import naive_bayes_Gaussian
     model = naive_bayes_Gaussian().fit(X_train, y_train)
     y_pred_score = model.predict_proba(X_test)
     y_pred = model.predict(X_test)
