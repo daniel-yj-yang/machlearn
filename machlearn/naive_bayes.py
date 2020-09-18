@@ -14,7 +14,6 @@
 __all__ = ["naive_bayes_Bernoulli", "naive_bayes_multinomial",
            "naive_bayes_Gaussian", "demo"]
 
-import machlearn.model_evaluation as me
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB, GaussianNB
 
 from sklearn.pipeline import Pipeline
@@ -111,10 +110,12 @@ def demo():
     # model evaluation
     y_pred = classifier.predict(X_test)
     y_score = classifier.predict_proba(X_test)
-    accuracy = me.plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=[
-        'Ham (y=0)', 'Spam (y=1)'])
-    me.plot_ROC_and_PR_curves(fitted_model=classifier, X=X_test,
-                              y_true=y_test, y_pred_score=y_score[:, 1], y_pos_label='spam', model_name='Multinomial NB')
+
+    from .model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
+    accuracy = plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=(
+        'Ham (y=0)', 'Spam (y=1)'))
+    plot_ROC_and_PR_curves(fitted_model=classifier, X=X_test,
+                           y_true=y_test, y_pred_score=y_score[:, 1], y_pos_label='spam', model_name='Multinomial NB')
     # application example
     custom_message = "URGENT! We are trying to contact U. Todays draw shows that you have won a 2000 prize GUARANTEED. Call 090 5809 4507 from a landline. Claim 3030. Valid 12hrs only."
     custom_results = classifier.predict([custom_message])[0]

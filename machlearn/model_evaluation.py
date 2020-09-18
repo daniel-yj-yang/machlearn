@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 from sklearn import datasets
 from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, average_precision_score, plot_precision_recall_curve
 from sklearn.model_selection import train_test_split
-import machlearn.naive_bayes as nb
+from .naive_bayes import naive_bayes_Gaussian
 
 
 __font_size__ = 18
@@ -29,7 +29,7 @@ __font_size__ = 18
 
 def plot_confusion_matrix(y_true,
                           y_pred,
-                          y_classes=['y=0', 'y=1'],
+                          y_classes=('y=0', 'y=1'),
                           figsize=(9, 9)):
     """
     This function plots the confusion matrix, along with key statistics, and returns accuracy.
@@ -151,9 +151,9 @@ def plot_ROC_curve(y_true,
     plt.title('ROC Curve')
 
     if plot_threshold:
-        for threshold in (0.001, 0.05, 0.5, 0.95, 0.999):
+        for threshold in (0.01, 0.50, 0.99):
             cm = confusion_matrix((y_true == y_pos_label).astype(bool),
-                                (y_pred_score >= threshold).astype(bool))
+                                  (y_pred_score >= threshold).astype(bool))
             TP = cm[1, 1]
             TN = cm[0, 0]
             FP = cm[0, 1]
@@ -161,7 +161,7 @@ def plot_ROC_curve(y_true,
             TPR = TP / (TP+FN)
             FPR = FP / (TN+FP)
             plt.plot([FPR], [TPR], marker='x', markersize=10,
-                    color="red", label=f"d={threshold}")
+                     color="red", label=f"d={threshold}")
             plt.annotate(text=f"d={threshold}", xy=(
                 FPR+0.01, TPR+0.01), color="red")
 
@@ -210,9 +210,9 @@ def plot_PR_curve(fitted_model,
     ax.set_title('Precision-Recall Curve')
 
     if plot_threshold:
-        for threshold in (0.001, 0.05, 0.5, 0.95, 0.999):
+        for threshold in (0.01, 0.50, 0.99):
             cm = confusion_matrix((y_true == y_pos_label).astype(bool),
-                                (y_pred_score >= threshold).astype(bool))
+                                  (y_pred_score >= threshold).astype(bool))
             TP = cm[1, 1]
             TN = cm[0, 0]
             FP = cm[0, 1]
@@ -222,7 +222,7 @@ def plot_PR_curve(fitted_model,
             precision = TP / (TP+FP)
             recall = TP / (TP+FN)
             plt.plot([recall], [precision], marker='x', markersize=10,
-                    color="red", label=f"d={threshold}")
+                     color="red", label=f"d={threshold}")
             plt.annotate(text=f"d={threshold}", xy=(
                 recall+0.01, precision+0.01), color="red")
 
@@ -274,7 +274,7 @@ def demo():
         n_samples=5000, n_features=30, n_classes=2, class_sep=0.8, random_state=123)
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.20, random_state=123)
-    model = nb.naive_bayes_Gaussian().fit(X_train, y_train)
+    model = naive_bayes_Gaussian().fit(X_train, y_train)
     y_pred_score = model.predict_proba(X_test)
     y_pred = model.predict(X_test)
     accuracy = plot_confusion_matrix(y_true=y_test, y_pred=y_pred)
