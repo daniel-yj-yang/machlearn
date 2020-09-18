@@ -74,7 +74,7 @@ Selected Output:
 
 
 .. list-table::
-   :widths: 25
+   :widths: 50
    :header-rows: 0
 
    * - |image_naive_bayes_confusion_matrix|
