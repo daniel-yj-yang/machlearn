@@ -42,6 +42,8 @@ setuptools.setup(
         'numpy>=1.19.2',
         'seaborn>=0.11.0',
         'matplotlib>=3.3.2',
+        'pandas>=1.1.2',
+        'textblob>=0.15.3', # used in naive_bayes.demo()
     ],
     python_requires='>=3.6',
 )

@@ -21,23 +21,29 @@ import matplotlib.pyplot as plt
 from sklearn import datasets
 from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, average_precision_score, plot_precision_recall_curve
 from sklearn.model_selection import train_test_split
-from .naive_bayes import naive_bayes_Gaussian
+import machlearn.naive_bayes as nb
 
 
 __font_size__ = 18
 
 
-def plot_confusion_matrix(cm,
+def plot_confusion_matrix(y_true,
+                          y_pred,
                           y_classes=['y=0', 'y=1'],
                           figsize=(9, 9)):
     """
-    This function plots the confusion matrix, along with key statistics.
+    This function plots the confusion matrix, along with key statistics, and returns accuracy.
 
-    Arguments:
-        - cm_ndarray: A numpy.ndarray, the output from sklearn.metrics.confusion_matrix
+    Required arguments:
+        - y_true:     An array of shape (m_sample,); the labels could be {0,1}
+        - y_pred:     An array of shape (m_sample,); the labels could be {0,1}
+    
+    Optional arguments:
         - y_classes:  A list, the y_classes to be displayed
         - figsize:    A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
     """
+
+    cm = confusion_matrix(y_true, y_pred)
 
     if cm.shape == (2, 2):
         cell_label = ['True Negative', 'False Positive',
@@ -101,6 +107,8 @@ def plot_confusion_matrix(cm,
 
     plt.rcParams.update({'font.size': old_font_size})
 
+    return accuracy
+
 
 def plot_ROC_curve(y_true,
                    y_pred_score,
@@ -110,12 +118,14 @@ def plot_ROC_curve(y_true,
     """
     This function plots the ROC (Receiver operating characteristic) curve, along with statistics.
 
-    Arguments:
-        - y_true:       The labels could be {0,1}
-        - y_pred_score: The probability estimates of the positive class
-        - y_pos_label:        The label of the positive class (default = 1)
-        - figsize:            A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
-        - model_name:         A string
+    Required arguments:
+        - y_true:       An array of shape (m_sample,); the labels could be {0,1}
+        - y_pred_score: An array of shape (m_sample,); the probability estimates of the positive class
+    
+    Optional arguments:
+        - y_pos_label:  The label of the positive class (default = 1)
+        - figsize:      A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
+        - model_name:   A string
     """
 
     fpr, tpr, thresholds = roc_curve(
@@ -154,11 +164,13 @@ def plot_PR_curve(fitted_model,
     """
     This function plots the precision-recall curve, along with statistics.
 
-    Arguments:
+    Required arguments:
         - fitted_model: A fitted classifier instance
         - X:            A matrix of m_samples x n_features
-        - y_true:       The labels could be {0,1}
-        - y_pred_score: The probability estimates of the positive class
+        - y_true:       An array of shape (m_sample,); the labels could be {0,1}
+        - y_pred_score: An array of shape (m_sample,); the probability estimates of the positive class
+    
+    Optional arguments:
         - y_pos_label:  The label of the positive class (default = 1)
         - figsize:      A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
         - model_name:   A string
@@ -194,11 +206,13 @@ def plot_ROC_and_PR_curves(fitted_model,
     """
     This function plots both the ROC and the precision-recall curves, along with statistics.
 
-    Arguments:
+    Required arguments:
         - fitted_model: A fitted classifier instance
         - X:            A matrix of m_samples x n_features
-        - y_true:       The labels could be {0,1}
-        - y_pred_score: The probability estimates of the positive class
+        - y_true:       An array of shape (m_sample,); the labels could be {0,1}
+        - y_pred_score: An array of shape (m_sample,); the probability estimates of the positive class
+    
+    Optional arguments:
         - y_pos_label:  The label of the positive class (default = 1)
         - figsize:      A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
         - model_name:   A string
@@ -212,15 +226,18 @@ def plot_ROC_and_PR_curves(fitted_model,
 
 def demo():
     """
-    This function demos the major functions in this module.
+    This function provides a demo of the major functions in this module.
+
+    Required arguments:
+        None
     """
     X, y = datasets.make_classification(
         n_samples=5000, n_features=30, n_classes=2, class_sep=0.8, random_state=123)
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.20, random_state=123)
-    model = naive_bayes_Gaussian().fit(X_train, y_train)
+    model = nb.naive_bayes_Gaussian().fit(X_train, y_train)
     y_pred_score = model.predict_proba(X_test)
     y_pred = model.predict(X_test)
-    plot_confusion_matrix(confusion_matrix(y_test, y_pred))
-    plot_ROC_and_PR_curves(fitted_model=model, X=X_test, y_true=y_test,
-                           y_pred_score=y_pred_score[:, 1], model_name='Gaussian NB')
+    accuracy = plot_confusion_matrix(y_true=y_test, y_pred=y_pred)
+    plot_ROC_and_PR_curves(fitted_model=model, X=X_test,
+                           y_true=y_test, y_pred_score=y_pred_score[:, 1], model_name='Gaussian NB')
