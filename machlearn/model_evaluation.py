@@ -73,7 +73,7 @@ def plot_confusion_matrix(y_true,
         # or, 2*precision*recall / (precision + recall)
         f1_score = TP / (TP + 0.5*(FP+FN))
         alpha = FP / (TN+FP)
-        stats_text = "\n\nAccuracy(higher TP and TN) = (TP+TN)/Total = {:0.3f}\nF1 Score(lower FP and FN) = TP/(TP+0.5*(FP+FN)) = {:0.3f}\n\nRecall/sensitivity/TPR = 1-β = p($y_{{pred}}$=1 | $y_{{true}}$=1) = {:0.3f}\nFPR = α = p($y_{{pred}}$=1 | $y_{{true}}$=0) = {:0.3f}\n\nPrecision = 1-FDR = p($y_{{true}}$=1 | $y_{{pred}}$=1) = {:0.3f}".format(
+        stats_text = "\n\nAccuracy(higher TP and TN) = (TP+TN)/Total = {:0.3f}\nF1 Score(lower FP and FN) = TP/(TP+0.5*(FP+FN)) = {:0.3f}\n\nTPR/recall/sensitivity = 1-FNR = p($y_{{pred}}$=1 | $y_{{true}}$=1) = {:0.3f}\nFPR = p($y_{{pred}}$=1 | $y_{{true}}$=0) = {:0.3f}\n\nPrecision = 1-FDR = p($y_{{true}}$=1 | $y_{{pred}}$=1) = {:0.3f}".format(
             accuracy, f1_score, recall, alpha, precision)
     else:
         stats_text = "\n\nAccuracy={:0.3f}".format(accuracy)
