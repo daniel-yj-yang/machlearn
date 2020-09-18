@@ -31,6 +31,7 @@ import urllib.request
 import numpy as np
 from sklearn.utils import shuffle
 
+
 def naive_bayes_Bernoulli(*args, **kwargs):
     """
     This function is used when X are independent binary variables (e.g., whether a word occurs in a document or not).
@@ -117,7 +118,8 @@ def demo():
     # application example
     custom_message = "URGENT! We are trying to contact U. Todays draw shows that you have won a 2000 prize GUARANTEED. Call 090 5809 4507 from a landline. Claim 3030. Valid 12hrs only."
     custom_results = classifier.predict([custom_message])[0]
-    print(f"Application example:\nMessage: [{custom_message}]\nClassification: [{custom_results}]\n")
+    print(
+        f"Application example:\nMessage: [{custom_message}]\nClassification: [{custom_results}]\n")
 
     # True Positive
     #X_test_subset = X_test[y_test == 'spam']
@@ -138,4 +140,3 @@ def demo():
     #X_test_subset = X_test[y_test == 'ham']
     #y_pred_array = classifier.predict( X_test_subset )
     #X_test_subset.loc[[ X_test_subset.index[ shuffle(np.where(y_pred_array == 'ham')[0], n_samples=1, random_state=123)[0] ] ]]
-
