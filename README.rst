@@ -125,3 +125,8 @@ module: naive_bayes
    "naive_bayes_multinomial()", "when X are independent discrete variables with 3+ levels (e.g., term frequency in the document)"
    "naive_bayes_Gaussian()", "when X are continuous variables"
    "demo()", "provides a demo of selected functions in this module"
+
+-----
+
+module: neural_network
+----------------------
