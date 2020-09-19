@@ -10,13 +10,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+def boost():
+    """
+    boosting
+    """
+    
 
-from .__about__ import (
-    __version__,
-)
+def demo():
+    """
+    This function provides a demo of selected functions in this module.
 
-# this is for "from machlearn import *"
-__all__ = ["model_evaluation",
-           "naive_bayes",
-           "neural_network",
-           "decision_tree"]
+    Required arguments:
+        None
+    """

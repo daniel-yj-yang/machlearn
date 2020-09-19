@@ -130,3 +130,22 @@ module: naive_bayes
 
 module: neural_network
 ----------------------
+
+.. csv-table::
+   :header: "function", "description"
+   :widths: 10, 20
+
+   "rnn()", "Recurrent neural network"
+   "demo()", "provides a demo of selected functions in this module"
+
+-----
+
+module: decision_tree
+---------------------
+
+.. csv-table::
+   :header: "function", "description"
+   :widths: 10, 20
+
+   "boost()", "Boosting"
+   "demo()", "provides a demo of selected functions in this module"

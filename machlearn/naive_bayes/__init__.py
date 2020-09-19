@@ -10,13 +10,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from ._naive_bayes import naive_bayes_Bernoulli, naive_bayes_multinomial, naive_bayes_Gaussian, demo
 
-from .__about__ import (
-    __version__,
-)
-
-# this is for "from machlearn import *"
-__all__ = ["model_evaluation",
-           "naive_bayes",
-           "neural_network",
-           "decision_tree"]
+# this is for "from machlearn.naive_bayes import *"
+__all__ = ["naive_bayes_Bernoulli",
+           "naive_bayes_multinomial",
+           "naive_bayes_Gaussian",
+           "demo"]

@@ -10,9 +10,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# this is for "from machlearn.naive_bayes import *"
-__all__ = ["naive_bayes_Bernoulli", "naive_bayes_multinomial",
-           "naive_bayes_Gaussian", "demo"]
 
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB, GaussianNB
 
@@ -75,7 +72,8 @@ def demo():
     n_spam = data.loc[data.label == 'spam', 'label'].count()
     n_ham = data.loc[data.label == 'ham', 'label'].count()
     print(
-        f"This demo uses a public dataset of SMS spam, which has a total of {len(data)} messages = {n_spam} spam and {n_ham} ham (legitimate).\n")
+        f"This demo uses a public dataset of SMS spam, which has a total of {len(data)} messages = {n_ham} ham (legitimate) and {n_spam} spam.\n"
+        f"The goal is to use 'term frequency in the message' to predict whether the message is ham (class=0) or spam (class=1).\n")
     test_size = 0.25
     X_train, X_test, y_train, y_test = train_test_split(
         data['message'], data['label'], test_size=test_size, random_state=123)
@@ -111,7 +109,7 @@ def demo():
     y_pred = classifier.predict(X_test)
     y_score = classifier.predict_proba(X_test)
 
-    from .model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
+    from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
     accuracy = plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=(
         'ham (y=0)', 'spam (y=1)'))
     plot_ROC_and_PR_curves(fitted_model=classifier, X=X_test,

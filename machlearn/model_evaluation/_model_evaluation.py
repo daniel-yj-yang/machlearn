@@ -10,10 +10,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# this is for "from machlearn.model_evaluation import *"
-__all__ = ["plot_confusion_matrix", "plot_ROC_curve",
-           "plot_PR_curve", "plot_ROC_and_PR_curves",
-           "demo"]
 
 import numpy as np
 import seaborn as sns
@@ -158,8 +154,8 @@ def plot_ROC_curve(y_true,
             TPR = TP / (TP+FN)
             FPR = FP / (TN+FP)
             plt.plot([FPR], [TPR], marker='x', markersize=10,
-                     color="red", label=f"d={threshold}")
-            plt.annotate(text=f"d={threshold}", xy=(
+                     color="red", label=f"d={threshold:4.2f}")
+            plt.annotate(text=f"d={threshold:4.2f}", xy=(
                 FPR+0.01, TPR+0.01), color="red")
 
     fig.tight_layout()
@@ -192,6 +188,7 @@ def plot_PR_curve(fitted_model,
         - plot_threshold: A boolean, whether to plot threshold or not
     """
 
+    # AP is the area under the PR curve
     AP = average_precision_score(
         y_true=y_true, y_score=y_pred_score, pos_label=y_pos_label, average='macro')
 
@@ -219,8 +216,8 @@ def plot_PR_curve(fitted_model,
             precision = TP / (TP+FP)
             recall = TP / (TP+FN)
             plt.plot([recall], [precision], marker='x', markersize=10,
-                     color="red", label=f"d={threshold}")
-            plt.annotate(text=f"d={threshold}", xy=(
+                     color="red", label=f"d={threshold:4.2f}")
+            plt.annotate(text=f"d={threshold:4.2f}", xy=(
                 recall+0.01, precision+0.01), color="red")
 
     fig.tight_layout()
@@ -275,7 +272,7 @@ def demo():
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.20, random_state=123)
 
-    from .naive_bayes import naive_bayes_Gaussian
+    from ..naive_bayes import naive_bayes_Gaussian
     model = naive_bayes_Gaussian().fit(X_train, y_train)
     y_pred_score = model.predict_proba(X_test)
     y_pred = model.predict(X_test)
