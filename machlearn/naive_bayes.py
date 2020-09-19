@@ -113,14 +113,14 @@ def demo():
 
     from .model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
     accuracy = plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=(
-        'Ham (y=0)', 'Spam (y=1)'))
+        'ham (y=0)', 'spam (y=1)'))
     plot_ROC_and_PR_curves(fitted_model=classifier, X=X_test,
                            y_true=y_test, y_pred_score=y_score[:, 1], y_pos_label='spam', model_name='Multinomial NB')
     # application example
     custom_message = "URGENT! We are trying to contact U. Todays draw shows that you have won a 2000 prize GUARANTEED. Call 090 5809 4507 from a landline. Claim 3030. Valid 12hrs only."
     custom_results = classifier.predict([custom_message])[0]
     print(
-        f"Application example:\n- Message: [{custom_message}]\n- Probability of class=1 (spam): [{classifier.predict_proba([custom_message])[0][1]:.2f}]\n- Classification: [{custom_results}]\n")
+        f"Application example:\n- Message: \"{custom_message}\"\n- Probability of class=1 (spam): {classifier.predict_proba([custom_message])[0][1]:.2%}\n- Classification: {custom_results}\n")
 
     # True Positive
     #X_test_subset = X_test[y_test == 'spam']

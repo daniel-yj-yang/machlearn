@@ -68,9 +68,9 @@ Selected Output:
       Step2: Transform count matrix to tf-idf = TfidfTransformer(use_idf = True).
 
    Application example:
-      - Message: [URGENT! We are trying to contact U. Todays draw shows that you have won a 2000 prize GUARANTEED. Call 090 5809 4507 from a landline. Claim 3030. Valid 12hrs only.]
-      - Probability of class=1 (spam): [0.96]
-      - Classification: [spam]
+      - Message: "URGENT! We are trying to contact U. Todays draw shows that you have won a 2000 prize GUARANTEED. Call 090 5809 4507 from a landline. Claim 3030. Valid 12hrs only."
+      - Probability of class=1 (spam): 95.85%
+      - Classification: spam
 
 
 .. list-table::
