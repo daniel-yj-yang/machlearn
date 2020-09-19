@@ -62,6 +62,7 @@ Selected Output:
 .. code-block::
 
    This demo uses a public dataset of SMS spam, which has a total of 5574 messages = 747 spam and 4827 ham (legitimate).
+   The goal is to use 'term frequency in the message' to predict whether the message is ham (class=0) or spam (class=1).
 
    Using test_size = 0.25 and training a multinomial naive bayes model, the best hyperparameters were found to be:
       Step1: Convert from text to count matrix = CountVectorizer(analyzer = __lemmas);
