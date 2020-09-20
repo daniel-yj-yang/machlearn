@@ -11,5 +11,7 @@ install:
   - ls -latr
 # command to run tests
 script:
-  - cd tests
+  - python tests/model_evaluation.py
+  - python tests/naive_bayes.py
+
 
