@@ -3,13 +3,8 @@ python:
   - "3.6"      # current default Python on Travis CI (Continuous Integration)
   - "3.7"
   - "3.8"
-#  - "nightly"  # nightly build
-# command to install dependencies
 install:
-#  - pip install -r requirements.txt
   - python setup.py install
-  - ls -latr
-# command to run tests
 script:
   - python tests/model_evaluation.py
   - python tests/naive_bayes.py
