@@ -108,6 +108,10 @@ def demo():
     )
     # train
     print("Training a multinomial naive bayes model, while tuning hyperparameters...\n")
+    
+    import nltk
+    nltk.download('punkt')
+
     classifier = grid.fit(X_train, y_train)
     print(
         f"Using test_size = {test_size}, the best hyperparameters for a multinomial NB model were found to be:\n"
