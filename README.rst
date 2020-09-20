@@ -1,7 +1,6 @@
-[![Build Test](https://travis-ci.com/vivek3141/ml.svg?branch=master)](https://travis-ci.com/vivek3141/ml)
-[![Downloads](https://pepy.tech/badge/ml-python)](https://pepy.tech/project/ml-python)
-[![PyPi Version](https://img.shields.io/pypi/v/ml-python.svg)](https://pypi.python.org/pypi/ml-python)
-[![License](https://img.shields.io/pypi/l/ml-python.svg)](https://pypi.python.org/pypi/ml-python)
+.. -*- mode: rst -*-
+
+|Travis|_ |PythonVersion|_ |PyPi|_
 
 .. |PyPi| image:: https://badge.fury.io/py/machlearn.svg
 .. _PyPi: https://badge.fury.io/py/machlearn
