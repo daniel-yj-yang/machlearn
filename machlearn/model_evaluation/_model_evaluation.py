@@ -8,7 +8,7 @@
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, average_precision_score, plot_precision_recall_curve
+from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, average_precision_score, plot_precision_recall_curve, classification_report
 
 
 __font_size__ = 18
@@ -16,10 +16,10 @@ __font_size__ = 18
 
 def plot_confusion_matrix(y_true,
                           y_pred,
-                          y_classes=('y=0', 'y=1'),
+                          y_classes='auto',
                           figsize=(9, 9)):
     """
-    
+
     This function plots the confusion matrix, along with key statistics, and returns accuracy.
 
     Required arguments:
@@ -27,10 +27,13 @@ def plot_confusion_matrix(y_true,
         - y_pred:     An array of shape (m_sample,); the labels could be {0,1}
 
     Optional arguments:
-        - y_classes:  A list, the y_classes to be displayed
+        - y_classes:  A list, the y_classes to be displayed. if auto and two classes, it would be ('y=0', 'y=1') and so on
         - figsize:    A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
 
     """
+
+    if type(y_classes) is not np.ndarray and y_classes == 'auto':
+        y_classes = [f"y={y}" for y in np.unique(y_true)]
 
     cm = confusion_matrix(y_true, y_pred)
 
@@ -39,6 +42,7 @@ def plot_confusion_matrix(y_true,
                       'False Negative', 'True Positive']
     else:
         cell_label = ['' for i in range(cm.size)]
+
 
     cell_count = ["{0:0.0f}".format(val) for val in cm.flatten()]
 
@@ -95,6 +99,8 @@ def plot_confusion_matrix(y_true,
     plt.show()
 
     plt.rcParams.update({'font.size': old_font_size})
+
+    print(classification_report(y_true, y_pred, target_names = y_classes))
 
     return accuracy,
 
