@@ -58,7 +58,7 @@ def __tokens(X):
 def _demo_SMS_spam():
     """
 
-    This function provides a demo of selected functions in this module.
+    This function provides a demo of selected functions in this module using the SMS spam dataset.
 
     Required arguments:
         None
@@ -86,7 +86,7 @@ def _demo_SMS_spam():
                                ])
     # pipeline parameters to tune
     hyperparameters = {
-        'count_matrix_transformer__analyzer': (__tokens, __lemmas),
+        'count_matrix_transformer__analyzer': ('word', __tokens, __lemmas),
         'count_matrix_normalizer__use_idf': (True, False),
     }
     grid = GridSearchCV(
@@ -108,9 +108,10 @@ def _demo_SMS_spam():
     # count_vect.fit_transform() in training vs. count_vect.transform() in testing
     classifier_grid = grid.fit(X_train, y_train)
     print(
-        f"\nUsing test_size = {test_size}, the best hyperparameters for a multinomial NB model were found to be:\n"
-        f"Step1: Convert from text to count matrix = CountVectorizer(analyzer = {classifier_grid.best_params_['count_matrix_transformer__analyzer'].__name__});\n"
-        f"Step2: Transform count matrix to tf-idf = TfidfTransformer(use_idf = {classifier_grid.best_params_['count_matrix_normalizer__use_idf']}).\n")
+        f"\nUsing test_size = {test_size} and a grid search, the best hyperparameters were found to be:\n"
+        f"Step1: Tokenizing text: CountVectorizer(analyzer = {classifier_grid.best_params_['count_matrix_transformer__analyzer'].__name__});\n"
+        f"Step2: Transforming from occurrences to frequency: TfidfTransformer(use_idf = {classifier_grid.best_params_['count_matrix_normalizer__use_idf']});\n"
+        f"Step3: Classifier: multinomial naive bayes model\n")
 
     # model attributes
     count_vect = classifier_grid.best_estimator_.named_steps['count_matrix_transformer']
@@ -165,6 +166,21 @@ def _demo_SMS_spam():
     #X_test_subset.loc[[ X_test_subset.index[ shuffle(np.where(y_pred_array == 'ham')[0], n_samples=1, random_state=123)[0] ] ]]
 
 
+def _demo_20newsgroup():
+    """
+
+    This function provides a demo of selected functions in this module using the 20 newsgroup dataset.
+
+    It models after the tutorial https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html
+
+    Required arguments:
+        None
+
+    """
+    from sklearn.datasets import fetch_20newsgroups
+    twenty_train = fetch_20newsgroups(random_state=123)
+
+
 def demo(dataset = "SMS_spam"):
     """
 
@@ -177,5 +193,5 @@ def demo(dataset = "SMS_spam"):
     if dataset == "SMS_spam":
         return _demo_SMS_spam()
     if dataset == "20newsgroup":
-        return _demo_20news_group()
+        return _demo_20newsgroup()
     raise TypeError(f"dataset [{dataset}] not defined")

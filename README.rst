@@ -84,9 +84,9 @@ Selected Output:
    This demo uses a public dataset of SMS spam, which has a total of 5574 messages = 747 spam and 4827 ham (legitimate).
    The goal is to use 'term frequency in the message' to predict whether the message is ham (class=0) or spam (class=1).
 
-   Using test_size = 0.25 and training a multinomial naive bayes model, the best hyperparameters were found to be:
-      Step1: Convert from text to count matrix = CountVectorizer(analyzer = __lemmas);
-      Step2: Transform count matrix to tf-idf = TfidfTransformer(use_idf = True).
+   Using test_size = 0.25 and a grid search, the best hyperparameters were found to be:
+      Step1: Tokenizing text: CountVectorizer(analyzer = __lemmas);
+      Step2: Transforming from occurrences to frequency: TfidfTransformer(use_idf = True).
 
    The top 3 terms with highest probability of a message being a spam (the classification is either spam or ham):
       "claim": 81.28%
