@@ -3,6 +3,9 @@
 [![PyPi Version](https://img.shields.io/pypi/v/ml-python.svg)](https://pypi.python.org/pypi/ml-python)
 [![License](https://img.shields.io/pypi/l/ml-python.svg)](https://pypi.python.org/pypi/ml-python)
 
+.. |PyPi| image:: https://badge.fury.io/py/machlearn.svg
+.. _PyPi: https://badge.fury.io/py/machlearn
+
 ===============================
 Machine Learning Python Library
 ===============================
