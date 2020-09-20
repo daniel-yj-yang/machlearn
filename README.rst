@@ -1,6 +1,9 @@
 .. -*- mode: rst -*-
 
-|PythonVersion|_ |PyPi|_ |Downloads|_ |License|_
+|BuildTest|_ |PythonVersion|_ |PyPi|_ |Downloads|_ |License|_
+
+.. |BuildTest| image::https://travis-ci.com/daniel-yj-yang/pyml.svg?branch=master
+.. _BuildTest: https://travis-ci.com/daniel-yj-yang/pyml
 
 .. |PythonVersion| image:: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
 .. _PythonVersion: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
