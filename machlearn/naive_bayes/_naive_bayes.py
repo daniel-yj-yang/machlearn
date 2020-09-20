@@ -18,9 +18,6 @@ from io import BytesIO
 from zipfile import ZipFile
 import urllib.request
 
-import numpy as np
-from sklearn.utils import shuffle
-
 
 def naive_bayes_Bernoulli(*args, **kwargs):
     """
@@ -65,7 +62,7 @@ def demo():
 
     Required arguments:
         None
-        
+
     """
     url = urllib.request.urlopen(
         "https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip")
@@ -117,7 +114,7 @@ def demo():
     y_score = classifier.predict_proba(X_test)
 
     from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
-    accuracy = plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=(
+    plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=(
         'ham (y=0)', 'spam (y=1)'))
     plot_ROC_and_PR_curves(fitted_model=classifier, X=X_test,
                            y_true=y_test, y_pred_score=y_score[:, 1], y_pos_label='spam', model_name='Multinomial NB')
@@ -126,6 +123,11 @@ def demo():
     custom_results = classifier.predict([custom_message])[0]
     print(
         f"Application example:\n- Message: \"{custom_message}\"\n- Probability of class=1 (spam): {classifier.predict_proba([custom_message])[0][1]:.2%}\n- Classification: {custom_results}\n")
+
+    return classifier
+    
+    # import numpy as np
+    # from sklearn.utils import shuffle
 
     # True Positive
     #X_test_subset = X_test[y_test == 'spam']
