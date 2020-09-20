@@ -11,9 +11,6 @@
 # limitations under the License.
 
 
-# https://packaging.python.org/guides/distributing-packages-using-setuptools/#setup-py
-# https://github.com/pypa/sampleproject/blob/master/setup.py
-
 import setuptools
 import machlearn
 
@@ -30,11 +27,14 @@ setuptools.setup(
     author_email="daniel.yj.yang@gmail.com",
     description="Machine Learning Python Library",
     long_description=long_description,
-    long_description_content_type="text/x-rst",  # "text/markdown",
+    long_description_content_type="text/x-rst",
     url="https://github.com/daniel-yj-yang/machlearn",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         # https://pypi.org/classifiers/
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
