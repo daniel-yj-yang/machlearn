@@ -104,47 +104,62 @@ def demo():
     nltk.download('punkt')
     nltk.download('wordnet')
 
-    classifier = grid.fit(X_train, y_train)
+    # see also: https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html
+    # count_vect.fit_transform() in training vs. count_vect.transform() in testing
+    classifier_grid = grid.fit(X_train, y_train)
     print(
-        f"Using test_size = {test_size}, the best hyperparameters for a multinomial NB model were found to be:\n"
-        f"Step1: Convert from text to count matrix = CountVectorizer(analyzer = {classifier.best_params_['count_matrix_transformer__analyzer'].__name__});\n"
-        f"Step2: Transform count matrix to tf-idf = TfidfTransformer(use_idf = {classifier.best_params_['count_matrix_normalizer__use_idf']}).\n")
+        f"\nUsing test_size = {test_size}, the best hyperparameters for a multinomial NB model were found to be:\n"
+        f"Step1: Convert from text to count matrix = CountVectorizer(analyzer = {classifier_grid.best_params_['count_matrix_transformer__analyzer'].__name__});\n"
+        f"Step2: Transform count matrix to tf-idf = TfidfTransformer(use_idf = {classifier_grid.best_params_['count_matrix_normalizer__use_idf']}).\n")
+
+    # model attributes
+    count_vect = classifier_grid.best_estimator_.named_steps['count_matrix_transformer']
+    vocabulary_dict = count_vect.vocabulary_
+    #clf = classifier_grid.best_estimator_.named_steps['classifier'] # clf = classifier fitted
+    term_proba_df = pd.DataFrame( {'term': list(vocabulary_dict), 'proba_spam': classifier_grid.predict_proba(vocabulary_dict)[:,1]} )
+    term_proba_df = term_proba_df.sort_values(by=['proba_spam'], ascending = False)
+    top_n = 3
+    df = pd.DataFrame.head(term_proba_df,n=top_n)
+    print(f"The top {top_n} terms with highest probability of being a spam (the classification will be either spam or ham)")
+    for term, proba_spam in zip(df['term'], df['proba_spam']):
+        print(f"   \"{term}\": {proba_spam:4.2%}")
+
     # model evaluation
-    y_pred = classifier.predict(X_test)
-    y_score = classifier.predict_proba(X_test)
+    y_pred = classifier_grid.predict(X_test)
+    y_score = classifier_grid.predict_proba(X_test)
 
     from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
     plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=(
         'ham (y=0)', 'spam (y=1)'))
-    plot_ROC_and_PR_curves(fitted_model=classifier, X=X_test,
+    plot_ROC_and_PR_curves(fitted_model=classifier_grid, X=X_test,
                            y_true=y_test, y_pred_score=y_score[:, 1], y_pos_label='spam', model_name='Multinomial NB')
     # application example
     custom_message = "URGENT! We are trying to contact U. Todays draw shows that you have won a 2000 prize GUARANTEED. Call 090 5809 4507 from a landline. Claim 3030. Valid 12hrs only."
-    custom_results = classifier.predict([custom_message])[0]
+    custom_results = classifier_grid.predict([custom_message])[0]
     print(
-        f"Application example:\n- Message: \"{custom_message}\"\n- Probability of class=1 (spam): {classifier.predict_proba([custom_message])[0][1]:.2%}\n- Classification: {custom_results}\n")
+        f"\nApplication example:\n- Message: \"{custom_message}\"\n- Probability of class=1 (spam): {classifier_grid.predict_proba([custom_message])[0][1]:.2%}\n- Classification: {custom_results}\n")
 
-    return classifier
-    
+    return classifier_grid
+
     # import numpy as np
     # from sklearn.utils import shuffle
 
     # True Positive
     #X_test_subset = X_test[y_test == 'spam']
-    #y_pred_array = classifier.predict( X_test_subset )
+    #y_pred_array = classifier_grid.predict( X_test_subset )
     #X_test_subset.loc[[ X_test_subset.index[ shuffle(np.where(y_pred_array == 'spam')[0], n_samples=1, random_state=1234)[0] ] ]]
 
     # False Negative
     #X_test_subset = X_test[y_test == 'spam']
-    #y_pred_array = classifier.predict( X_test_subset )
+    #y_pred_array = classifier_grid.predict( X_test_subset )
     #X_test_subset.loc[[ X_test_subset.index[ shuffle(np.where(y_pred_array == 'ham')[0], n_samples=1, random_state=1234)[0] ] ]]
 
     # False Positive
     #X_test_subset = X_test[y_test == 'ham']
-    #y_pred_array = classifier.predict( X_test_subset )
+    #y_pred_array = classifier_grid.predict( X_test_subset )
     #X_test_subset.loc[[ X_test_subset.index[ shuffle(np.where(y_pred_array == 'spam')[0], n_samples=1, random_state=1234)[0] ] ]]
 
     # True Negative
     #X_test_subset = X_test[y_test == 'ham']
-    #y_pred_array = classifier.predict( X_test_subset )
+    #y_pred_array = classifier_grid.predict( X_test_subset )
     #X_test_subset.loc[[ X_test_subset.index[ shuffle(np.where(y_pred_array == 'ham')[0], n_samples=1, random_state=123)[0] ] ]]

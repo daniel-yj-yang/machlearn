@@ -88,6 +88,11 @@ Selected Output:
       Step1: Convert from text to count matrix = CountVectorizer(analyzer = __lemmas);
       Step2: Transform count matrix to tf-idf = TfidfTransformer(use_idf = True).
 
+   The top 3 terms with highest probability of being a spam (the classification will be either spam or ham):
+      "claim": 81.28%
+      "prize": 80.24%
+      "won": 76.29%
+
    Application example:
       - Message: "URGENT! We are trying to contact U. Todays draw shows that you have won a 2000 prize GUARANTEED. Call 090 5809 4507 from a landline. Claim 3030. Valid 12hrs only."
       - Probability of class=1 (spam): 95.85%
