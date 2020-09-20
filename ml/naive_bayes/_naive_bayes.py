@@ -30,21 +30,27 @@ from sklearn.utils import shuffle
 
 def naive_bayes_Bernoulli(*args, **kwargs):
     """
+
     This function is used when X are independent binary variables (e.g., whether a word occurs in a document or not).
+
     """
     return BernoulliNB(*args, **kwargs)
 
 
 def naive_bayes_multinomial(*args, **kwargs):
     """
+
     This function is used when X are independent discrete variables with 3+ levels (e.g., term frequency in the document).
+
     """
     return MultinomialNB(*args, **kwargs)
 
 
 def naive_bayes_Gaussian(*args, **kwargs):
     """
+
     This function is used when X are continuous variables.
+
     """
     return GaussianNB(*args, **kwargs)
 
@@ -60,10 +66,12 @@ def __tokens(X):
 
 def demo():
     """
+
     This function provides a demo of selected functions in this module.
 
     Required arguments:
         None
+        
     """
     url = urllib.request.urlopen(
         "https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip")

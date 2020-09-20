@@ -10,11 +10,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from ._model_evaluation import plot_confusion_matrix, plot_ROC_curve, plot_PR_curve, plot_ROC_and_PR_curves, demo
+from ._naive_bayes import naive_bayes_Bernoulli, naive_bayes_multinomial, naive_bayes_Gaussian, demo
 
-# this is for "from machlearn.model_evaluation import *"
-__all__ = ["plot_confusion_matrix",
-           "plot_ROC_curve",
-           "plot_PR_curve",
-           "plot_ROC_and_PR_curves",
+# this is for "from <package_name>.naive_bayes import *"
+__all__ = ["naive_bayes_Bernoulli",
+           "naive_bayes_multinomial",
+           "naive_bayes_Gaussian",
            "demo"]

@@ -1,3 +1,8 @@
+[![Build Test](https://travis-ci.com/vivek3141/ml.svg?branch=master)](https://travis-ci.com/vivek3141/ml)
+[![Downloads](https://pepy.tech/badge/ml-python)](https://pepy.tech/project/ml-python)
+[![PyPi Version](https://img.shields.io/pypi/v/ml-python.svg)](https://pypi.python.org/pypi/ml-python)
+[![License](https://img.shields.io/pypi/l/ml-python.svg)](https://pypi.python.org/pypi/ml-python)
+
 ===============================
 Machine Learning Python Library
 ===============================
@@ -16,7 +21,7 @@ Example 1: Model evaluation
 
 .. code-block:: python
    
-   from machlearn import model_evaluation as me
+   from ml import model_evaluation as me
    me.demo()
 
 
@@ -53,7 +58,7 @@ Example 2: Naive Bayes
 
 .. code-block:: python
    
-   from machlearn import naive_bayes as nb
+   from ml import naive_bayes as nb
    nb.demo()
 
 

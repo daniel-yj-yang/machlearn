@@ -15,7 +15,7 @@
 # https://github.com/pypa/sampleproject/blob/master/setup.py
 
 import setuptools
-import machlearn
+import ml
 
 README_file = "README.rst" # "README.md"
 with open(README_file, "r") as fh:
@@ -23,7 +23,7 @@ with open(README_file, "r") as fh:
 
 setuptools.setup(
     name="machlearn",
-    version=machlearn.__version__,
+    version=ml.__version__,
     author="Daniel Yang",
     author_email="daniel.yj.yang@gmail.com",
     description="Machine Learning Python Library",

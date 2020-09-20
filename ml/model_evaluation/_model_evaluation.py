@@ -25,6 +25,7 @@ def plot_confusion_matrix(y_true,
                           y_classes=('y=0', 'y=1'),
                           figsize=(9, 9)):
     """
+    
     This function plots the confusion matrix, along with key statistics, and returns accuracy.
 
     Required arguments:
@@ -34,6 +35,7 @@ def plot_confusion_matrix(y_true,
     Optional arguments:
         - y_classes:  A list, the y_classes to be displayed
         - figsize:    A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
+
     """
 
     cm = confusion_matrix(y_true, y_pred)
@@ -110,6 +112,7 @@ def plot_ROC_curve(y_true,
                    model_name='Binary Classifier',
                    plot_threshold=True):
     """
+
     This function plots the ROC (Receiver operating characteristic) curve, along with statistics.
 
     Required arguments:
@@ -121,6 +124,7 @@ def plot_ROC_curve(y_true,
         - figsize:        A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
         - model_name:     A string
         - plot_threshold: A boolean, whether to plot threshold or not
+
     """
 
     fpr, tpr, thresholds = roc_curve(
@@ -173,6 +177,7 @@ def plot_PR_curve(fitted_model,
                   model_name='Binary Classifier',
                   plot_threshold=True):
     """
+
     This function plots the precision-recall curve, along with statistics.
 
     Required arguments:
@@ -186,6 +191,7 @@ def plot_PR_curve(fitted_model,
         - figsize:        A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
         - model_name:     A string
         - plot_threshold: A boolean, whether to plot threshold or not
+
     """
 
     # AP is the area under the PR curve
@@ -235,6 +241,7 @@ def plot_ROC_and_PR_curves(fitted_model,
                            model_name='Binary Classifier',
                            plot_threshold=True):
     """
+
     This function plots both the ROC and the precision-recall curves, along with statistics.
 
     Required arguments:
@@ -248,6 +255,7 @@ def plot_ROC_and_PR_curves(fitted_model,
         - figsize:        A tuple, the figure size. reference: plt.rcParams.get('figure.figsize')
         - model_name:     A string
         - plot_threshold: A boolean, whether to plot threshold or not
+
     """
     plot_ROC_curve(y_true=y_true, y_pred_score=y_pred_score,
                    y_pos_label=y_pos_label, figsize=figsize, model_name=model_name, plot_threshold=plot_threshold)
@@ -259,10 +267,12 @@ def plot_ROC_and_PR_curves(fitted_model,
 
 def demo():
     """
+
     This function provides a demo of the major functions in this module.
 
     Required arguments:
         None
+
     """
     from sklearn import datasets
     X, y = datasets.make_classification(
