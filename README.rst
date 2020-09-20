@@ -1,12 +1,15 @@
 .. -*- mode: rst -*-
 
-|PythonVersion|_ |PyPi|_ |License|_
+|PythonVersion|_ |PyPi|_ |Downloads|_ |License|_
 
 .. |PythonVersion| image:: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
 .. _PythonVersion: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
 
 .. |PyPi| image:: https://badge.fury.io/py/machlearn.svg
 .. _PyPi: https://badge.fury.io/py/machlearn
+
+.. |Downloads| image:: https://pepy.tech/badge/machlearn
+.. _Downloads: https://pepy.tech/project/machlearn
 
 .. |License| image:: https://img.shields.io/pypi/l/machlearn.svg
 .. _License: https://pypi.python.org/pypi/machlearn
