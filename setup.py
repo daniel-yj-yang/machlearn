@@ -17,9 +17,11 @@
 import setuptools
 import machlearn
 
-README_file = "README.rst" # "README.md"
-with open(README_file, "r") as fh:
+with open("README.rst", "r") as fh:
     long_description = fh.read()
+
+with open("requirements.txt") as fh:
+    required = fh.read().splitlines()
 
 setuptools.setup(
     name="machlearn",
@@ -37,13 +39,6 @@ setuptools.setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
-    install_requires=[
-        'scikit-learn>=0.23.2',
-        'numpy>=1.19.2',
-        'seaborn>=0.11.0',
-        'matplotlib>=3.3.2',
-        'pandas>=1.1.2',
-        'textblob>=0.15.3', # used in naive_bayes.demo()
-    ],
+    install_requires=required,
     python_requires='>=3.6',
 )

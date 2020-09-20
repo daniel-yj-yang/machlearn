@@ -2,8 +2,8 @@
 
 |BuildTest|_ |PythonVersion|_ |PyPi|_ |Downloads|_ |License|_
 
-.. |BuildTest| image:: https://travis-ci.com/daniel-yj-yang/pyml.svg?branch=master
-.. _BuildTest: https://travis-ci.com/daniel-yj-yang/pyml
+.. |BuildTest| image:: https://travis-ci.com/daniel-yj-yang/machlearn.svg?branch=master
+.. _BuildTest: https://travis-ci.com/daniel-yj-yang/machlearn
 
 .. |PythonVersion| image:: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
 .. _PythonVersion: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
@@ -35,7 +35,7 @@ Example 1: Model evaluation
 
 .. code-block:: python
    
-   from ml import model_evaluation as me
+   from machlearn import model_evaluation as me
    me.demo()
 
 
@@ -55,13 +55,13 @@ Selected Output:
    * - |image_demo_ROC_curve| 
      - |image_demo_PR_curve| 
 
-.. |image_demo_confusion_matrix| image:: https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_confusion_matrix.png
+.. |image_demo_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/model_evaluation/images/demo_confusion_matrix.png
    :width: 400px
 
-.. |image_demo_ROC_curve| image:: https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_ROC_curve.png
+.. |image_demo_ROC_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/model_evaluation/images/demo_ROC_curve.png
    :width: 400px
    
-.. |image_demo_PR_curve| image:: https://github.com/daniel-yj-yang/pyml/raw/master/examples/model_evaluation/images/demo_PR_curve.png
+.. |image_demo_PR_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/model_evaluation/images/demo_PR_curve.png
    :width: 400px
 
 
@@ -72,7 +72,7 @@ Example 2: Naive Bayes
 
 .. code-block:: python
    
-   from ml import naive_bayes as nb
+   from machlearn import naive_bayes as nb
    nb.demo()
 
 
@@ -107,13 +107,13 @@ Selected Output:
    * - |image_naive_bayes_ROC_curve| 
      - |image_naive_bayes_PR_curve| 
 
-.. |image_naive_bayes_confusion_matrix| image:: https://github.com/daniel-yj-yang/pyml/raw/master/examples/naive_bayes/images/demo_confusion_matrix.png
+.. |image_naive_bayes_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/naive_bayes/images/demo_confusion_matrix.png
    :width: 400px
 
-.. |image_naive_bayes_ROC_curve| image:: https://github.com/daniel-yj-yang/pyml/raw/master/examples/naive_bayes/images/demo_ROC_curve.png
+.. |image_naive_bayes_ROC_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/naive_bayes/images/demo_ROC_curve.png
    :width: 400px
    
-.. |image_naive_bayes_PR_curve| image:: https://github.com/daniel-yj-yang/pyml/raw/master/examples/naive_bayes/images/demo_PR_curve.png
+.. |image_naive_bayes_PR_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/naive_bayes/images/demo_PR_curve.png
    :width: 400px
 
 
