@@ -4,7 +4,6 @@
 #
 # License: BSD 3 clause
 
-
 import setuptools
 import machlearn
 
