@@ -1,6 +1,9 @@
 .. -*- mode: rst -*-
 
-|PythonVersion|_ |PyPi|_
+|Travis|_ |PythonVersion|_ |PyPi|_
+
+.. |Travis| image:: https://api.travis-ci.org/machlearn/machlearn.svg?branch=master
+.. _Travis: https://travis-ci.org/machlearn/machlearn
 
 .. |PythonVersion| image:: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
 .. _PythonVersion: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
