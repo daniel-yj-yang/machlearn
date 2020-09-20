@@ -1,5 +1,3 @@
-.. -*- mode: rst -*-
-
 |Travis|_ |PythonVersion|_ |PyPi|_
 
 .. |Travis| image:: https://api.travis-ci.org/machlearn/machlearn.svg?branch=master
