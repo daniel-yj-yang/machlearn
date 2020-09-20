@@ -203,7 +203,7 @@ def _demo_20newsgroup():
     count_vect = classifier_grid.best_estimator_.named_steps['count_matrix_transformer']
     vocabulary_dict = count_vect.vocabulary_
     # clf = classifier_grid.best_estimator_.named_steps['classifier'] # clf = classifier fitted
-    for i in len(categories):
+    for i in range(len(categories)):
         term_proba_df = pd.DataFrame({'term': list(
             vocabulary_dict), 'proba': classifier_grid.predict_proba(vocabulary_dict)[:, i]})
         term_proba_df = term_proba_df.sort_values(
@@ -235,4 +235,4 @@ def demo(dataset="SMS_spam"):
         return _demo_SMS_spam()
     if dataset == "20newsgroup":
         return _demo_20newsgroup()
-    raise TypeError(f"dataset [{dataset}] not defined")
+    raise TypeError(f"dataset [{dataset}] is not defined")
