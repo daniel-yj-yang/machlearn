@@ -30,14 +30,13 @@ setuptools.setup(
     long_description_content_type="text/x-rst",
     url="https://github.com/daniel-yj-yang/machlearn",
     packages=setuptools.find_packages(),
-    classifiers=[
+    classifiers=[  # https://pypi.org/classifiers/
         "Topic :: Scientific/Engineering",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
-        # https://pypi.org/classifiers/
-        "License :: OSI Approved :: Apache Software License",
+        "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
     ],
     install_requires=required,
