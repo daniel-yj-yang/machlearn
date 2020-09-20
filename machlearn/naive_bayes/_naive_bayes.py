@@ -108,9 +108,10 @@ def demo():
     )
     # train
     print("Training a multinomial naive bayes model, while tuning hyperparameters...\n")
-    
+
     import nltk
     nltk.download('punkt')
+    nltk.download('wordnet')
 
     classifier = grid.fit(X_train, y_train)
     print(
