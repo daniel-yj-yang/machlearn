@@ -82,8 +82,8 @@ def __naive_bayes_multinomial_pipeline(X_train, y_train):
     print("Training a multinomial naive bayes pipeline, while tuning hyperparameters...\n")
 
     import nltk
-    nltk.download('punkt')
-    nltk.download('wordnet')
+    nltk.download('punkt', quiet=True)
+    nltk.download('wordnet', quiet=True)
 
     # see also: https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html
     # count_vect.fit_transform() in training vs. count_vect.transform() in testing
