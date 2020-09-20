@@ -8,7 +8,7 @@
 .. |PythonVersion| image:: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
 .. _PythonVersion: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
 
-.. |PyPi| image:: https://img.shields.io/pypi/v/machlearn
+.. |PyPi| image:: https://badge.fury.io/py/machlearn.svg
 .. _PyPi: https://pypi.python.org/pypi/machlearn
 
 .. |Downloads| image:: https://pepy.tech/badge/machlearn
