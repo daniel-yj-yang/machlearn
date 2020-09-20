@@ -89,7 +89,7 @@ def __naive_bayes_multinomial_pipeline(X_train, y_train):
     # count_vect.fit_transform() in training vs. count_vect.transform() in testing
     classifier_grid = grid.fit(X_train, y_train)
     print(
-        f"\nUsing a grid search, the best hyperparameters were found to be:\n"
+        f"Using a grid search, the best hyperparameters were found to be:\n"
         f"Step1: Tokenizing text: CountVectorizer(ngram_range = {repr(classifier_grid.best_params_['count_matrix_transformer__ngram_range'])}, analyzer = {repr(classifier_grid.best_params_['count_matrix_transformer__analyzer'])});\n"
         f"Step2: Transforming from occurrences to frequency: TfidfTransformer(use_idf = {classifier_grid.best_params_['count_matrix_normalizer__use_idf']}).\n")
     
