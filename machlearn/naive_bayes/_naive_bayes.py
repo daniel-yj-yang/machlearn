@@ -120,7 +120,7 @@ def demo():
     term_proba_df = term_proba_df.sort_values(by=['proba_spam'], ascending = False)
     top_n = 3
     df = pd.DataFrame.head(term_proba_df,n=top_n)
-    print(f"The top {top_n} terms with highest probability of a message being a spam (the classification is either spam or ham)")
+    print(f"The top {top_n} terms with highest probability of a message being a spam (the classification is either spam or ham):")
     for term, proba_spam in zip(df['term'], df['proba_spam']):
         print(f"   \"{term}\": {proba_spam:4.2%}")
 
