@@ -14,7 +14,7 @@
 .. |Downloads| image:: https://pepy.tech/badge/machlearn
 .. _Downloads: https://pepy.tech/project/machlearn
 
-.. |License| image:: https://img.shields.io/pypi/l/machlearn.svg
+.. |License| image:: https://img.shields.io/pypi/l/machlearn
 .. _License: https://pypi.python.org/pypi/machlearn
 
 
