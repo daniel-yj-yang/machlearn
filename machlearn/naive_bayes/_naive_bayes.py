@@ -55,7 +55,7 @@ def __tokens(X):
     return TextBlob(str(X)).words
 
 
-def demo():
+def _demo_SMS_spam():
     """
 
     This function provides a demo of selected functions in this module.
@@ -163,3 +163,19 @@ def demo():
     #X_test_subset = X_test[y_test == 'ham']
     #y_pred_array = classifier_grid.predict( X_test_subset )
     #X_test_subset.loc[[ X_test_subset.index[ shuffle(np.where(y_pred_array == 'ham')[0], n_samples=1, random_state=123)[0] ] ]]
+
+
+def demo(dataset = "SMS_spam"):
+    """
+
+    This function provides a demo of selected functions in this module.
+
+    Required arguments:
+        dataset: A string. It could be "SMS_spam", or "20newsgroup"
+
+    """
+    if dataset == "SMS_spam":
+        return _demo_SMS_spam()
+    if dataset == "20newsgroup":
+        return _demo_20news_group()
+    raise TypeError(f"dataset [{dataset}] not defined")
