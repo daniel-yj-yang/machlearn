@@ -31,10 +31,11 @@ setuptools.setup(
     url="https://github.com/daniel-yj-yang/machlearn",
     packages=setuptools.find_packages(),
     classifiers=[
+        "Topic :: Scientific/Engineering",
         "Programming Language :: Python :: 3",
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         # https://pypi.org/classifiers/
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
