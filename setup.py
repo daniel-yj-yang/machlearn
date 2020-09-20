@@ -20,6 +20,7 @@ setuptools.setup(
     author="Daniel Yang",
     author_email="daniel.yj.yang@gmail.com",
     description="Machine Learning Python Library",
+    license="BSD 3-Clause \"New\" License",
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/daniel-yj-yang/machlearn",
