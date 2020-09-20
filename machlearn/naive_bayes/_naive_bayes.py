@@ -109,7 +109,7 @@ def _demo_SMS_spam():
     classifier_grid = grid.fit(X_train, y_train)
     print(
         f"\nUsing test_size = {test_size} and a grid search, the best hyperparameters were found to be:\n"
-        f"Step1: Tokenizing text: CountVectorizer(analyzer = {classifier_grid.best_params_['count_matrix_transformer__analyzer'].__name__});\n"
+        f"Step1: Tokenizing text: CountVectorizer(analyzer = {classifier_grid.best_params_['count_matrix_transformer__analyzer']});\n"
         f"Step2: Transforming from occurrences to frequency: TfidfTransformer(use_idf = {classifier_grid.best_params_['count_matrix_normalizer__use_idf']});\n"
         f"Step3: Classifier: multinomial naive bayes model\n")
 
