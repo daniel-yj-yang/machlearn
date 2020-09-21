@@ -187,7 +187,7 @@ def _demo_20newsgroup():
         None
 
     """
-    categories = sorted(['alt.atheism', 'soc.religion.christian', 'comp.graphics', 'sci.med'])
+    categories = sorted(['soc.religion.christian', 'comp.graphics', 'sci.med'])
     print(
         f"This demo uses a public dataset of 20newsgroup and uses {len(categories)} categories of them: {repr(categories)}.\n"
         f"The goal is to use 'term frequency in document' to predict which category a document belongs to.\n")
