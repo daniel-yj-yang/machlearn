@@ -82,9 +82,9 @@ Selected Output:
 .. code-block::
 
    This demo uses a public dataset of SMS spam, which has a total of 5574 messages = 747 spam and 4827 ham (legitimate).
-   The goal is to use 'term frequency in the message' to predict whether the message is ham (class=0) or spam (class=1).
+   The goal is to use 'term frequency in message' to predict whether the message is ham (class=0) or spam (class=1).
 
-   Using a grid search, the best hyperparameters were found to be:
+   Using a grid search and a multinomial naive bayes classifier, the best hyperparameters were found as following:
       Step1: Tokenizing text: CountVectorizer(analyzer = 'word', ngram_range = (1, 1));
       Step2: Transforming from occurrences to frequency: TfidfTransformer(use_idf = True).
 

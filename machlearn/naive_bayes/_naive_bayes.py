@@ -46,181 +46,236 @@ def naive_bayes_Gaussian(*args, **kwargs):
     return GaussianNB(*args, **kwargs)
 
 
-def __lemmas(X):
-    words = TextBlob(str(X).lower()).words
-    return [word.lemma for word in words]
+class _naive_bayes_demo():
+    def __init__(self):
+        self.X = None
+        self.y = None
+        self.y_classes = None
+        self.test_size = 0.25
+        self.classifier_grid = None
+        self.random_state = 123
+        self.X_train = None
+        self.X_test = None
+        self.y_train = None
+        self.y_test = None
+
+    def _lemmas(self, X):
+        words = TextBlob(str(X).lower()).words
+        return [word.lemma for word in words]
+
+    def _tokens(self, X):
+        return TextBlob(str(X)).words
+
+    def build_naive_bayes_multinomial_pipeline(self):
+        # create pipeline
+        pipeline = Pipeline(steps=[('count_matrix_transformer',
+                                    CountVectorizer(ngram_range=(1, 1), analyzer=self._tokens)),
+                                   ('count_matrix_normalizer',
+                                    TfidfTransformer(use_idf=True)),
+                                   ('classifier',
+                                    naive_bayes_multinomial()),
+                                   ])
+        # pipeline parameters to tune
+        hyperparameters = {
+            'count_matrix_transformer__ngram_range': ((1, 1), (1, 2)),
+            'count_matrix_transformer__analyzer': ('word', self._tokens, self._lemmas),
+            'count_matrix_normalizer__use_idf': (True, False),
+        }
+        grid = GridSearchCV(
+            pipeline,
+            hyperparameters,  # parameters to tune via cross validation
+            refit=True,       # fit using all data, on the best detected classifier
+            n_jobs=-1,
+            scoring='accuracy',
+            cv=5,
+        )
+        # train
+        print(
+            "Training a multinomial naive bayes pipeline, while tuning hyperparameters...\n")
+
+        import nltk
+        nltk.download('punkt', quiet=True)
+        nltk.download('wordnet', quiet=True)
+
+        # see also: https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html
+        # count_vect.fit_transform() in training vs. count_vect.transform() in testing
+        self.classifier_grid = grid.fit(self.X_train, self.y_train)
+        print(
+            f"Using a grid search and a multinomial naive bayes classifier, the best hyperparameters were found as following:\n"
+            f"Step1: Tokenizing text: CountVectorizer(ngram_range = {repr(self.classifier_grid.best_params_['count_matrix_transformer__ngram_range'])}, analyzer = {repr(self.classifier_grid.best_params_['count_matrix_transformer__analyzer'])});\n"
+            f"Step2: Transforming from occurrences to frequency: TfidfTransformer(use_idf = {self.classifier_grid.best_params_['count_matrix_normalizer__use_idf']}).\n")
 
 
-def __tokens(X):
-    return TextBlob(str(X)).words
+class _naive_bayes_demo_SMS_spam(_naive_bayes_demo):
+    def __init__(self):
+        super().__init__()
+        self.y_classes = ('ham (y=0)', 'spam (y=1)')
 
+    def getdata(self):
+        url = urllib.request.urlopen(
+            "https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip")
+        data = pd.read_csv(ZipFile(BytesIO(url.read())).open(
+            'SMSSpamCollection'), sep='\t', quoting=csv.QUOTE_NONE, names=["label", "message"])
+        n_spam = data.loc[data.label == 'spam', 'label'].count()
+        n_ham = data.loc[data.label == 'ham', 'label'].count()
+        print(
+            f"This demo uses a public dataset of SMS spam, which has a total of {len(data)} messages = {n_ham} ham (legitimate) and {n_spam} spam.\n"
+            f"The goal is to use 'term frequency in message' to predict whether a message is ham (class=0) or spam (class=1).\n")
+        self.X = data['message']
+        self.y = data['label']
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
+            self.X, self.y, test_size=self.test_size, random_state=self.random_state)
 
-def __naive_bayes_multinomial_pipeline(X_train, y_train):
-    # create pipeline
-    pipeline = Pipeline(steps=[('count_matrix_transformer',
-                                CountVectorizer(ngram_range=(1, 1), analyzer=__tokens)),
-                               ('count_matrix_normalizer',
-                                TfidfTransformer(use_idf=True)),
-                               ('classifier',
-                                naive_bayes_multinomial()),
-                               ])
-    # pipeline parameters to tune
-    hyperparameters = {
-        'count_matrix_transformer__ngram_range': ((1, 1), (1, 2)),
-        'count_matrix_transformer__analyzer': ('word', __tokens, __lemmas),
-        'count_matrix_normalizer__use_idf': (True, False),
-    }
-    grid = GridSearchCV(
-        pipeline,
-        hyperparameters,  # parameters to tune via cross validation
-        refit=True,       # fit using all data, on the best detected classifier
-        n_jobs=-1,
-        scoring='accuracy',
-        cv=5,
-    )
-    # train
-    print("Training a multinomial naive bayes pipeline, while tuning hyperparameters...\n")
-
-    import nltk
-    nltk.download('punkt', quiet=True)
-    nltk.download('wordnet', quiet=True)
-
-    # see also: https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html
-    # count_vect.fit_transform() in training vs. count_vect.transform() in testing
-    classifier_grid = grid.fit(X_train, y_train)
-    print(
-        f"Using a grid search, the best hyperparameters were found to be:\n"
-        f"Step1: Tokenizing text: CountVectorizer(ngram_range = {repr(classifier_grid.best_params_['count_matrix_transformer__ngram_range'])}, analyzer = {repr(classifier_grid.best_params_['count_matrix_transformer__analyzer'])});\n"
-        f"Step2: Transforming from occurrences to frequency: TfidfTransformer(use_idf = {classifier_grid.best_params_['count_matrix_normalizer__use_idf']}).\n")
-    
-    return classifier_grid
-
-def _demo_SMS_spam():
-    """
-
-    This function provides a demo of selected functions in this module using the SMS spam dataset.
-
-    Required arguments:
-        None
-
-    """
-    url = urllib.request.urlopen(
-        "https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip")
-    data = pd.read_csv(ZipFile(BytesIO(url.read())).open(
-        'SMSSpamCollection'), sep='\t', quoting=csv.QUOTE_NONE, names=["label", "message"])
-    n_spam = data.loc[data.label == 'spam', 'label'].count()
-    n_ham = data.loc[data.label == 'ham', 'label'].count()
-    print(
-        f"This demo uses a public dataset of SMS spam, which has a total of {len(data)} messages = {n_ham} ham (legitimate) and {n_spam} spam.\n"
-        f"The goal is to use 'term frequency in message' to predict whether a message is ham (class=0) or spam (class=1).\n")
-    test_size = 0.25
-    X_train, X_test, y_train, y_test = train_test_split(
-        data['message'], data['label'], test_size=test_size, random_state=123)
-
-    # Build and train a pipeline
-    classifier_grid = __naive_bayes_multinomial_pipeline(X_train, y_train)
-
-    # model attributes
-    count_vect = classifier_grid.best_estimator_.named_steps['count_matrix_transformer']
-    vocabulary_dict = count_vect.vocabulary_
-    # clf = classifier_grid.best_estimator_.named_steps['classifier'] # clf = classifier fitted
-    term_proba_df = pd.DataFrame({'term': list(
-        vocabulary_dict), 'proba_spam': classifier_grid.predict_proba(vocabulary_dict)[:, 1]})
-    term_proba_df = term_proba_df.sort_values(
-        by=['proba_spam'], ascending=False)
-    top_n = 10
-    df = pd.DataFrame.head(term_proba_df, n=top_n)
-    print(f"The top {top_n} terms with highest probability of a message being a spam (the classification is either spam or ham):")
-    for term, proba_spam in zip(df['term'], df['proba_spam']):
-        print(f"   \"{term}\": {proba_spam:4.2%}")
-
-    # model evaluation
-    y_pred = classifier_grid.predict(X_test)
-    y_score = classifier_grid.predict_proba(X_test)
-
-    from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
-    plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=(
-        'ham (y=0)', 'spam (y=1)'))
-    plot_ROC_and_PR_curves(fitted_model=classifier_grid, X=X_test,
-                           y_true=y_test, y_pred_score=y_score[:, 1], y_pos_label='spam', model_name='Multinomial NB')
-
-    # application example
-    custom_message = "URGENT! We are trying to contact U. Todays draw shows that you have won a 2000 prize GUARANTEED. Call 090 5809 4507 from a landline. Claim 3030. Valid 12hrs only."
-    custom_results = classifier_grid.predict([custom_message])[0]
-    print(
-        f"\nApplication example:\n- Message: \"{custom_message}\"\n- Probability of class=1 (spam): {classifier_grid.predict_proba([custom_message])[0][1]:.2%}\n- Classification: {custom_results}\n")
-
-    return classifier_grid
-
-    # import numpy as np
-    # from sklearn.utils import shuffle
-
-    # True Positive
-    #X_test_subset = X_test[y_test == 'spam']
-    #y_pred_array = classifier_grid.predict( X_test_subset )
-    #X_test_subset.loc[[ X_test_subset.index[ shuffle(np.where(y_pred_array == 'spam')[0], n_samples=1, random_state=1234)[0] ] ]]
-
-    # False Negative
-    #X_test_subset = X_test[y_test == 'spam']
-    #y_pred_array = classifier_grid.predict( X_test_subset )
-    #X_test_subset.loc[[ X_test_subset.index[ shuffle(np.where(y_pred_array == 'ham')[0], n_samples=1, random_state=1234)[0] ] ]]
-
-    # False Positive
-    #X_test_subset = X_test[y_test == 'ham']
-    #y_pred_array = classifier_grid.predict( X_test_subset )
-    #X_test_subset.loc[[ X_test_subset.index[ shuffle(np.where(y_pred_array == 'spam')[0], n_samples=1, random_state=1234)[0] ] ]]
-
-    # True Negative
-    #X_test_subset = X_test[y_test == 'ham']
-    #y_pred_array = classifier_grid.predict( X_test_subset )
-    #X_test_subset.loc[[ X_test_subset.index[ shuffle(np.where(y_pred_array == 'ham')[0], n_samples=1, random_state=123)[0] ] ]]
-
-
-def _demo_20newsgroup():
-    """
-
-    This function provides a demo of selected functions in this module using the 20 newsgroup dataset.
-
-    It models after the tutorial https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html
-
-    Required arguments:
-        None
-
-    """
-    categories = sorted(['soc.religion.christian', 'comp.graphics', 'sci.med'])
-    print(
-        f"This demo uses a public dataset of 20newsgroup and uses {len(categories)} categories of them: {repr(categories)}.\n"
-        f"The goal is to use 'term frequency in document' to predict which category a document belongs to.\n")
-
-    from sklearn.datasets import fetch_20newsgroups
-    twenty_train = fetch_20newsgroups(subset='train', categories=categories, random_state=123)
-    twenty_test = fetch_20newsgroups(subset='test', categories=categories, random_state=123)
-
-    # Build and train a pipeline
-    classifier_grid = __naive_bayes_multinomial_pipeline(X_train=twenty_train.data, y_train=twenty_train.target)
-
-    # model attributes
-    count_vect = classifier_grid.best_estimator_.named_steps['count_matrix_transformer']
-    vocabulary_dict = count_vect.vocabulary_
-    # clf = classifier_grid.best_estimator_.named_steps['classifier'] # clf = classifier fitted
-    for i in range(len(categories)):
+    def show_model_attributes(self):
+        count_vect = self.classifier_grid.best_estimator_.named_steps['count_matrix_transformer']
+        vocabulary_dict = count_vect.vocabulary_
+        # clf = classifier_grid.best_estimator_.named_steps['classifier'] # clf = classifier fitted
         term_proba_df = pd.DataFrame({'term': list(
-            vocabulary_dict), 'proba': classifier_grid.predict_proba(vocabulary_dict)[:, i]})
+            vocabulary_dict), 'proba_spam': self.classifier_grid.predict_proba(vocabulary_dict)[:, 1]})
         term_proba_df = term_proba_df.sort_values(
-            by=['proba'], ascending=False)
+            by=['proba_spam'], ascending=False)
         top_n = 10
         df = pd.DataFrame.head(term_proba_df, n=top_n)
-        print(f"The top {top_n} terms with highest probability of a document being a {repr(categories[i])}:")
-        for term, proba in zip(df['term'], df['proba']):
-            print(f"   \"{term}\": {proba:4.2%}")
+        print(
+            f"The top {top_n} terms with highest probability of a message being a spam (the classification is either spam or ham):")
+        for term, proba_spam in zip(df['term'], df['proba_spam']):
+            print(f"   \"{term}\": {proba_spam:4.2%}")
 
-    # model evaluation
-    y_pred = classifier_grid.predict(twenty_test.data)
+    def evaluate_model(self):
+        y_pred = self.classifier_grid.predict(self.X_test)
+        y_score = self.classifier_grid.predict_proba(self.X_test)
 
-    from ..model_evaluation import plot_confusion_matrix
-    plot_confusion_matrix(y_true=twenty_test.target, y_pred=y_pred, y_classes=categories) # the y_classes are in an alphabetic order
+        from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
+        plot_confusion_matrix(y_true=self.y_test, y_pred=y_pred,
+                              y_classes=self.y_classes)
+        plot_ROC_and_PR_curves(fitted_model=self.classifier_grid, X=self.X_test,
+                               y_true=self.y_test, y_pred_score=y_score[:, 1], y_pos_label='spam', model_name='Multinomial NB')
 
-    return classifier_grid
+    def application(self):
+        custom_message = "URGENT! We are trying to contact U. Todays draw shows that you have won a 2000 prize GUARANTEED. Call 090 5809 4507 from a landline. Claim 3030. Valid 12hrs only."
+        custom_results = self.classifier_grid.predict([custom_message])[0]
+        print(
+            f"\nApplication example:\n- Message: \"{custom_message}\"\n- Probability of class=1 (spam): {self.classifier_grid.predict_proba([custom_message])[0][1]:.2%}\n- Classification: {custom_results}\n")
+
+    def run(self):
+        """
+
+        This function provides a demo of selected functions in this module using the SMS spam dataset.
+
+        Required arguments:
+            None
+
+        """
+        # Get data
+        self.getdata()
+        # Create and train a pipeline
+        self.build_naive_bayes_multinomial_pipeline()
+        # model attributes
+        self.show_model_attributes()
+        # model evaluation
+        self.evaluate_model()
+        # application example
+        self.application()
+        # return classifier_grid
+        # return self.classifier_grid
+
+        # import numpy as np
+        # from sklearn.utils import shuffle
+
+        # True Positive
+        #X_test_subset = X_test[y_test == 'spam']
+        #y_pred_array = classifier_grid.predict( X_test_subset )
+        #X_test_subset.loc[[ X_test_subset.index[ shuffle(np.where(y_pred_array == 'spam')[0], n_samples=1, random_state=1234)[0] ] ]]
+
+        # False Negative
+        #X_test_subset = X_test[y_test == 'spam']
+        #y_pred_array = classifier_grid.predict( X_test_subset )
+        #X_test_subset.loc[[ X_test_subset.index[ shuffle(np.where(y_pred_array == 'ham')[0], n_samples=1, random_state=1234)[0] ] ]]
+
+        # False Positive
+        #X_test_subset = X_test[y_test == 'ham']
+        #y_pred_array = classifier_grid.predict( X_test_subset )
+        #X_test_subset.loc[[ X_test_subset.index[ shuffle(np.where(y_pred_array == 'spam')[0], n_samples=1, random_state=1234)[0] ] ]]
+
+        # True Negative
+        #X_test_subset = X_test[y_test == 'ham']
+        #y_pred_array = classifier_grid.predict( X_test_subset )
+        #X_test_subset.loc[[ X_test_subset.index[ shuffle(np.where(y_pred_array == 'ham')[0], n_samples=1, random_state=123)[0] ] ]]
+
+
+class _naive_bayes_demo_20newsgroups(_naive_bayes_demo):
+    def __init__(self):
+        super().__init__()
+        self.y_classes = sorted(
+            ['soc.religion.christian', 'comp.graphics', 'sci.med'])
+
+    def getdata(self):
+        print(
+            f"This demo uses a public dataset of 20newsgroup and uses {len(self.y_classes)} categories of them: {repr(self.y_classes)}.\n"
+            f"The goal is to use 'term frequency in document' to predict which category a document belongs to.\n")
+        from sklearn.datasets import fetch_20newsgroups
+        twenty_train = fetch_20newsgroups(
+            subset='train', categories=self.y_classes, random_state=self.random_state)
+        twenty_test = fetch_20newsgroups(
+            subset='test', categories=self.y_classes, random_state=self.random_state)
+        self.X_train = twenty_train.data
+        self.y_train = twenty_train.target
+        self.X_test = twenty_test.data
+        self.y_test = twenty_test.target
+
+    def show_model_attributes(self):
+        # model attributes
+        count_vect = self.classifier_grid.best_estimator_.named_steps['count_matrix_transformer']
+        vocabulary_dict = count_vect.vocabulary_
+        # clf = classifier_grid.best_estimator_.named_steps['classifier'] # clf = classifier fitted
+        for i in range(len(self.y_classes)):
+            term_proba_df = pd.DataFrame({'term': list(
+                vocabulary_dict), 'proba': self.classifier_grid.predict_proba(vocabulary_dict)[:, i]})
+            term_proba_df = term_proba_df.sort_values(
+                by=['proba'], ascending=False)
+            top_n = 10
+            df = pd.DataFrame.head(term_proba_df, n=top_n)
+            print(
+                f"The top {top_n} terms with highest probability of a document being a {repr(self.y_classes[i])}:")
+            for term, proba in zip(df['term'], df['proba']):
+                print(f"   \"{term}\": {proba:4.2%}")
+
+    def evaluate_model(self):
+        # model evaluation
+        y_pred = self.classifier_grid.predict(self.X_test)
+
+        from ..model_evaluation import plot_confusion_matrix
+        # the y_classes are in an alphabetic order
+        plot_confusion_matrix(y_true=self.y_test,
+                              y_pred=y_pred, y_classes=self.y_classes)
+
+    def application(self):
+        pass
+
+    def run(self):
+        """
+
+        This function provides a demo of selected functions in this module using the 20 newsgroup dataset.
+
+        It models after the tutorial https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html
+
+        Required arguments:
+            None
+
+        """
+        # Get data
+        self.getdata()
+        # Create and train a pipeline
+        self.build_naive_bayes_multinomial_pipeline()
+        # model attributes
+        self.show_model_attributes()
+        # model evaluation
+        self.evaluate_model()
+        # application example
+        self.application()
+        # return classifier_grid
+        # return self.classifier_grid
+
 
 def demo(dataset="SMS_spam"):
     """
@@ -228,11 +283,13 @@ def demo(dataset="SMS_spam"):
     This function provides a demo of selected functions in this module.
 
     Required arguments:
-        dataset: A string. Possible values: "SMS_spam", "20newsgroup".
+        dataset: A string. Possible values: "SMS_spam", "20newsgroups".
 
     """
     if dataset == "SMS_spam":
-        return _demo_SMS_spam()
-    if dataset == "20newsgroup":
-        return _demo_20newsgroup()
-    raise TypeError(f"dataset [{dataset}] is not defined")
+        nb_demo = _naive_bayes_demo_SMS_spam()
+    elif dataset == "20newsgroups":
+        nb_demo = _naive_bayes_demo_20newsgroups()
+    else:
+        raise TypeError(f"dataset [{dataset}] is not defined")
+    return nb_demo.run()
