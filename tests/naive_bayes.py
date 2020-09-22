@@ -7,5 +7,5 @@
 from machlearn import naive_bayes as nb
 
 nb.demo(dataset="SMS_spam")
-nb.demo(dataset="20newsgroup")
+nb.demo(dataset="20newsgroups")
 
