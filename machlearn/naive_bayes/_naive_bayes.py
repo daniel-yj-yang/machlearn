@@ -58,6 +58,8 @@ class _naive_bayes_demo():
         self.X_test = None
         self.y_train = None
         self.y_test = None
+        self.y_pred = None
+        self.y_pred_score = None
 
     def _lemmas(self, X):
         words = TextBlob(str(X).lower()).words
@@ -142,14 +144,14 @@ class _naive_bayes_demo_SMS_spam(_naive_bayes_demo):
             print(f"   \"{term}\": {proba_spam:4.2%}")
 
     def evaluate_model(self):
-        y_pred = self.classifier_grid.predict(self.X_test)
-        y_score = self.classifier_grid.predict_proba(self.X_test)
+        self.y_pred = self.classifier_grid.predict(self.X_test)
+        self.y_pred_score = self.classifier_grid.predict_proba(self.X_test)
 
         from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
-        plot_confusion_matrix(y_true=self.y_test, y_pred=y_pred,
+        plot_confusion_matrix(y_true=self.y_test, y_pred=self.y_pred,
                               y_classes=self.y_classes)
         plot_ROC_and_PR_curves(fitted_model=self.classifier_grid, X=self.X_test,
-                               y_true=self.y_test, y_pred_score=y_score[:, 1], y_pos_label='spam', model_name='Multinomial NB')
+                               y_true=self.y_test, y_pred_score=self.y_pred_score[:, 1], y_pos_label='spam', model_name='Multinomial NB')
 
     def application(self):
         custom_message = "URGENT! We are trying to contact U. Todays draw shows that you have won a 2000 prize GUARANTEED. Call 090 5809 4507 from a landline. Claim 3030. Valid 12hrs only."
@@ -242,12 +244,12 @@ class _naive_bayes_demo_20newsgroups(_naive_bayes_demo):
 
     def evaluate_model(self):
         # model evaluation
-        y_pred = self.classifier_grid.predict(self.X_test)
+        self.y_pred = self.classifier_grid.predict(self.X_test)
 
         from ..model_evaluation import plot_confusion_matrix
         # the y_classes are in an alphabetic order
         plot_confusion_matrix(y_true=self.y_test,
-                              y_pred=y_pred, y_classes=self.y_classes)
+                              y_pred=self.y_pred, y_classes=self.y_classes)
 
     def application(self):
         pass
