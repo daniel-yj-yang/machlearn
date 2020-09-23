@@ -40,7 +40,7 @@ def visualize_kNN_classifier(classifier, X_set, y_set, figsize=(8, 7)):
 
 def demo():
     from ..datasets import dataset
-    data = dataset(dataset_name='Social_Network_Ads').download_as_df()
+    data = dataset(dataset_name='Social_Network_Ads')
     X = data[['Age', 'EstimatedSalary']].to_numpy()
     y = data['Purchased'].to_numpy()
 
