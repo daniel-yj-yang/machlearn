@@ -9,7 +9,8 @@ from .__about__ import (
 )
 
 # this is for "from <package_name> import *"
-__all__ = ["model_evaluation",
+__all__ = ["dataset",
+           "model_evaluation",
            "naive_bayes",
            "neural_network",
            "decision_tree"]

@@ -12,11 +12,6 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split, GridSearchCV
 from textblob import TextBlob
 import pandas as pd
-import csv
-
-from io import BytesIO
-from zipfile import ZipFile
-import urllib.request
 
 
 def naive_bayes_Bernoulli(*args, **kwargs):
@@ -114,10 +109,8 @@ class _naive_bayes_demo_SMS_spam(_naive_bayes_demo):
         self.y_classes = ('ham (y=0)', 'spam (y=1)')
 
     def getdata(self):
-        url = urllib.request.urlopen(
-            "https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip")
-        data = pd.read_csv(ZipFile(BytesIO(url.read())).open(
-            'SMSSpamCollection'), sep='\t', quoting=csv.QUOTE_NONE, names=["label", "message"])
+        from ..datasets import dataset
+        data = dataset(dataset_name = 'SMS_spam').download_as_df()
         n_spam = data.loc[data.label == 'spam', 'label'].count()
         n_ham = data.loc[data.label == 'ham', 'label'].count()
         print(
