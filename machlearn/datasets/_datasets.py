@@ -4,6 +4,13 @@
 #
 # License: BSD 3 clause
 
+# Disclaimer:
+
+# The datasets collected are resources freely and publicly available in the Internet.
+# They are known as in the public domain.
+# They are stored here (in respective folders) for the convenience of using this package.
+# I do not own any of these datasets.
+
 # Some references:
 # https://huggingface.co/docs/datasets/
 # https://scikit-learn.org/stable/datasets/index.html#general-dataset-api

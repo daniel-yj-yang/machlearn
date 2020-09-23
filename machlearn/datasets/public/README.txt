@@ -8,7 +8,7 @@
 Disclaimer:
 
 The datasets collected are resources freely and publicly available in the Internet.
-They are known as in the public domain at the time of downloading.
+They are known as in the public domain.
 They are stored here (in respective folders) for the convenience of using this package.
 I do not own any of these datasets.
 
