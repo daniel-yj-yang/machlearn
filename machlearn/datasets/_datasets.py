@@ -29,6 +29,7 @@ def public_dataset(name=None):
     - They are known as in the public domain.
     - They are stored in respective folders for the convenience of using this package.
     - The author does not own any of these datasets.
+    - If you use one of these datasets, the rule stated in the readme file in their respective folder should be followed.
     """
     if name is None:
         raise TypeError('dataset name is not provided')
