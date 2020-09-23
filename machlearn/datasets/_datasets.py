@@ -19,7 +19,7 @@ import pandas as pd
 
 def public_dataset(name=None):
     """
-    name can be the following:
+    name can be one of the following:
 
         - SMS_spam
         - Social_Network_Ads
