@@ -34,7 +34,7 @@ def dataset(dataset_name=None):
     if dataset_name is None:
         raise TypeError('dataset name is not provided')
     if dataset_name == 'SMS_spam':
-        df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/SMS_Spam_Collection/SMSSpamCollection")), sep='\t', quoting=csv.QUOTE_NONE, names=("label", "message"))
+        df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/SMS_Spam_Collection/SMSSpamCollection.tsv")), sep='\t', quoting=csv.QUOTE_NONE, names=("label", "message"))
         #url = urllib.request.urlopen("https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip")
         #df = pd.read_csv(ZipFile(io.BytesIO(url.read())).open('SMSSpamCollection'), sep='\t', quoting=csv.QUOTE_NONE, names=("label", "message"))
     if dataset_name == 'Social_Network_Ads':
