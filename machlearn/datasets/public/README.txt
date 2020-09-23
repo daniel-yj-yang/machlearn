@@ -1,4 +1,17 @@
-The datasets collected were resources freely and publicly available in the Internet, and were stored in respective folders intended for research use.
+# -*- coding: utf-8 -*-
+#
+# Author: Daniel Yang <daniel.yj.yang@gmail.com>
+#
+# License: BSD 3 clause
+
+
+Disclaimer:
+
+The datasets collected are resources freely and publicly available in the Internet.
+They are known as in the public domain at the time of downloading.
+They are stored here (in respective folders) for the convenience of using this package.
+I do not own any of these datasets.
+
 
 Datasets:
 
@@ -10,7 +23,7 @@ Dataset description: "This corpus has been collected from free or free for resea
 
 2. Social_Network_Ads
 
-URL: https://www.kaggle.com/rakeshrau/social-network-ads
+URL: https://www.kaggle.com/akram24/social-network-ads/activity
 Download Date: 2020-09-23
-License: Unknown
+License: CC0: Public Domain
 Visibility: Public
