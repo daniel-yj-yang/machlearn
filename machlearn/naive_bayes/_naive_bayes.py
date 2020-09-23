@@ -207,7 +207,7 @@ class _naive_bayes_demo_20newsgroups(_naive_bayes_demo):
 
     def getdata(self):
         print(
-            f"--------------------------------------------------------------------------------------------------------------------------------------\n"
+            f"-------------------------------------------------------------------------------------------------------------------------------------\n"
             f"This demo uses a public dataset of 20newsgroup and uses {len(self.y_classes)} categories of them: {repr(self.y_classes)}.\n"
             f"The goal is to use 'term frequency in document' to predict which category a document belongs to.\n")
         from sklearn.datasets import fetch_20newsgroups
