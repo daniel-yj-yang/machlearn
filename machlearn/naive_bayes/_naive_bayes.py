@@ -109,8 +109,8 @@ class _naive_bayes_demo_SMS_spam(_naive_bayes_demo):
         self.y_classes = ('ham (y=0)', 'spam (y=1)')
 
     def getdata(self):
-        from ..datasets import dataset
-        data = dataset(dataset_name = 'SMS_spam')
+        from ..datasets import public_dataset
+        data = public_dataset(name = 'SMS_spam')
         n_spam = data.loc[data.label == 'spam', 'label'].count()
         n_ham = data.loc[data.label == 'ham', 'label'].count()
         print(
