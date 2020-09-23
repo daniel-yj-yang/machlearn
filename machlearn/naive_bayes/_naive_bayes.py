@@ -114,7 +114,7 @@ class _naive_bayes_demo_SMS_spam(_naive_bayes_demo):
         n_spam = data.loc[data.label == 'spam', 'label'].count()
         n_ham = data.loc[data.label == 'ham', 'label'].count()
         print(
-            f"-----------------------------------------------------------------------------------------------------------\n"
+            f"---------------------------------------------------------------------------------------------------------------------\n"
             f"This demo uses a public dataset of SMS spam, which has a total of {len(data)} messages = {n_ham} ham (legitimate) and {n_spam} spam.\n"
             f"The goal is to use 'term frequency in message' to predict whether a message is ham (class=0) or spam (class=1).\n")
         self.X = data['message']
@@ -207,7 +207,7 @@ class _naive_bayes_demo_20newsgroups(_naive_bayes_demo):
 
     def getdata(self):
         print(
-            f"-----------------------------------------------------------------------------------------------------------\n"
+            f"--------------------------------------------------------------------------------------------------------------------------------------\n"
             f"This demo uses a public dataset of 20newsgroup and uses {len(self.y_classes)} categories of them: {repr(self.y_classes)}.\n"
             f"The goal is to use 'term frequency in document' to predict which category a document belongs to.\n")
         from sklearn.datasets import fetch_20newsgroups
