@@ -100,7 +100,7 @@ def plot_confusion_matrix(y_true,
 
     plt.rcParams.update({'font.size': old_font_size})
 
-    print(classification_report(y_true, y_pred, target_names = y_classes))
+    print("\n",classification_report(y_true, y_pred, target_names = y_classes))
 
     return accuracy,
 
@@ -274,6 +274,9 @@ def demo():
         None
 
     """
+    print(
+        f"------------------------------------------------\n"
+        f"This demo uses a made-up classification dataset.\n")
     from sklearn import datasets
     X, y = datasets.make_classification(
         n_samples=5000, n_features=30, n_classes=2, class_sep=0.8, random_state=123)
