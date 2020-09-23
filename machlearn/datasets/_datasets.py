@@ -17,7 +17,7 @@ import pandas as pd
 
 class dataset():
     """
-    This class provides an interface to download dataset that is publicly available in the Internet.
+    This class provides an interface for downloading dataset that is publicly available in the Internet.
     """
     def __init__(self, dataset_name=None):
         self.df = None
@@ -27,8 +27,8 @@ class dataset():
         """
         dataset_name can be the following:
 
-            SMS_spam
-            Social_Network_Ads
+            - SMS_spam
+            - Social_Network_Ads
         """
         if self.dataset_name is None:
             raise TypeError('dataset name is not provided')
