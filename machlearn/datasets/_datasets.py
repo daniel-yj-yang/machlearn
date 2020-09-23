@@ -26,11 +26,11 @@ def public_dataset(name=None):
 
     Disclaimer:
     - The datasets collected are resources freely and publicly available in the Internet.
-    - They are known as in the public domain.
-    - They are stored in respective folders for the convenience of using this package.
-    - The author does not own any of these datasets.
-    - If you use one of these datasets, the rule stated in the readme file in their respective folder should be followed.
+    - They are considered resources in the public domain by the author, while the author does not own any of these datasets.
+    - If there is any misunderstanding, please contact the author for correction.
+    - If you use one of these datasets in your work, please follow the readme instruction in their respective folder or url if any.
     """
+    print(public_dataset.__doc__)
     if name is None:
         raise TypeError('dataset name is not provided')
     if name == 'SMS_spam':
