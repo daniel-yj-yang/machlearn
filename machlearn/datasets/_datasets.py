@@ -25,10 +25,11 @@ def public_dataset(name=None):
         - Social_Network_Ads
 
     Disclaimer:
-    - The datasets collected are resources freely and publicly available in the Internet.
-    - They are considered resources in the public domain by the author, while the author does not own any of these datasets.
-    - If there is any misunderstanding, please contact the author for correction.
-    - If you use one of these datasets in your work, please follow the readme instruction in their respective folder or url if any.
+        - The datasets are shared with the sole intention of providing the convenience to access public datasets and reproduce/compare results.
+        - They are shared under a good-faith understanding that they are widely viewed and accepted as public-domain datasets.
+        - If there is any misunderstanding, please contact the author.
+        - The the author does not own any of these datasets.
+        - The readme in respective folder (or related Internet link) should be followed for citation/license requirements.
     """
     print(public_dataset.__doc__)
     if name is None:
