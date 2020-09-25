@@ -19,7 +19,7 @@
 
 
 =====================================================
-A simple and powerful machine learning python library
+A Simple and Powerful Machine Learning Python Library
 =====================================================
 
 Install
