@@ -18,9 +18,9 @@
 .. _License: https://pypi.python.org/pypi/machlearn
 
 
-===============================
-Machine Learning Python Library
-===============================
+=====================================================
+A simple and powerful machine learning python library
+=====================================================
 
 Install
 -------
