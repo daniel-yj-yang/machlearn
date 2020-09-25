@@ -41,3 +41,9 @@ Here is the rule regarding redistributing of nltk data (see https://github.com/n
 - NLTK documentation is distributed under the Creative Commons Attribution-Noncommercial-No Derivative Works 3.0 United States license.
 - NLTK corpora are provided under the terms given in the README file for each corpus; all are redistributable and available for non-commercial use.
 - NLTK may be freely redistributed, subject to the provisions of these licenses.
+
+4. Scikit-Learn data
+
+Download Date: 2020-09-25
+Download commands:
+    fetch_20newsgroups(subset='all')
