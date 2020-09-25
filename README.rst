@@ -31,28 +31,27 @@ Install
 
 -----
 
-Example 1: Model evaluation
----------------------------
-
-.. code-block:: python
-   
+.. Example 1: Model evaluation
+   ---------------------------
+..
+   .. code-block:: python
+..   
    from machlearn import model_evaluation as me
    me.demo()
-
-
-Selected Output:
-
+..
+   Selected Output:
+..
 .. list-table::
    :widths: 25 25
    :header-rows: 0
-
+..
    * - |image_demo_confusion_matrix|
      -
-
+..
 .. list-table::
    :widths: 25 25
    :header-rows: 0
-
+..
    * - |image_demo_ROC_curve| 
      - |image_demo_PR_curve| 
 
@@ -66,9 +65,7 @@ Selected Output:
    :width: 400px
 
 
------
-
-Example 2: Naive Bayes 
+Example 1: Naive Bayes 
 ----------------------
 
 .. code-block:: python
@@ -124,7 +121,7 @@ Selected Output:
 
 -----
 
-Example 3: k-Nearest Neighbors 
+Example 2: k-Nearest Neighbors 
 ------------------------------
 
 .. code-block:: python
