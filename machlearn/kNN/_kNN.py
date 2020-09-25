@@ -28,13 +28,13 @@ def visualize_kNN_classifier_with_two_features(classifier, X, y, y_classes, titl
                          np.linspace(start=(X[:, 1].min() - boundary_pct*X2_range), stop=(X[:, 1].max() + boundary_pct*X2_range), num=500))
     colors = ('red', 'green')
     cmap = ListedColormap(colors)
-    plt.contourf(X1, X2, classifier.predict(np.array([X1.ravel(), X2.ravel()]).T).reshape(X1.shape), alpha=0.5, cmap=cmap)
+    plt.contourf(X1, X2, classifier.predict(np.array([X1.ravel(), X2.ravel()]).T).reshape(X1.shape), alpha=0.1, cmap=cmap)
     plt.xlim(X1.min(), X1.max())
     plt.ylim(X2.min(), X2.max())
     for counter, j in enumerate(np.unique(y)):
         plt.scatter(X[y == j, 0], 
                     X[y == j, 1], 
-                    alpha=0.5,
+                    alpha=0.9,
                     c=colors[counter], 
                     label=y_classes[counter])
     plt.title(title)
