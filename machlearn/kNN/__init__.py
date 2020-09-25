@@ -7,4 +7,4 @@
 from ._kNN import kNN_classifier, demo
 
 # this is for "from <package_name>.kNN import *"
-__all__ = ["kNN_classifier","demo"]
+__all__ = ["kNN_classifier", "demo"]
