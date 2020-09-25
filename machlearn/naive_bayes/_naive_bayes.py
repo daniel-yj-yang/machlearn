@@ -57,6 +57,36 @@ class _naive_bayes_demo():
         self.y_pred = None
         self.y_pred_score = None
 
+    def build_naive_bayes_Gaussian_pipeline(self):
+        # create pipeline
+        from sklearn.preprocessing import StandardScaler
+        from sklearn.pipeline import Pipeline
+        pipeline = Pipeline(steps=[('scaler',
+                                    StandardScaler(with_mean=True, with_std=True)),
+                                   ('classifier',
+                                    naive_bayes_Gaussian()),
+                                   ])
+        # pipeline parameters to tune
+        hyperparameters = {
+            'scaler__with_mean': [True],
+            'scaler__with_std': [True],
+        }
+        grid = GridSearchCV(
+            pipeline,
+            hyperparameters,  # parameters to tune via cross validation
+            refit=True,       # fit using all data, on the best detected classifier
+            n_jobs=-1,
+            scoring='accuracy',
+            cv=5,
+        )
+        # train
+        print(
+            "Training a Gaussian naive bayes pipeline, while tuning hyperparameters...\n")
+        self.classifier_grid = grid.fit(self.X_train, self.y_train)
+        print(
+            f"Using a grid search and a Gaussian naive bayes classifier, the best hyperparameters were found as following:\n"
+            f"Step1: scaler: StandardScaler(with_mean={repr(self.classifier_grid.best_params_['scaler__with_mean'])}, with_std={repr(self.classifier_grid.best_params_['scaler__with_std'])}).\n")
+
     def _lemmas(self, X):
         words = TextBlob(str(X).lower()).words
         return [word.lemma for word in words]
@@ -115,7 +145,7 @@ class _naive_bayes_demo_SMS_spam(_naive_bayes_demo):
 
     def getdata(self):
         from ..datasets import public_dataset
-        data = public_dataset(name = 'SMS_spam')
+        data = public_dataset(name='SMS_spam')
         n_spam = data.loc[data.label == 'spam', 'label'].count()
         n_ham = data.loc[data.label == 'ham', 'label'].count()
         print(
@@ -217,9 +247,9 @@ class _naive_bayes_demo_20newsgroups(_naive_bayes_demo):
             f"The goal is to use 'term frequency in document' to predict which category a document belongs to.\n")
         from sklearn.datasets import fetch_20newsgroups
         #from ..datasets import public_dataset
-        twenty_train = fetch_20newsgroups(#data_home=public_dataset("scikit_learn_data_path"),
+        twenty_train = fetch_20newsgroups(  # data_home=public_dataset("scikit_learn_data_path"),
             subset='train', categories=self.y_classes, random_state=self.random_state)
-        twenty_test = fetch_20newsgroups(#data_home=public_dataset("scikit_learn_data_path"),
+        twenty_test = fetch_20newsgroups(  # data_home=public_dataset("scikit_learn_data_path"),
             subset='test', categories=self.y_classes, random_state=self.random_state)
         self.X_train = twenty_train.data
         self.y_train = twenty_train.target
@@ -280,19 +310,80 @@ class _naive_bayes_demo_20newsgroups(_naive_bayes_demo):
         # return self.classifier_grid
 
 
+class _naive_bayes_demo_Social_Network_Ads(_naive_bayes_demo):
+    def __init__(self):
+        super().__init__()
+        self.y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
+
+    def getdata(self):
+        from ..datasets import public_dataset
+        data = public_dataset(name='Social_Network_Ads')
+        self.X = data[['Age', 'EstimatedSalary']].to_numpy()
+        self.y = data['Purchased'].to_numpy()
+        from sklearn.model_selection import train_test_split
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
+            self.X, self.y, test_size=0.25, random_state=123)
+
+    def show_model_attributes(self):
+        pass
+
+    def evaluate_model(self):
+        # model evaluation
+        self.y_pred = self.classifier_grid.predict(self.X_test)
+        self.y_pred_score = self.classifier_grid.predict_proba(self.X_test)
+
+        from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves, visualize_classifier_decision_boundary_with_two_features
+        plot_confusion_matrix(y_true=self.y_test,
+                              y_pred=self.y_pred, y_classes=self.y_classes)
+        plot_ROC_and_PR_curves(fitted_model=self.classifier_grid, X=self.X_test,
+                               y_true=self.y_test, y_pred_score=self.y_pred_score[:, 1], y_pos_label=1, model_name="Gaussian NB")
+
+        visualize_classifier_decision_boundary_with_two_features(
+            self.classifier_grid, self.X_train, self.y_train, self.y_classes, title=f"Gaussian naive bayes / training set", X1_lab='Age', X2_lab='Estimated Salary')
+        visualize_classifier_decision_boundary_with_two_features(
+            self.classifier_grid, self.X_test,  self.y_test,  self.y_classes, title=f"Gaussian naive bayes / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
+
+    def application(self):
+        pass
+
+    def run(self):
+        """
+
+        This function provides a demo of selected functions in this module using the Social_Network_Ads dataset.
+
+        Required arguments:
+            None
+
+        """
+        # Get data
+        self.getdata()
+        # Create and train a pipeline
+        self.build_naive_bayes_Gaussian_pipeline()
+        # model attributes
+        self.show_model_attributes()
+        # model evaluation
+        self.evaluate_model()
+        # application example
+        self.application()
+        # return classifier_grid
+        # return self.classifier_grid
+
+
 def demo(dataset="SMS_spam"):
     """
 
     This function provides a demo of selected functions in this module.
 
     Required arguments:
-        dataset: A string. Possible values: "SMS_spam", "20newsgroups".
+        dataset: A string. Possible values: "SMS_spam", "20newsgroups", "Social_Network_Ads"
 
     """
     if dataset == "SMS_spam":
         nb_demo = _naive_bayes_demo_SMS_spam()
     elif dataset == "20newsgroups":
         nb_demo = _naive_bayes_demo_20newsgroups()
+    elif dataset == "Social_Network_Ads":
+        nb_demo = _naive_bayes_demo_Social_Network_Ads()
     else:
         raise TypeError(f"dataset [{dataset}] is not defined")
     return nb_demo.run()

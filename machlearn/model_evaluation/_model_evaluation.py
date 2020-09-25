@@ -14,6 +14,37 @@ from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, average_
 __font_size__ = 18
 
 
+def visualize_classifier_decision_boundary_with_two_features(classifier, X, y, y_classes, title='Classifier', X1_lab='X1', X2_lab='X2', figsize=(8, 7)):
+    """
+    # reference: https://scikit-learn.org/stable/auto_examples/neighbors/plot_classification.html
+    """
+    fig = plt.figure(figsize=figsize)
+    X1_range = X[:, 0].max() - X[:, 0].min()
+    X2_range = X[:, 1].max() - X[:, 1].min()
+    boundary_pct = 0.10
+    X1, X2 = np.meshgrid(np.linspace(start=(X[:, 0].min() - boundary_pct*X1_range), stop=(X[:, 0].max() + boundary_pct*X1_range), num=500),
+                         np.linspace(start=(X[:, 1].min() - boundary_pct*X2_range), stop=(X[:, 1].max() + boundary_pct*X2_range), num=500))
+    colors = ('red', 'green')
+    from matplotlib.colors import ListedColormap
+    cmap = ListedColormap(colors)
+    plt.contourf(X1, X2, classifier.predict(
+        np.array([X1.ravel(), X2.ravel()]).T).reshape(X1.shape), alpha=0.1, cmap=cmap)
+    plt.xlim(X1.min(), X1.max())
+    plt.ylim(X2.min(), X2.max())
+    for counter, j in enumerate(np.unique(y)):
+        plt.scatter(X[y == j, 0],
+                    X[y == j, 1],
+                    alpha=0.9,
+                    c=colors[counter],
+                    label=y_classes[counter])
+    plt.title(title)
+    plt.xlabel(X1_lab)
+    plt.ylabel(X2_lab)
+    plt.legend()
+    fig.tight_layout()
+    plt.show()
+
+
 def plot_confusion_matrix(y_true,
                           y_pred,
                           y_classes='auto',
@@ -42,7 +73,6 @@ def plot_confusion_matrix(y_true,
                       'False Negative', 'True Positive']
     else:
         cell_label = ['' for i in range(cm.size)]
-
 
     cell_count = ["{0:0.0f}".format(val) for val in cm.flatten()]
 
@@ -100,7 +130,7 @@ def plot_confusion_matrix(y_true,
 
     plt.rcParams.update({'font.size': old_font_size})
 
-    print("\n",classification_report(y_true, y_pred, target_names = y_classes))
+    print("\n", classification_report(y_true, y_pred, target_names=y_classes))
 
     return accuracy,
 

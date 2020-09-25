@@ -4,10 +4,7 @@
 #
 # License: BSD 3 clause
 
-from matplotlib.colors import ListedColormap
 from sklearn.neighbors import KNeighborsClassifier
-import numpy as np
-import matplotlib.pyplot as plt
 
 
 def kNN_classifier(*args, **kwargs):
@@ -16,39 +13,9 @@ def kNN_classifier(*args, **kwargs):
     return KNeighborsClassifier(*args, **kwargs)
 
 
-def _visualize_kNN_classifier_with_two_features(classifier, X, y, y_classes, title = 'k-Nearest Neighbors', X1_lab = 'X1', X2_lab = 'X2', figsize=(8, 7)):
-    """
-    # reference: https://scikit-learn.org/stable/auto_examples/neighbors/plot_classification.html
-    """
-    fig = plt.figure(figsize=figsize)
-    X1_range = X[:,0].max() - X[:,0].min()
-    X2_range = X[:,1].max() - X[:,1].min()
-    boundary_pct = 0.10
-    X1, X2 = np.meshgrid(np.linspace(start=(X[:, 0].min() - boundary_pct*X1_range), stop=(X[:, 0].max() + boundary_pct*X1_range), num=500),
-                         np.linspace(start=(X[:, 1].min() - boundary_pct*X2_range), stop=(X[:, 1].max() + boundary_pct*X2_range), num=500))
-    colors = ('red', 'green')
-    cmap = ListedColormap(colors)
-    plt.contourf(X1, X2, classifier.predict(np.array([X1.ravel(), X2.ravel()]).T).reshape(X1.shape), alpha=0.1, cmap=cmap)
-    plt.xlim(X1.min(), X1.max())
-    plt.ylim(X2.min(), X2.max())
-    for counter, j in enumerate(np.unique(y)):
-        plt.scatter(X[y == j, 0], 
-                    X[y == j, 1], 
-                    alpha=0.9,
-                    c=colors[counter], 
-                    label=y_classes[counter])
-    plt.title(title)
-    plt.xlabel(X1_lab)
-    plt.ylabel(X2_lab)
-    plt.legend()
-    fig.tight_layout()
-    plt.show()
-
-
 def demo():
     from ..datasets import public_dataset
     data = public_dataset(name='Social_Network_Ads')
-    print("This demo uses a public dataset of Social Network Ads, which is used to determine what audience a car company should target in its ads in order to sell a SUV on a social network website.\n")
     X = data[['Age', 'EstimatedSalary']].to_numpy()
     y = data['Purchased'].to_numpy()
     y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
@@ -58,7 +25,7 @@ def demo():
         X, y, test_size=0.25, random_state=123)
 
     from sklearn.preprocessing import StandardScaler
-    #scaler = StandardScaler()  # removing the mean and scaling to unit variance
+    # scaler = StandardScaler()  # removing the mean and scaling to unit variance
     #X_train = scaler.fit_transform(X_train)
     #X_test = scaler.transform(X_test)
 
@@ -97,11 +64,12 @@ def demo():
     y_pred = classifier_grid.predict(X_test)
     y_pred_score = classifier_grid.predict_proba(X_test)
 
-    from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
+    from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves, visualize_classifier_decision_boundary_with_two_features
     plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=y_classes)
     plot_ROC_and_PR_curves(fitted_model=classifier_grid, X=X_test,
-                           y_true=y_test, y_pred_score=y_pred_score[:, 1], y_pos_label=1, model_name='kNN')
+                           y_true=y_test, y_pred_score=y_pred_score[:, 1], y_pos_label=1, model_name=f"kNN k={k}")
 
-    _visualize_kNN_classifier_with_two_features(classifier_grid, X_train, y_train, y_classes, title=f"k-Nearest Neighbors (k={k}) training set", X1_lab='Age', X2_lab='Estimated Salary')
-    _visualize_kNN_classifier_with_two_features(classifier_grid, X_test,  y_test,  y_classes, title=f"k-Nearest Neighbors (k={k}) testing set", X1_lab='Age', X2_lab='Estimated Salary')
-
+    visualize_classifier_decision_boundary_with_two_features(
+        classifier_grid, X_train, y_train, y_classes, title=f"k-Nearest Neighbors (k={k}) training set", X1_lab='Age', X2_lab='Estimated Salary')
+    visualize_classifier_decision_boundary_with_two_features(
+        classifier_grid, X_test,  y_test,  y_classes, title=f"k-Nearest Neighbors (k={k}) testing set",  X1_lab='Age', X2_lab='Estimated Salary')

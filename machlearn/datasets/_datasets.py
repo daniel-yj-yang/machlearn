@@ -43,6 +43,7 @@ def public_dataset(name=None):
     if name == 'Social_Network_Ads':
         import pandas as pd
         df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/Social_Network_Ads/Social_Network_Ads.csv")), encoding='utf8', sep=",")
+        print("Social Network Ads is a public dataset that can be used to determine what audience a car company should target in its ads in order to sell a SUV on a social network website.\n")
         return df
         #url = urllib.request.urlopen("https://github.com/daniel-yj-yang/machlearn/raw/master/machlearn/datasets/public/Social_Network_Ads/Social_Network_Ads.csv")
         #df = pd.read_csv(io.BytesIO(url.read()), encoding='utf8', sep=",")
