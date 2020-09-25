@@ -136,13 +136,16 @@ Selected Output:
 
 -----
 
-Example 3: k-Nearest Neighbors vs. Gaussian Naive Bayes 
--------------------------------------------------------
+Example 3: Decision Boundary Comparison 
+---------------------------------------
 
 .. code-block:: python
    
+   from machlearn import kNN
+   kNN.demo()
    from machlearn import naive_bayes as nb
    nb.demo("Social_Network_Ads")
+
 
 .. list-table::
    :widths: 25 25
