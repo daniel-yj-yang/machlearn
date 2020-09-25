@@ -14,3 +14,9 @@ __all__ = ["dataset",
            "naive_bayes",
            "neural_network",
            "decision_tree"]
+
+# this was originally for _naive_bayes.py and is more widely applicable to other modules
+from .datasets import public_dataset
+import os
+os.environ["NLTK_DATA"] = public_dataset("nltk_data_path")
+os.environ["SCIKIT_LEARN_DATA"] = public_dataset("scikit_learn_data_path")
