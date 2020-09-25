@@ -48,7 +48,7 @@ def visualize_kNN_classifier_with_two_features(classifier, X, y, y_classes, titl
 def demo():
     from ..datasets import public_dataset
     data = public_dataset(name='Social_Network_Ads')
-    print("This demo uses a public dataset of Social Network Ads, which is used to determine what audience a car company should target via ads on a social network website.\n")
+    print("This demo uses a public dataset of Social Network Ads, which is used to determine what audience a car company should target in its ads in order to sell a SUV on a social network website.\n")
     X = data[['Age', 'EstimatedSalary']].to_numpy()
     y = data['Purchased'].to_numpy()
     y_classes = ['not_purchased (y=0)', 'purchased (y=1)']

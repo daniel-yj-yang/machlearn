@@ -100,7 +100,7 @@ Selected Output:
 
 .. code-block::
 
-   This demo uses a public dataset of Social Network Ads, which is used to determine what audience a car company should target via ads on a social network website.
+   This demo uses a public dataset of Social Network Ads, which is used to determine what audience a car company should target in its ads in order to sell a SUV on a social network website.
    
    Using a grid search and a kNN classifier, the best hyperparameters were found as following:
       Step1: scaler: StandardScaler(with_mean=True, with_std=True);
