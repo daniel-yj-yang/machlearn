@@ -27,3 +27,17 @@ URL: https://www.kaggle.com/akram24/social-network-ads/activity
 Download Date: 2020-09-23
 License: CC0: Public Domain
 Visibility: Public
+
+3. NLTK (Natural Language Toolkit) data
+
+Download Date: 2020-09-25
+Download commands:
+    nltk.download('punkt', quiet=True)
+    nltk.download('wordnet', quiet=True)
+The original zip files (punkt.zip and wordnet.zip) were removed.
+
+Here is the rule regarding redistributing of nltk data (see https://github.com/nltk/nltk):
+- NLTK source code is distributed under the Apache 2.0 License.
+- NLTK documentation is distributed under the Creative Commons Attribution-Noncommercial-No Derivative Works 3.0 United States license.
+- NLTK corpora are provided under the terms given in the README file for each corpus; all are redistributable and available for non-commercial use.
+- NLTK may be freely redistributed, subject to the provisions of these licenses.

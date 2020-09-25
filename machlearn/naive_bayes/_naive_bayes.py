@@ -91,8 +91,12 @@ class _naive_bayes_demo():
             "Training a multinomial naive bayes pipeline, while tuning hyperparameters...\n")
 
         import nltk
-        nltk.download('punkt', quiet=True)
-        nltk.download('wordnet', quiet=True)
+        #nltk.download('punkt', quiet=True)
+        #nltk.download('wordnet', quiet=True)
+
+        from ..datasets import public_dataset
+        import os
+        os.environ["NLTK_DATA"] = public_dataset("nltk_data_path")
 
         # see also: https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html
         # count_vect.fit_transform() in training vs. count_vect.transform() in testing
