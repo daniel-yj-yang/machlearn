@@ -7,17 +7,13 @@
 
 import setuptools
 
-with open("requirements.txt") as fh:
-    required = fh.read().splitlines()
-
-setuptools.setup(
-    install_requires=required,
-)
-
 import machlearn
 
 with open("README.rst", "r") as fh:
     long_description = fh.read()
+
+with open("requirements.txt") as fh:
+    required = fh.read().splitlines()
 
 setuptools.setup(
     name="machlearn",
@@ -39,7 +35,7 @@ setuptools.setup(
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
     ],
-#    install_requires=required,
+    install_requires=required,
     python_requires='>=3.6',
     include_package_data=True,
 )
