@@ -101,6 +101,6 @@ def demo():
     plot_ROC_and_PR_curves(fitted_model=classifier_grid, X=X_test,
                            y_true=y_test, y_pred_score=y_pred_score[:, 1], y_pos_label=1, model_name='kNN')
 
-    visualize_kNN_classifier_with_two_features(classifier_grid, X_train, y_train, y_classes, title=f"k-Nearest Neighbors (k={k})", X1_lab='Age', X2_lab='Estimated Salary')
-    visualize_kNN_classifier_with_two_features(classifier_grid, X_test,  y_test,  y_classes, title=f"k-Nearest Neighbors (k={k})", X1_lab='Age', X2_lab='Estimated Salary')
+    visualize_kNN_classifier_with_two_features(classifier_grid, X_train, y_train, y_classes, title=f"k-Nearest Neighbors (k={k}) training set", X1_lab='Age', X2_lab='Estimated Salary')
+    visualize_kNN_classifier_with_two_features(classifier_grid, X_test,  y_test,  y_classes, title=f"k-Nearest Neighbors (k={k}) testing set", X1_lab='Age', X2_lab='Estimated Salary')
 
