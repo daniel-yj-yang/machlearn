@@ -31,40 +31,6 @@ Install
 
 -----
 
-.. Example 1: Model evaluation
-   ---------------------------
-..
-   .. code-block:: python
-..   
-   from machlearn import model_evaluation as me
-   me.demo()
-..
-   Selected Output:
-..
-.. list-table::
-   :widths: 25 25
-   :header-rows: 0
-..
-   * - |image_demo_confusion_matrix|
-     -
-..
-.. list-table::
-   :widths: 25 25
-   :header-rows: 0
-..
-   * - |image_demo_ROC_curve| 
-     - |image_demo_PR_curve| 
-
-.. |image_demo_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/model_evaluation/images/demo_confusion_matrix.png
-   :width: 400px
-
-.. |image_demo_ROC_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/model_evaluation/images/demo_ROC_curve.png
-   :width: 400px
-   
-.. |image_demo_PR_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/model_evaluation/images/demo_PR_curve.png
-   :width: 400px
-
-
 Example 1: Naive Bayes 
 ----------------------
 
