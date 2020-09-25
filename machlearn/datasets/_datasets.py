@@ -24,6 +24,7 @@ def public_dataset(name=None):
         - SMS_spam
         - Social_Network_Ads
         - nltk_data_path
+        - scikit_learn_data_path
 
     Disclaimer:
         - The datasets are shared with the sole intention of providing the convenience to access public datasets and reproduce/compare results.
@@ -46,6 +47,9 @@ def public_dataset(name=None):
     if name == 'nltk_data_path':
         import os
         return os.path.dirname(__file__) + "/public/nltk_data"
+    if name == 'scikit_learn_data_path':
+        import os
+        return os.path.dirname(__file__) + "/public/scikit_learn_data"
     raise TypeError('recognizable dataset name is not provided')
 
     
