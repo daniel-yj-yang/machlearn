@@ -31,7 +31,7 @@ def public_dataset(name=None):
         - The the author does not own any of these datasets.
         - The readme in respective folder (or related Internet link) should be followed for citation/license requirements.
     """
-    print(public_dataset.__doc__)
+    #print(public_dataset.__doc__)
     if name is None:
         raise TypeError('dataset name is not provided')
     if name == 'SMS_spam':
