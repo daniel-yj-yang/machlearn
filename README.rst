@@ -136,6 +136,29 @@ Selected Output:
 
 -----
 
+Example 3: k-Nearest Neighbors vs. Gaussian Naive Bayes 
+-------------------------------------------------------
+
+.. code-block:: python
+   
+   from machlearn import naive_bayes as nb
+   nb.demo("Social_Network_Ads")
+
+.. list-table::
+   :widths: 25 25
+   :header-rows: 0
+
+   * - |image_kNN_decision_boundary_testing_set|
+     - |image_Gaussian_NB_decision_boundary_testing_set|
+
+.. |image_kNN_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/Social_Network_Ads_decision_boundary_testing_set.png
+   :width: 400px
+
+.. |image_Gaussian_NB_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/naive_bayes/images/demo_Social_Network_Ads_decision_boundary_testing_set.png
+   :width: 400px
+
+-----
+
 module: model_evaluation
 ------------------------
 
