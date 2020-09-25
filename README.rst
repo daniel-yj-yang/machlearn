@@ -124,6 +124,55 @@ Selected Output:
 
 -----
 
+Example 3: k-Nearest Neighbors 
+------------------------------
+
+.. code-block:: python
+   
+   from machlearn import kNN
+   kNN.demo()
+
+
+Selected Output:
+
+.. code-block::
+
+   This demo uses a public dataset of Social Network Ads, which is used to determine what audience a car company should target via ads on a social network website.
+   
+   Using a grid search and a kNN classifier, the best hyperparameters were found as following:
+      Step1: scaler: StandardScaler(with_mean=True, with_std=True);
+      Step2: classifier: kNN_classifier(n_neighbors=8, weights='uniform', p=1.189207115002721, metric='minkowski').
+
+
+.. list-table::
+   :widths: 25 25
+   :header-rows: 0
+
+   * - |image_kNN_confusion_matrix|
+     - |image_kNN_decision_boundary_testing_set|
+
+.. list-table::
+   :widths: 25 25
+   :header-rows: 0
+
+   * - |image_kNN_ROC_curve| 
+     - |image_kNN_PR_curve| 
+
+.. |image_kNN_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/Social_Network_Ads_cm.png
+   :width: 400px
+
+.. |image_kNN_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/Social_Network_Ads_decision_boundary_testing_set.png
+   :width: 400px
+
+.. |image_kNN_ROC_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/Social_Network_Ads_ROC_curve.png
+   :width: 400px
+   
+.. |image_kNN_PR_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/Social_Network_Ads_PR_curve.png
+   :width: 400px
+
+
+-----
+
 module: model_evaluation
 ------------------------
 
@@ -149,6 +198,17 @@ module: naive_bayes
    "naive_bayes_Bernoulli()", "when X are independent binary variables (e.g., whether a word occurs in a document or not)"
    "naive_bayes_multinomial()", "when X are independent discrete variables with 3+ levels (e.g., term frequency in the document)"
    "naive_bayes_Gaussian()", "when X are continuous variables"
+   "demo()", "provides a demo of selected functions in this module"
+
+-----
+
+module: kNN
+-----------
+
+.. csv-table::
+   :header: "function", "description"
+   :widths: 10, 20
+
    "demo()", "provides a demo of selected functions in this module"
 
 -----
