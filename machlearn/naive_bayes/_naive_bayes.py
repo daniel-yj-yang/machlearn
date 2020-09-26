@@ -339,9 +339,9 @@ class _naive_bayes_demo_Social_Network_Ads(_naive_bayes_demo):
                                y_true=self.y_test, y_pred_score=self.y_pred_score[:, 1], y_pos_label=1, model_name="Gaussian NB")
 
         visualize_classifier_decision_boundary_with_two_features(
-            self.classifier_grid, self.X_train, self.y_train, self.y_classes, title=f"Gaussian naive bayes / training set", X1_lab='Age', X2_lab='Estimated Salary')
+            self.classifier_grid, self.X_train, self.y_train, self.y_classes, title=f"Gaussian Naive Bayes / training set", X1_lab='Age', X2_lab='Estimated Salary')
         visualize_classifier_decision_boundary_with_two_features(
-            self.classifier_grid, self.X_test,  self.y_test,  self.y_classes, title=f"Gaussian naive bayes / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
+            self.classifier_grid, self.X_test,  self.y_test,  self.y_classes, title=f"Gaussian Naive Bayes / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
 
     def application(self):
         pass
