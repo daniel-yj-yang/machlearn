@@ -124,9 +124,6 @@ Selected Output:
 .. |image_kNN_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/Social_Network_Ads_cm.png
    :width: 400px
 
-.. |image_kNN_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/Social_Network_Ads_decision_boundary_testing_set.png
-   :width: 400px
-
 .. |image_kNN_ROC_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/Social_Network_Ads_ROC_curve.png
    :width: 400px
    
