@@ -133,8 +133,8 @@ Selected Output:
 
 -----
 
-Example 3: Decision Boundary 
-----------------------------
+Example 3: Decision Boundary Comparison
+---------------------------------------
 
 .. code-block:: python
    
