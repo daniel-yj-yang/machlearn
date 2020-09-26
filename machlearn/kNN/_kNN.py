@@ -13,7 +13,7 @@ def kNN_classifier(*args, **kwargs):
     return KNeighborsClassifier(*args, **kwargs)
 
 
-def demo():
+def _kNN_demo_Social_Network_Ads():
     from ..datasets import public_dataset
     data = public_dataset(name='Social_Network_Ads')
     X = data[['Age', 'EstimatedSalary']].to_numpy()
@@ -73,3 +73,18 @@ def demo():
         classifier_grid, X_train, y_train, y_classes, title=f"k-Nearest Neighbors (k={k}) training set", X1_lab='Age', X2_lab='Estimated Salary')
     visualize_classifier_decision_boundary_with_two_features(
         classifier_grid, X_test,  y_test,  y_classes, title=f"k-Nearest Neighbors (k={k}) testing set",  X1_lab='Age', X2_lab='Estimated Salary')
+
+
+def demo(dataset="Social_Network_Ads"):
+    """
+
+    This function provides a demo of selected functions in this module.
+
+    Required arguments:
+        dataset: A string. Possible values: "Social_Network_Ads"
+
+    """
+    if dataset == "Social_Network_Ads":
+        _kNN_demo_Social_Network_Ads()
+    else:
+        raise TypeError(f"dataset [{dataset}] is not defined")

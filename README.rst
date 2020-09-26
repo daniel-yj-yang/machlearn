@@ -37,7 +37,7 @@ Example 1: Naive Bayes
 .. code-block:: python
    
    from machlearn import naive_bayes as nb
-   nb.demo()
+   nb.demo(dataset="SMS_spam")
 
 
 Selected Output:
@@ -93,7 +93,7 @@ Example 2: k-Nearest Neighbors
 .. code-block:: python
    
    from machlearn import kNN
-   kNN.demo()
+   kNN.demo("Social_Network_Ads")
 
 
 Selected Output:
@@ -133,13 +133,13 @@ Selected Output:
 
 -----
 
-Example 3: Decision Boundary Comparison 
----------------------------------------
+Example 3: Decision Boundary 
+----------------------------
 
 .. code-block:: python
    
    from machlearn import kNN
-   kNN.demo()
+   kNN.demo("Social_Network_Ads")
    from machlearn import naive_bayes as nb
    nb.demo("Social_Network_Ads")
 

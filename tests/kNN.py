@@ -6,5 +6,5 @@
 
 from machlearn import kNN
 
-kNN.demo()
+kNN.demo("Social_Network_Ads")
 
