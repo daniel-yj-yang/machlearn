@@ -8,6 +8,7 @@ def rnn():
     """
     Recurrent neural network
     """
+    pass
     
 
 def demo():
@@ -17,5 +18,6 @@ def demo():
     Required arguments:
         None
     """
+    pass
 
 
