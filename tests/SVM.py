@@ -4,5 +4,7 @@
 #
 # License: BSD 3 clause
 
- 
-__version__ = "1.1.dev1"
+from machlearn import SVM
+
+SVM.demo("Social_Network_Ads")
+

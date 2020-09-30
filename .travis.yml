@@ -9,5 +9,7 @@ script:
   - python tests/model_evaluation.py
   - python tests/naive_bayes.py
   - python tests/kNN.py
+  - python tests/SVM.py
+  
 
 

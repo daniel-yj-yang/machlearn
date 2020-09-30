@@ -9,11 +9,14 @@ from .__about__ import (
 )
 
 # this is for "from <package_name> import *"
-__all__ = ["dataset",
+__all__ = ["SVM",
+           "datasets",
+           "decision_tree",
+           "kNN",
            "model_evaluation",
            "naive_bayes",
            "neural_network",
-           "decision_tree"]
+           ]
 
 # this was originally for _naive_bayes.py and is more widely applicable to other modules
 from .datasets import public_dataset
