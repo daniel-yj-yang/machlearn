@@ -140,8 +140,10 @@ Example 3: Decision Boundary Comparison
    
    from machlearn import kNN
    kNN.demo("Social_Network_Ads")
+
    from machlearn import naive_bayes as nb
    nb.demo("Social_Network_Ads")
+
    from machlearn import SVM
    SVM.demo("Social_Network_Ads")
 
@@ -152,6 +154,7 @@ Example 3: Decision Boundary Comparison
 
    * - |image_kNN_decision_boundary_testing_set|
      - |image_Gaussian_NB_decision_boundary_testing_set|
+     
    * - |image_SVM_decision_boundary_testing_set|
 
 
