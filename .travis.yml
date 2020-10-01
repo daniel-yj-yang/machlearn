@@ -10,6 +10,7 @@ script:
   - python tests/naive_bayes.py
   - python tests/kNN.py
   - python tests/SVM.py
+  - python tests/datasets.py
   
 
 

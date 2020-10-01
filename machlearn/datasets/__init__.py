@@ -4,7 +4,7 @@
 #
 # License: BSD 3 clause
 
-from ._datasets import public_dataset
+from ._datasets import public_dataset, Fashion_MNIST_methods
 
 # this is for "from <package_name>.datasets import *"
-__all__ = ["public_dataset"]
+__all__ = ["public_dataset", "Fashion_MNIST_methods"]
