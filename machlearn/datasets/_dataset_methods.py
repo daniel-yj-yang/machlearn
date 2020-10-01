@@ -7,6 +7,10 @@
 import numpy as np
 
 class Fashion_MNIST_methods(object):
+    """
+    Some reference: https://github.com/zalandoresearch/fashion-mnist
+    """
+    
     def __init__(self):
         self.description = [
             "T-shirt/top",
