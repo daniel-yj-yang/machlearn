@@ -4,10 +4,6 @@
 #
 # License: BSD 3 clause
 
-# Some references:
-# https://huggingface.co/docs/datasets/
-# https://scikit-learn.org/stable/datasets/index.html#general-dataset-api
-
 import numpy as np
 
 class Fashion_MNIST_methods(object):
