@@ -4,7 +4,7 @@
 #
 # License: BSD 3 clause
 
-from machlearn import datasets
+from machlearn.datasets import Fashion_MNIST_methods
 
-datasets.Fashion_MNIST_methods().demo()
+Fashion_MNIST_methods().demo()
 
