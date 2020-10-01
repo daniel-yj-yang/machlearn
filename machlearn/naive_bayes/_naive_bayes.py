@@ -5,7 +5,7 @@
 # License: BSD 3 clause
 
 
-from ..datasets import public_dataset
+#from ..datasets import public_dataset
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB, GaussianNB
 
 from sklearn.pipeline import Pipeline
@@ -121,7 +121,7 @@ class _naive_bayes_demo():
         print(
             "Training a multinomial naive bayes pipeline, while tuning hyperparameters...\n")
 
-        import nltk
+        #import nltk
         #nltk.download('punkt', quiet=True)
         #nltk.download('wordnet', quiet=True)
 
@@ -339,9 +339,9 @@ class _naive_bayes_demo_Social_Network_Ads(_naive_bayes_demo):
                                y_true=self.y_test, y_pred_score=self.y_pred_score[:, 1], y_pos_label=1, model_name="Gaussian NB")
 
         visualize_classifier_decision_boundary_with_two_features(
-            self.classifier_grid, self.X_train, self.y_train, self.y_classes, title=f"Gaussian Naive Bayes / training set", X1_lab='Age', X2_lab='Estimated Salary')
+            self.classifier_grid, self.X_train, self.y_train, self.y_classes, title="Gaussian Naive Bayes / training set", X1_lab='Age', X2_lab='Estimated Salary')
         visualize_classifier_decision_boundary_with_two_features(
-            self.classifier_grid, self.X_test,  self.y_test,  self.y_classes, title=f"Gaussian Naive Bayes / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
+            self.classifier_grid, self.X_test,  self.y_test,  self.y_classes, title="Gaussian Naive Bayes / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
 
     def application(self):
         pass
