@@ -40,9 +40,9 @@ class Fashion_MNIST_methods(object):
         import matplotlib.pyplot as plt
         for i in range(5000, 5005):
             sample = self.reshape_image(X_test[i])
-            plt.figure()
-            title = f"label {self.get_label_desc(y_test[i])}"
+            plt.figure(figsize = (1,1))
+            title = f"{self.get_label_desc(y_test[i])}"
             print(title)
             plt.title(title)
-            plt.imshow(sample, cmap='gray', vmin=0, vmax=255)
+            plt.imshow(255 - sample, cmap='gray', vmin=0, vmax=255)
         plt.show()
