@@ -11,6 +11,8 @@ script:
   - python tests/kNN.py
   - python tests/SVM.py
   - python tests/datasets.py
+  - python tests/neural_network.py
+  - python tests/decision_tree.py
   
 
 

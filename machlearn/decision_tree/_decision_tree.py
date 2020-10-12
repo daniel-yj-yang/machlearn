@@ -22,10 +22,23 @@ def boosting(type = "GBM"):
     return AdaBoostClassifier(*args, **kwargs)
 
 
-def demo():
+def _kNN_demo_Social_Network_Ads():
+    from ..datasets import public_dataset
+    data = public_dataset(name='Social_Network_Ads')
+    X = data[['Age', 'EstimatedSalary']].to_numpy()
+    y = data['Purchased'].to_numpy()
+    y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
+
+    
+def demo(dataset="Social_Network_Ads"):
     """
     This function provides a demo of selected functions in this module.
 
     Required arguments:
-        None
+        dataset: A string. Possible values: "Social_Network_Ads"
+
     """
+    if dataset == "Social_Network_Ads":
+        _decision_tree_demo_Social_Network_Ads()
+    else:
+        raise TypeError(f"dataset [{dataset}] is not defined")
