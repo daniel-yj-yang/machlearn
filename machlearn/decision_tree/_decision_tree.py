@@ -22,7 +22,7 @@ def boosting(type = "GBM"):
     return AdaBoostClassifier(*args, **kwargs)
 
 
-def _kNN_demo_Social_Network_Ads():
+def _decision_tree_demo_Social_Network_Ads():
     from ..datasets import public_dataset
     data = public_dataset(name='Social_Network_Ads')
     X = data[['Age', 'EstimatedSalary']].to_numpy()

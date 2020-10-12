@@ -9,13 +9,13 @@ from .__about__ import (
 )
 
 # this is for "from <package_name> import *"
-__all__ = ["SVM",
-           "datasets",
+__all__ = ["datasets",
            "decision_tree",
            "kNN",
            "model_evaluation",
            "naive_bayes",
            "neural_network",
+           "SVM",
            ]
 
 # this was originally for _naive_bayes.py and is more widely applicable to other modules
