@@ -35,7 +35,7 @@ def AdaBoost(*args, **kwargs):
     return AdaBoostClassifier(*args, **kwargs)
 
 
-def _DT_demo_Social_Network_Ads(classifier_func="decision_tree"): # DT: decision_tree
+def _DT_demo_Social_Network_Ads(classifier_func="decision_tree", plotting_tree = False): # DT: decision_tree
     """
     classifier_func: "decision_tree", "GBM", "AdaBoost", "bagging"
     """
@@ -165,7 +165,7 @@ def _DT_demo_Social_Network_Ads(classifier_func="decision_tree"): # DT: decision
         classifier_grid, X_test,  y_test,  y_classes, title=f"{model_name} / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
 
     # Plotting the tree
-    if classifier_func == "decision_tree":
+    if classifier_func == "decision_tree" and plotting_tree is True:
         from sklearn.tree import export_graphviz
         import io
         import pydotplus
