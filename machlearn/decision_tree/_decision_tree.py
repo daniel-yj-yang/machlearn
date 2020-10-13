@@ -37,7 +37,7 @@ def AdaBoost(*args, **kwargs):
 
 def _DT_demo_Social_Network_Ads(classifier_func="decision_tree"): # DT: decision_tree
     """
-    classifier_func: "decision_tree", "GBM"
+    classifier_func: "decision_tree", "GBM", "AdaBoost", "bagging"
     """
     from ..datasets import public_dataset
     data = public_dataset(name='Social_Network_Ads')
@@ -90,6 +90,34 @@ def _DT_demo_Social_Network_Ads(classifier_func="decision_tree"): # DT: decision
         model_name = "Gradient Boosting"
 
     ########################################################################################################################
+    if classifier_func == "AdaBoost":
+        pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
+                                   ('classifier', AdaBoost(random_state=123)),
+                                   ])
+
+        # pipeline parameters to tune
+        hyperparameters = {
+            'scaler__with_mean': [True],
+            'scaler__with_std': [True],
+        }
+
+        model_name = "Adaptive Boosting"
+
+    ########################################################################################################################
+    if classifier_func == "bagging":
+        pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
+                                   ('classifier', bagging(random_state=123)),
+                                   ])
+
+        # pipeline parameters to tune
+        hyperparameters = {
+            'scaler__with_mean': [True],
+            'scaler__with_std': [True],
+        }
+
+        model_name = "Bagging"
+
+    ########################################################################################################################
 
     grid=GridSearchCV(
         pipeline,
@@ -106,12 +134,20 @@ def _DT_demo_Social_Network_Ads(classifier_func="decision_tree"): # DT: decision
     classifier_grid=grid.fit(X_train, y_train)
 
     ########################################################################################################################
-    criterion=classifier_grid.best_params_['classifier__criterion']
-    max_depth=classifier_grid.best_params_['classifier__max_depth']
-    print(
-        f"Using a grid search and a {model_name} classifier, the best hyperparameters were found as following:\n"
-        f"Step1: scaler: StandardScaler(with_mean={repr(classifier_grid.best_params_['scaler__with_mean'])}, with_std={repr(classifier_grid.best_params_['scaler__with_std'])});\n"
-        f"Step2: classifier: {classifier_func}(criterion={repr(criterion)}, max_depth={repr(max_depth)}).\n")
+    if classifier_func == "decision_tree" or classifier_func == "GBM":
+        criterion=classifier_grid.best_params_['classifier__criterion']
+        max_depth=classifier_grid.best_params_['classifier__max_depth']
+        print(
+            f"Using a grid search and a {model_name} classifier, the best hyperparameters were found as following:\n"
+            f"Step1: scaler: StandardScaler(with_mean={repr(classifier_grid.best_params_['scaler__with_mean'])}, with_std={repr(classifier_grid.best_params_['scaler__with_std'])});\n"
+            f"Step2: classifier: {classifier_func}(criterion={repr(criterion)}, max_depth={repr(max_depth)}).\n")
+
+    if classifier_func == "AdaBoost" or classifier_func == "bagging":
+        print(
+            f"Using a grid search and a {model_name} classifier, the best hyperparameters were found as following:\n"
+            f"Step1: scaler: StandardScaler(with_mean={repr(classifier_grid.best_params_['scaler__with_mean'])}, with_std={repr(classifier_grid.best_params_['scaler__with_std'])});\n"
+            f"Step2: classifier: {classifier_func}().\n")
+
     ########################################################################################################################
 
     y_pred=classifier_grid.predict(X_test)
@@ -151,7 +187,7 @@ def demo(dataset="Social_Network_Ads", classifier_func="decision_tree"):
 
     Required arguments:
         - dataset:         A string. Possible values: "Social_Network_Ads"
-        - classifier_func: A string. Possible values: "decision_tree", "GBM"
+        - classifier_func: A string. Possible values: "decision_tree", "GBM", "AdaBoost", "bagging"
     """
     if dataset == "Social_Network_Ads":
         _DT_demo_Social_Network_Ads(classifier_func=classifier_func)
