@@ -6,5 +6,7 @@
 
 from machlearn import decision_tree as DT
 
-DT.demo("Social_Network_Ads")
+DT.demo(dataset="Social_Network_Ads", classifier_func="decision_tree")
+DT.demo(dataset="Social_Network_Ads", classifier_func="GBM")
+
 
