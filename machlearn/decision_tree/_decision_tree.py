@@ -35,15 +35,17 @@ def AdaBoost(*args, **kwargs):
     return AdaBoostClassifier(*args, **kwargs)
 
 
-def _DT_demo_Social_Network_Ads(classifier_func="decision_tree", plotting_tree = False): # DT: decision_tree
+def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plotting_tree = False): # DT: decision_tree
     """
     classifier_func: "decision_tree", "GBM", "AdaBoost", "bagging"
     """
     from ..datasets import public_dataset
-    data = public_dataset(name='Social_Network_Ads')
-    X = data[['Age', 'EstimatedSalary']].to_numpy()
-    y = data['Purchased'].to_numpy()
-    y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
+    data = public_dataset(name=dataset)
+
+    if dataset == 'Social_Network_Ads':
+        X = data[['Age', 'EstimatedSalary']].to_numpy()
+        y = data['Purchased'].to_numpy()
+        y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
 
     from sklearn.model_selection import train_test_split, GridSearchCV
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
@@ -189,7 +191,12 @@ def demo(dataset="Social_Network_Ads", classifier_func="decision_tree"):
         - dataset:         A string. Possible values: "Social_Network_Ads"
         - classifier_func: A string. Possible values: "decision_tree", "GBM", "AdaBoost", "bagging"
     """
-    if dataset == "Social_Network_Ads":
-        _DT_demo_Social_Network_Ads(classifier_func=classifier_func)
+
+    available_datasets = ("Social_Network_Ads",)
+    available_classifier_functions = ('decision_tree', 'GBM', 'AdaBoost', 'bagging',)
+
+    if (any(dataset in d for d in available_datasets) and
+        any(classifier_func in f for f in available_classifier_functions)):
+        _demo(dataset = dataset, classifier_func = classifier_func)
     else:
         raise TypeError(f"dataset [{dataset}] is not defined")
