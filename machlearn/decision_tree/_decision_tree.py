@@ -35,14 +35,20 @@ def AdaBoost(*args, **kwargs):
     return AdaBoostClassifier(*args, **kwargs)
 
 
-def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plotting_tree = False): # DT: decision_tree
+def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plotting_tree = True): # DT: decision_tree
     """
     classifier_func: "decision_tree", "GBM", "AdaBoost", "bagging"
     """
     from ..datasets import public_dataset
-    data = public_dataset(name=dataset)
+    
+    if dataset == 'iris':
+        data = public_dataset(name=dataset)
+        y_classes = ['setosa', 'versicolor', 'virginica']
+        X = data[['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']]
+        y = data['target']
 
     if dataset == 'Social_Network_Ads':
+        data = public_dataset(name=dataset)
         X = data[['Age', 'EstimatedSalary']].to_numpy()
         y = data['Purchased'].to_numpy()
         y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
@@ -158,13 +164,16 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
     # Model evaluation
     from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves, visualize_classifier_decision_boundary_with_two_features
     plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=y_classes)
-    plot_ROC_and_PR_curves(fitted_model=classifier_grid, X=X_test,
-                           y_true=y_test, y_pred_score=y_pred_score[:, 1], y_pos_label=1, model_name=f"{model_name}")
 
-    visualize_classifier_decision_boundary_with_two_features(
-        classifier_grid, X_train, y_train, y_classes, title=f"{model_name} / training set", X1_lab='Age', X2_lab='Estimated Salary')
-    visualize_classifier_decision_boundary_with_two_features(
-        classifier_grid, X_test,  y_test,  y_classes, title=f"{model_name} / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
+    if dataset == 'Social_Network_Ads':
+        plot_ROC_and_PR_curves(fitted_model=classifier_grid, X=X_test,
+                            y_true=y_test, y_pred_score=y_pred_score[:, 1], y_pos_label=1, model_name=f"{model_name}")
+    
+    if dataset == 'Social_Network_Ads':
+        visualize_classifier_decision_boundary_with_two_features(
+            classifier_grid, X_train, y_train, y_classes, title=f"{model_name} / training set", X1_lab='Age', X2_lab='Estimated Salary')
+        visualize_classifier_decision_boundary_with_two_features(
+            classifier_grid, X_test,  y_test,  y_classes, title=f"{model_name} / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
 
     # Plotting the tree
     if classifier_func == "decision_tree" and plotting_tree is True:
@@ -173,10 +182,19 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
         import pydotplus
         # from IPython.display import Image
         dot_data=io.StringIO()
-        feature_cols=['Age', 'EstimatedSalary']
+
+        if dataset == 'iris':
+            feature_cols = list(X.columns)
+            class_names = ['0', '1', '2']
+        
+        if dataset == 'Social_Network_Ads':
+            feature_cols=['Age', 'EstimatedSalary']
+            class_names = ['0', '1']
+
         export_graphviz(classifier_grid.best_estimator_.steps[1][1], out_file=dot_data,
                         filled=True, rounded=True,
-                        special_characters=True, feature_names=feature_cols, class_names=['0', '1'])
+                        special_characters=True, feature_names=feature_cols, class_names=class_names)
+
         graph=pydotplus.graph_from_dot_data(dot_data.getvalue())
         image=graph.create_png()
         from PIL import Image
@@ -188,15 +206,14 @@ def demo(dataset="Social_Network_Ads", classifier_func="decision_tree"):
     This function provides a demo of selected functions in this module.
 
     Required arguments:
-        - dataset:         A string. Possible values: "Social_Network_Ads"
+        - dataset:         A string. Possible values: "Social_Network_Ads", "iris"
         - classifier_func: A string. Possible values: "decision_tree", "GBM", "AdaBoost", "bagging"
     """
 
-    available_datasets = ("Social_Network_Ads",)
+    available_datasets = ("Social_Network_Ads","iris",)
     available_classifier_functions = ('decision_tree', 'GBM', 'AdaBoost', 'bagging',)
 
-    if (any(dataset in d for d in available_datasets) and
-        any(classifier_func in f for f in available_classifier_functions)):
+    if dataset in available_datasets and classifier_func in available_classifier_functions:
         _demo(dataset = dataset, classifier_func = classifier_func)
     else:
-        raise TypeError(f"dataset [{dataset}] is not defined")
+        raise TypeError(f"either dataset [{dataset}] or classifier function [{classifier_func}] is not defined")

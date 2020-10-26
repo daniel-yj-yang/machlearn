@@ -63,7 +63,7 @@ def plot_confusion_matrix(y_true,
 
     """
 
-    if type(y_classes) is not np.ndarray and y_classes == 'auto':
+    if y_classes == 'auto':
         y_classes = [f"y={y}" for y in np.unique(y_true)]
 
     cm = confusion_matrix(y_true, y_pred)
