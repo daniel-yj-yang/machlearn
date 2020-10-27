@@ -18,8 +18,6 @@ import pkgutil
 import os
 import numpy as np
 
-import pandas as pd
-
 def public_dataset(name=None):
     """
     name can be one of the following:
@@ -40,6 +38,7 @@ def public_dataset(name=None):
     """
 
     if name == "iris":
+        import pandas as pd
         from sklearn import datasets
         iris = datasets.load_iris()
         dataset = pd.DataFrame(data = iris.data, columns = iris.feature_names)
@@ -50,6 +49,7 @@ def public_dataset(name=None):
 
     #print(public_dataset.__doc__)
     if name == "SMS_spam":
+        import pandas as pd
         # https://archive.ics.uci.edu/ml/datasets/sms+spam+collection
         df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/SMS_Spam_Collection/SMSSpamCollection.tsv")), sep='\t', quoting=csv.QUOTE_NONE, names=("label", "message"))
         n_spam = df['label'].value_counts()['spam']
@@ -60,6 +60,7 @@ def public_dataset(name=None):
         #df = pd.read_csv(ZipFile(io.BytesIO(url.read())).open('SMSSpamCollection'), sep='\t', quoting=csv.QUOTE_NONE, names=("label", "message"))
 
     if name == "Social_Network_Ads":
+        import pandas as pd
         df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/Social_Network_Ads/Social_Network_Ads.csv")), encoding='utf8', sep=",")
         print("Social Network Ads is a public dataset that can be used to determine what audience a car company should target in its ads in order to sell a SUV on a social network website.\n")
         return df
@@ -69,6 +70,7 @@ def public_dataset(name=None):
     if name == "bank_note_authentication":
         # http://archive.ics.uci.edu/ml/datasets/banknote+authentication
         # https://www.vshsolutions.com/blogs/banknote-authentication-using-machine-learning-algorithms/ about whether 0 or 1 = genuine
+        import pandas as pd
         df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/bank_note_authentication/data_banknote_authentication.txt")), header=None, encoding='utf8', sep=",")
         df.columns = ['variance of Wavelet Transformed image', 'skewness of Wavelet Transformed image', 'curtosis of Wavelet Transformed image', 'entropy of image', 'class']
         print(f"The dataset of bank note authentication is a public dataset, where data were extracted from {len(df)} images (400x400 pixels, resolution of about 660 dpi) taken from {df['class'].value_counts()[1]} genuine and {df['class'].value_counts()[0]} forged banknote-like specimens. Wavelet Transform tool were used to extract features from images.\n")
