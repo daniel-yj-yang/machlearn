@@ -208,6 +208,18 @@ module: naive_bayes
 
 -----
 
+module: SVM
+-------------------
+
+.. csv-table::
+   :header: "function", "description"
+   :widths: 10, 20
+
+   "demo()", "provides a demo of selected functions in this module"
+   
+
+-----
+
 module: neural_network
 ----------------------
 
@@ -217,6 +229,7 @@ module: neural_network
 
    "rnn()", "Recurrent neural network"
    "demo()", "provides a demo of selected functions in this module"
+
 
 -----
 
@@ -229,3 +242,15 @@ module: decision_tree
 
    "boost()", "Boosting"
    "demo()", "provides a demo of selected functions in this module"
+
+
+-----
+
+module: datasets
+-------------------
+
+.. csv-table::
+   :header: "function", "description"
+   :widths: 10, 20
+
+   "public_dataset()", "returns a public dataset as specified (e.g., iris, SMS_spam, Social_Network_Ads)"
