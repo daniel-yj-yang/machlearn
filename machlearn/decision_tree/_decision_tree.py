@@ -15,6 +15,16 @@ def bagging(*args, **kwargs):
     return BaggingClassifier(*args, **kwargs)
 
 
+def AdaBoost(*args, **kwargs):
+    """
+    The idea of boosting: one is weak, together is strong, iterative training leads to the best model.
+    Strategy: To improve the predictive power by training a sequence of weak models. Each additional weak model is to compensate the weaknesses of its predecessors.
+
+    AdaBoost, Adaptive Boosting: at every step the sample distribution was adapted to put more weight on misclassified samples and less weight on correctly classified samples.
+    """
+    return AdaBoostClassifier(*args, **kwargs)
+
+
 def GBM(*args, **kwargs):
     """
     The idea of boosting: one is weak, together is strong, iterative training leads to the best model.
@@ -24,15 +34,6 @@ def GBM(*args, **kwargs):
     """
     return GradientBoostingClassifier(*args, **kwargs)
 
-
-def AdaBoost(*args, **kwargs):
-    """
-    The idea of boosting: one is weak, together is strong, iterative training leads to the best model.
-    Strategy: To improve the predictive power by training a sequence of weak models. Each additional weak model is to compensate the weaknesses of its predecessors.
-
-    AdaBoost, Adaptive Boosting: at every step the sample distribution was adapted to put more weight on misclassified samples and less weight on correctly classified samples.
-    """
-    return AdaBoostClassifier(*args, **kwargs)
 
 
 def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plotting_tree = True): # DT: decision_tree

@@ -19,7 +19,7 @@
 
 
 =====================================================
-A Simple and Powerful Machine Learning Python Library
+A Simple Yet Powerful Machine Learning Python Library
 =====================================================
 
 Install
@@ -231,7 +231,10 @@ module: decision_tree
    :header: "function", "description"
    :widths: 10, 20
 
-   "boost()", "Boosting"
+   "decision_tree()", "decision_tree classifier"
+   "bagging()", "bagging classifier"
+   "AdaBoost()", "Adaptive Boosting classifier"
+   "GBM()", "Gradient Boosting Machines classifier"
    "demo()", "provides a demo of selected functions in this module"
 
 
