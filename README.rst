@@ -53,6 +53,7 @@ Selected Output:
       Step2: classifier: kNN_classifier(n_neighbors=12, weights='uniform', p=2.00, metric='minkowski').
 
 
+|image_dataset_iris|
 |image_kNN_iris_confusion_matrix|
    
 
@@ -61,7 +62,7 @@ Selected Output:
 
 .. |image_dataset_iris| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/datasets/iris/images/iris.jpg
    :width: 600px
-   
+
 -----
 
 Example 2: Naive Bayes 
