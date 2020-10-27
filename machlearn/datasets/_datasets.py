@@ -38,28 +38,33 @@ def public_dataset(name=None):
         - The readme in respective folder (or related Internet link) should be followed for citation/license requirements.
     """
 
-    if name == 'iris':
+    if name == "iris":
         from sklearn import datasets
         iris = datasets.load_iris()
         dataset = pd.DataFrame(data = iris.data, columns = iris.feature_names)
         dataset['target'] = iris.target
+        # iris.target_names  # y_classes = ['setosa', 'versicolor', 'virginica']
+        print("Fisher's Iris is a public dataset that consists of {len(iris.data)} samples from three species of Iris ('setosa', 'versicolor', 'virginica'), while four features were measured from each sample: the length and the width of the sepals and petals, in centimeters.")
         return dataset
 
     #print(public_dataset.__doc__)
-    if name == 'SMS_spam':
+    if name == "SMS_spam":
         df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/SMS_Spam_Collection/SMSSpamCollection.tsv")), sep='\t', quoting=csv.QUOTE_NONE, names=("label", "message"))
+        n_spam = df.loc[data.label == 'spam', 'label'].count()
+        n_ham = df.loc[data.label == 'ham', 'label'].count()
+        print("SMS_spam is a public dataset that has a total of {len(df)} messages = {n_ham} ham (legitimate) and {n_spam} spam.\n")
         return df
         #url = urllib.request.urlopen("https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip")
         #df = pd.read_csv(ZipFile(io.BytesIO(url.read())).open('SMSSpamCollection'), sep='\t', quoting=csv.QUOTE_NONE, names=("label", "message"))
 
-    if name == 'Social_Network_Ads':
+    if name == "Social_Network_Ads":
         df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/Social_Network_Ads/Social_Network_Ads.csv")), encoding='utf8', sep=",")
         print("Social Network Ads is a public dataset that can be used to determine what audience a car company should target in its ads in order to sell a SUV on a social network website.\n")
         return df
         #url = urllib.request.urlopen("https://github.com/daniel-yj-yang/machlearn/raw/master/machlearn/datasets/public/Social_Network_Ads/Social_Network_Ads.csv")
         #df = pd.read_csv(io.BytesIO(url.read()), encoding='utf8', sep=",")
 
-    if name == 'Fashion_MNIST':
+    if name == "Fashion_MNIST":
         # this part of the code is modeled after https://github.com/zalandoresearch/fashion-mnist/blob/master/utils/mnist_reader.py
         import gzip
         path = os.path.dirname(__file__) + "/public/Fashion_MNIST"

@@ -41,14 +41,14 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
     """
     from ..datasets import public_dataset
     
-    if dataset == 'iris':
-        data = public_dataset(name=dataset)
+    if dataset == "iris":
+        data = public_dataset(name="iris")
         y_classes = ['setosa', 'versicolor', 'virginica']
         X = data[['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']]
         y = data['target']
 
-    if dataset == 'Social_Network_Ads':
-        data = public_dataset(name=dataset)
+    if dataset == "Social_Network_Ads":
+        data = public_dataset(name="Social_Network_Ads")
         X = data[['Age', 'EstimatedSalary']].to_numpy()
         y = data['Purchased'].to_numpy()
         y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
