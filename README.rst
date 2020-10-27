@@ -92,12 +92,8 @@ Selected Output:
       - Classification: spam
 
 
-.. list-table::
-   :widths: 25 25
-   :header-rows: 0
+|image_naive_bayes_confusion_matrix|
 
-   * - |image_naive_bayes_confusion_matrix|
-     -
 
 .. list-table::
    :widths: 25 25
