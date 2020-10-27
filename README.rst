@@ -178,6 +178,19 @@ module: model_evaluation
    "plot_ROC_and_PR_curves()", "plots both the ROC and the precision-recall curves, along with statistics"
    "demo()", "provides a demo of the major functions in this module"
 
+
+-----
+
+module: kNN
+-----------
+
+.. csv-table::
+   :header: "function", "description"
+   :widths: 10, 20
+
+   "demo()", "provides a demo of selected functions in this module"
+
+
 -----
 
 module: naive_bayes
@@ -192,16 +205,6 @@ module: naive_bayes
    "naive_bayes_Gaussian()", "when X are continuous variables"
    "demo()", "provides a demo of selected functions in this module"
 
------
-
-module: kNN
------------
-
-.. csv-table::
-   :header: "function", "description"
-   :widths: 10, 20
-
-   "demo()", "provides a demo of selected functions in this module"
 
 -----
 
