@@ -75,7 +75,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
         hyperparameters={
             'scaler__with_mean': [True],
             'scaler__with_std': [True],
-            'classifier__criterion': ("gini", "entropy"),
+            'classifier__criterion': ("gini", "entropy",),
             'classifier__max_depth': range(1, 10),
         }
 
