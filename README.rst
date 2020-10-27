@@ -57,7 +57,7 @@ Selected Output:
    
 
 .. |image_kNN_iris_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/iris_cm.png
-   :width: 400px
+   :width: 600px
 
 
 -----
@@ -103,7 +103,7 @@ Selected Output:
      - |image_naive_bayes_PR_curve| 
 
 .. |image_naive_bayes_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/naive_bayes/images/demo_confusion_matrix.png
-   :width: 400px
+   :width: 600px
 
 .. |image_naive_bayes_ROC_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/naive_bayes/images/demo_ROC_curve.png
    :width: 400px
