@@ -149,12 +149,14 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
             f"Using a grid search and a {model_name} classifier, the best hyperparameters were found as following:\n"
             f"Step1: scaler: StandardScaler(with_mean={repr(classifier_grid.best_params_['scaler__with_mean'])}, with_std={repr(classifier_grid.best_params_['scaler__with_std'])});\n"
             f"Step2: classifier: {classifier_func}(criterion={repr(criterion)}, max_depth={repr(max_depth)}).\n")
+        model_desc = f"{model_name} (criterion={repr(criterion)}, max_depth={repr(max_depth)})"
 
     if classifier_func in ["AdaBoost", "bagging"]:
         print(
             f"Using a grid search and a {model_name} classifier, the best hyperparameters were found as following:\n"
             f"Step1: scaler: StandardScaler(with_mean={repr(classifier_grid.best_params_['scaler__with_mean'])}, with_std={repr(classifier_grid.best_params_['scaler__with_std'])});\n"
             f"Step2: classifier: {classifier_func}().\n")
+        model_desc = f"{model_name}"
 
     ########################################################################################################################
 
@@ -168,12 +170,10 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
     if dataset == 'Social_Network_Ads':
         plot_ROC_and_PR_curves(fitted_model=classifier_grid, X=X_test,
                             y_true=y_test, y_pred_score=y_pred_score[:, 1], y_pos_label=1, model_name=f"{model_name}")
-    
-    if dataset == 'Social_Network_Ads':
         visualize_classifier_decision_boundary_with_two_features(
-            classifier_grid, X_train, y_train, y_classes, title=f"{model_name} / training set", X1_lab='Age', X2_lab='Estimated Salary')
+            classifier_grid, X_train, y_train, y_classes, title=f"{model_desc} / training set", X1_lab='Age', X2_lab='Estimated Salary')
         visualize_classifier_decision_boundary_with_two_features(
-            classifier_grid, X_test,  y_test,  y_classes, title=f"{model_name} / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
+            classifier_grid, X_test,  y_test,  y_classes, title=f"{model_desc} / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
 
     # Plotting the tree
     if classifier_func in ["decision_tree", "DT"] and plotting_tree is True:
