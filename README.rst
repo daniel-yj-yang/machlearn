@@ -59,7 +59,9 @@ Selected Output:
 .. |image_kNN_iris_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/iris_cm.png
    :width: 600px
 
-
+.. |image_dataset_iris| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/datasets/iris/images/iris.jpg
+   :width: 600px
+   
 -----
 
 Example 2: Naive Bayes 
