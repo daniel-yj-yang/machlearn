@@ -29,9 +29,45 @@ Install
 
    pip install machlearn
 
+
 -----
 
-Example 1: Naive Bayes 
+Example 1: k-Nearest Neighbors 
+------------------------------
+
+.. code-block:: python
+   
+   from machlearn import kNN
+   kNN.demo("iris")
+
+
+Selected Output:
+
+.. code-block::
+
+   This demo uses a public dataset of Fisher's Iris, which has a total of 150 samples from three species of Iris ('setosa', 'versicolor', 'virginica').
+   The goal is to use 'the length and the width of the sepals and petals, in centimeters', to predict which species of Iris the sample belongs to.
+   
+   Using a grid search and a kNN classifier, the best hyperparameters were found as following:
+      Step1: scaler: StandardScaler(with_mean=True, with_std=True);
+      Step2: classifier: kNN_classifier(n_neighbors=12, weights='uniform', p=2.00, metric='minkowski').
+
+
+.. list-table::
+   :widths: 25 25
+   :header-rows: 0
+
+   * - |image_kNN_iris_confusion_matrix|
+     -
+   
+
+.. |image_kNN_iris_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/iris_cm.png
+   :width: 400px
+
+
+-----
+
+Example 2: Naive Bayes 
 ----------------------
 
 .. code-block:: python
@@ -82,41 +118,6 @@ Selected Output:
    :width: 400px
    
 .. |image_naive_bayes_PR_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/naive_bayes/images/demo_PR_curve.png
-   :width: 400px
-
-
------
-
-Example 2: k-Nearest Neighbors 
-------------------------------
-
-.. code-block:: python
-   
-   from machlearn import kNN
-   kNN.demo("iris")
-
-
-Selected Output:
-
-.. code-block::
-
-   This demo uses a public dataset of Fisher's Iris, which has a total of 150 samples from three species of Iris ('setosa', 'versicolor', 'virginica').
-   The goal is to use 'the length and the width of the sepals and petals, in centimeters', to predict which species of Iris the sample belongs to.
-   
-   Using a grid search and a kNN classifier, the best hyperparameters were found as following:
-      Step1: scaler: StandardScaler(with_mean=True, with_std=True);
-      Step2: classifier: kNN_classifier(n_neighbors=12, weights='uniform', p=2.00, metric='minkowski').
-
-
-.. list-table::
-   :widths: 25 25
-   :header-rows: 0
-
-   * - |image_kNN_iris_confusion_matrix|
-     -
-   
-
-.. |image_kNN_iris_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/iris_cm.png
    :width: 400px
 
 
