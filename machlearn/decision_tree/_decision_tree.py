@@ -41,7 +41,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
     classifier_func: "decision_tree" or "DT", "GBM", "AdaBoost", "bagging"
     """
     from ..datasets import public_dataset
-    
+
     if dataset == "iris":
         data = public_dataset(name="iris")
         y_classes = ['setosa', 'versicolor', 'virginica']
@@ -53,12 +53,16 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
         X = data[['Age', 'EstimatedSalary']].to_numpy()
         y = data['Purchased'].to_numpy()
         y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
+        import seaborn as sns
+        sns.pairplot(data, hue="Purchased", markers=["o", "s"])
 
     if dataset == "bank_note_authentication":
         data = public_dataset(name="bank_note_authentication")
-        y_classes = ['forged', 'genuine']
+        y_classes = ['genuine (y=0)', 'forged (y=1)']
         X = data[['variance', 'skewness', 'curtosis', 'entropy']]
         y = data['class']
+        import seaborn as sns
+        sns.pairplot(data, hue="class", markers=["o", "s"])
 
     from sklearn.model_selection import train_test_split, GridSearchCV
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
@@ -73,7 +77,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
     from sklearn.pipeline import Pipeline
 
     ########################################################################################################################
-    if classifier_func in ["decision_tree", "DT"]: 
+    if classifier_func in ["decision_tree", "DT"]:
         pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
                                    ('classifier', decision_tree(max_depth=1, random_state=123)),  # default criterion = 'gini'
                                    ])
@@ -87,7 +91,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
         }
 
         model_name = "Decision Tree"
-    
+
     ########################################################################################################################
     if classifier_func == "GBM":
         pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
@@ -174,9 +178,11 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
     from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves, visualize_classifier_decision_boundary_with_two_features
     plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=y_classes)
 
-    if dataset == 'Social_Network_Ads':
+    if dataset in ['Social_Network_Ads', 'bank_note_authentication']:
         plot_ROC_and_PR_curves(fitted_model=classifier_grid, X=X_test,
                             y_true=y_test, y_pred_score=y_pred_score[:, 1], y_pos_label=1, model_name=f"{model_name}")
+    
+    if dataset in ['Social_Network_Ads',]:
         visualize_classifier_decision_boundary_with_two_features(
             classifier_grid, X_train, y_train, y_classes, title=f"{model_desc} / training set", X1_lab='Age', X2_lab='Estimated Salary')
         visualize_classifier_decision_boundary_with_two_features(
@@ -197,7 +203,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
         if dataset == 'bank_note_authentication':
             feature_cols = list(X.columns)
             class_names = ['0', '1']
-        
+
         if dataset == 'Social_Network_Ads':
             feature_cols=['Age', 'EstimatedSalary']
             class_names = ['0', '1']

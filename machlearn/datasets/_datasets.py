@@ -74,7 +74,7 @@ def public_dataset(name=None):
         df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/bank_note_authentication/data_banknote_authentication.txt")), header=None, encoding='utf8', sep=",")
         # 'variance of Wavelet Transformed image', 'skewness of Wavelet Transformed image', 'curtosis of Wavelet Transformed image', 'entropy of image'
         df.columns = ['variance', 'skewness', 'curtosis', 'entropy', 'class']
-        print(f"The dataset of bank note authentication is a public dataset, where data were extracted from {len(df)} images (400x400 pixels, resolution of about 660 dpi) taken from {df['class'].value_counts()[1]} genuine and {df['class'].value_counts()[0]} forged banknote-like specimens. Wavelet Transform tool were used to extract features from images.\n")
+        print(f"The dataset of bank note authentication is a public dataset, where data were extracted from {len(df)} images (400x400 pixels, resolution of about 660 dpi) taken from {df['class'].value_counts()[0]} genuine and {df['class'].value_counts()[1]} forged banknote-like specimens. Wavelet Transform tool were used to extract features from images.\n")
         return df
 
     if name == "Fashion_MNIST":
