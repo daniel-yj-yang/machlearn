@@ -26,6 +26,3 @@ script:
   - python tests/datasets.py
   - python tests/neural_network.py
   - python tests/decision_tree.py
-  
-
-
