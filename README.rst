@@ -5,8 +5,8 @@
 .. |BuildTest| image:: https://travis-ci.com/daniel-yj-yang/machlearn.svg?branch=master
 .. _BuildTest: https://travis-ci.com/daniel-yj-yang/machlearn
 
-.. |PythonVersion| image:: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
-.. _PythonVersion: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue
+.. |PythonVersion| image:: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue
+.. _PythonVersion: https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue
 
 .. |PyPi_version| image:: https://img.shields.io/pypi/v/machlearn
 .. _PyPi_version: https://pypi.python.org/pypi/machlearn
