@@ -44,7 +44,7 @@ def public_dataset(name=None):
         dataset = pd.DataFrame(data = iris.data, columns = iris.feature_names)
         dataset['target'] = iris.target
         # iris.target_names  # y_classes = ['setosa', 'versicolor', 'virginica']
-        print("Fisher's Iris is a public dataset that consists of {len(iris.data)} samples from three species of Iris ('setosa', 'versicolor', 'virginica'), while four features were measured from each sample: the length and the width of the sepals and petals, in centimeters.")
+        print("Fisher's Iris is a public dataset that consists of {len(iris.data)} samples from three species of Iris ('setosa', 'versicolor', 'virginica'), while four features were measured from each sample: the length and the width of the sepals and petals, in centimeters.\n")
         return dataset
 
     #print(public_dataset.__doc__)
