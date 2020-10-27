@@ -26,6 +26,7 @@ def public_dataset(name=None):
         - iris
         - SMS_spam
         - Social_Network_Ads
+        - bank_note_authentication
         - Fashion_MNIST
         - nltk_data_path
         - scikit_learn_data_path
@@ -44,15 +45,16 @@ def public_dataset(name=None):
         dataset = pd.DataFrame(data = iris.data, columns = iris.feature_names)
         dataset['target'] = iris.target
         # iris.target_names  # y_classes = ['setosa', 'versicolor', 'virginica']
-        print("Fisher's Iris is a public dataset that consists of {len(iris.data)} samples from three species of Iris ('setosa', 'versicolor', 'virginica'), while four features were measured from each sample: the length and the width of the sepals and petals, in centimeters.\n")
+        print(f"Fisher's Iris is a public dataset that consists of {len(iris.data)} samples from three species of Iris ('setosa', 'versicolor', 'virginica'), while four features were measured from each sample: the length and the width of the sepals and petals, in centimeters.\n")
         return dataset
 
     #print(public_dataset.__doc__)
     if name == "SMS_spam":
+        # https://archive.ics.uci.edu/ml/datasets/sms+spam+collection
         df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/SMS_Spam_Collection/SMSSpamCollection.tsv")), sep='\t', quoting=csv.QUOTE_NONE, names=("label", "message"))
-        n_spam = df.loc[data.label == 'spam', 'label'].count()
-        n_ham = df.loc[data.label == 'ham', 'label'].count()
-        print("SMS_spam is a public dataset that has a total of {len(df)} messages = {n_ham} ham (legitimate) and {n_spam} spam.\n")
+        n_spam = df['label'].value_counts()['spam']
+        n_ham = df['label'].value_counts()['ham']
+        print(f"SMS_spam is a public dataset that has a total of {len(df)} messages = {n_ham} ham (legitimate) and {n_spam} spam.\n")
         return df
         #url = urllib.request.urlopen("https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip")
         #df = pd.read_csv(ZipFile(io.BytesIO(url.read())).open('SMSSpamCollection'), sep='\t', quoting=csv.QUOTE_NONE, names=("label", "message"))
@@ -63,6 +65,14 @@ def public_dataset(name=None):
         return df
         #url = urllib.request.urlopen("https://github.com/daniel-yj-yang/machlearn/raw/master/machlearn/datasets/public/Social_Network_Ads/Social_Network_Ads.csv")
         #df = pd.read_csv(io.BytesIO(url.read()), encoding='utf8', sep=",")
+
+    if name == "bank_note_authentication":
+        # http://archive.ics.uci.edu/ml/datasets/banknote+authentication
+        # https://www.vshsolutions.com/blogs/banknote-authentication-using-machine-learning-algorithms/ about whether 0 or 1 = genuine
+        df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/bank_note_authentication/data_banknote_authentication.txt")), header=None, encoding='utf8', sep=",")
+        df.columns = ['variance of Wavelet Transformed image', 'skewness of Wavelet Transformed image', 'curtosis of Wavelet Transformed image', 'entropy of image', 'class']
+        print(f"The dataset of bank note authentication is a public dataset, where data were extracted from {len(df)} images (400x400 pixels, resolution of about 660 dpi) taken from {df['class'].value_counts()[1]} genuine and {df['class'].value_counts()[0]} forged banknote-like specimens. Wavelet Transform tool were used to extract features from images.\n")
+        return df
 
     if name == "Fashion_MNIST":
         # this part of the code is modeled after https://github.com/zalandoresearch/fashion-mnist/blob/master/utils/mnist_reader.py

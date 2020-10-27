@@ -207,11 +207,11 @@ def demo(dataset="Social_Network_Ads", classifier_func="decision_tree"):
     This function provides a demo of selected functions in this module.
 
     Required arguments:
-        - dataset:         A string. Possible values: "Social_Network_Ads", "iris"
+        - dataset:         A string. Possible values: "Social_Network_Ads", "iris", "bank_note_authentication"
         - classifier_func: A string. Possible values: "decision_tree" or "DT", "GBM", "AdaBoost", "bagging"
     """
 
-    available_datasets = ("Social_Network_Ads","iris",)
+    available_datasets = ("Social_Network_Ads","iris","bank_note_authentication")
     available_classifier_functions = ("decision_tree", "DT", "GBM", "AdaBoost", "bagging",)
 
     if dataset in available_datasets and classifier_func in available_classifier_functions:

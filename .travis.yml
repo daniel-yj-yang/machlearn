@@ -5,17 +5,7 @@ python:
   - "3.8"
   - "3.9"
 before_install:
-  if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-    git clone https://github.com/MacPython/terryfy.git
-    # Avoid printing the lines from the script below.
-    source terryfy/travis_tools.sh
-    get_python_environment $INSTALL_TYPE $VERSION $VENV
-    # Install graphviz on Mac.
-    brew install graphviz
-  else
-    # Install graphviz on Linux.
-    sudo apt-get -y install graphviz
-  fi
+  - sudo apt-get -y install graphviz
 install:
   - python setup.py install
 script:
