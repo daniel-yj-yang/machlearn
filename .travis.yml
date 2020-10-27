@@ -3,6 +3,7 @@ python:
   - "3.6"      # current default Python on Travis CI (Continuous Integration)
   - "3.7"
   - "3.8"
+  - "3.9"
 before_install:
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
     git clone https://github.com/MacPython/terryfy.git
