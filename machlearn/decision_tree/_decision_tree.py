@@ -37,7 +37,7 @@ def AdaBoost(*args, **kwargs):
 
 def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plotting_tree = True): # DT: decision_tree
     """
-    classifier_func: "decision_tree", "GBM", "AdaBoost", "bagging"
+    classifier_func: "decision_tree" or "DT", "GBM", "AdaBoost", "bagging"
     """
     from ..datasets import public_dataset
     
@@ -66,7 +66,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
     from sklearn.pipeline import Pipeline
 
     ########################################################################################################################
-    if classifier_func == "decision_tree":
+    if classifier_func in ["decision_tree", "DT"]: 
         pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
                                    ('classifier', decision_tree(max_depth=1, random_state=123)),  # default criterion = 'gini'
                                    ])
@@ -142,7 +142,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
     classifier_grid=grid.fit(X_train, y_train)
 
     ########################################################################################################################
-    if classifier_func == "decision_tree" or classifier_func == "GBM":
+    if classifier_func in ["decision_tree", "DT", "GBM"]:
         criterion=classifier_grid.best_params_['classifier__criterion']
         max_depth=classifier_grid.best_params_['classifier__max_depth']
         print(
@@ -150,7 +150,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
             f"Step1: scaler: StandardScaler(with_mean={repr(classifier_grid.best_params_['scaler__with_mean'])}, with_std={repr(classifier_grid.best_params_['scaler__with_std'])});\n"
             f"Step2: classifier: {classifier_func}(criterion={repr(criterion)}, max_depth={repr(max_depth)}).\n")
 
-    if classifier_func == "AdaBoost" or classifier_func == "bagging":
+    if classifier_func in ["AdaBoost", "bagging"]:
         print(
             f"Using a grid search and a {model_name} classifier, the best hyperparameters were found as following:\n"
             f"Step1: scaler: StandardScaler(with_mean={repr(classifier_grid.best_params_['scaler__with_mean'])}, with_std={repr(classifier_grid.best_params_['scaler__with_std'])});\n"
@@ -176,7 +176,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
             classifier_grid, X_test,  y_test,  y_classes, title=f"{model_name} / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
 
     # Plotting the tree
-    if classifier_func == "decision_tree" and plotting_tree is True:
+    if classifier_func in ["decision_tree", "DT"] and plotting_tree is True:
         from sklearn.tree import export_graphviz
         import io
         import pydotplus
@@ -207,11 +207,11 @@ def demo(dataset="Social_Network_Ads", classifier_func="decision_tree"):
 
     Required arguments:
         - dataset:         A string. Possible values: "Social_Network_Ads", "iris"
-        - classifier_func: A string. Possible values: "decision_tree", "GBM", "AdaBoost", "bagging"
+        - classifier_func: A string. Possible values: "decision_tree" or "DT", "GBM", "AdaBoost", "bagging"
     """
 
     available_datasets = ("Social_Network_Ads","iris",)
-    available_classifier_functions = ('decision_tree', 'GBM', 'AdaBoost', 'bagging',)
+    available_classifier_functions = ("decision_tree", "DT", "GBM", "AdaBoost", "bagging",)
 
     if dataset in available_datasets and classifier_func in available_classifier_functions:
         _demo(dataset = dataset, classifier_func = classifier_func)
