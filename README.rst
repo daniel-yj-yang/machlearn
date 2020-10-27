@@ -146,6 +146,9 @@ Example 3: Decision Boundary Comparison
 
    from machlearn import SVM
    SVM.demo("Social_Network_Ads")
+   
+   from machlearn import decision_tree as DT
+   DT.demo("Social_Network_Ads", classifier_func = "DT")
 
 
 .. list-table::
@@ -155,7 +158,7 @@ Example 3: Decision Boundary Comparison
    * - |image_kNN_decision_boundary_testing_set|
      - |image_Gaussian_NB_decision_boundary_testing_set|
    * - |image_SVM_decision_boundary_testing_set|
-     -
+     - |image_DT_decision_boundary_testing_set|
 
 
 .. |image_kNN_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/Social_Network_Ads_decision_boundary_testing_set.png
@@ -165,6 +168,9 @@ Example 3: Decision Boundary Comparison
    :width: 400px
 
 .. |image_SVM_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/SVM/images/Social_Network_Ads_decision_boundary_testing_set.png
+   :width: 400px
+   
+.. |image_DT_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/decision_tree/images/Social_Network_Ads_DT_decision_boundary_testing_set.png
    :width: 400px
 
 -----
