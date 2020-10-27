@@ -4,12 +4,15 @@
 #
 # License: BSD 3 clause
 
-from sklearn.ensemble import GradientBoostingClassifier, AdaBoostClassifier, BaggingClassifier
+from sklearn.ensemble import RandomForestClassifier, BaggingClassifier, AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.tree import DecisionTreeClassifier
 
 
 def decision_tree(*args, **kwargs):
     return DecisionTreeClassifier(*args, **kwargs)
+
+def random_forest(*args, **kwargs):
+    return RandomForestClassifier(*args, **kwargs)
 
 def bagging(*args, **kwargs):
     return BaggingClassifier(*args, **kwargs)
@@ -93,20 +96,34 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
         model_name = "Decision Tree"
 
     ########################################################################################################################
-    if classifier_func == "GBM":
+    if classifier_func in ["random_forest"]:
         pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
-                                   ('classifier', GBM(max_depth=1, random_state=123)),
+                                   ('classifier', random_forest(max_depth=1, random_state=123)),  # default criterion = 'gini'
+                                   ])
+
+        # pipeline parameters to tune
+        hyperparameters={
+            'scaler__with_mean': [True],
+            'scaler__with_std': [True],
+            'classifier__criterion': ("gini", "entropy",),
+            'classifier__max_depth': range(1, 10),
+        }
+
+        model_name = "Random Forest"
+
+    ########################################################################################################################
+    if classifier_func == "bagging":
+        pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
+                                   ('classifier', bagging(random_state=123)),
                                    ])
 
         # pipeline parameters to tune
         hyperparameters = {
             'scaler__with_mean': [True],
             'scaler__with_std': [True],
-            'classifier__criterion': ("friedman_mse", "mse", "mae"),
-            'classifier__max_depth': range(1, 10),
         }
 
-        model_name = "Gradient Boosting"
+        model_name = "Bagging"
 
     ########################################################################################################################
     if classifier_func == "AdaBoost":
@@ -123,18 +140,20 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
         model_name = "Adaptive Boosting"
 
     ########################################################################################################################
-    if classifier_func == "bagging":
+    if classifier_func == "GBM":
         pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
-                                   ('classifier', bagging(random_state=123)),
+                                   ('classifier', GBM(max_depth=1, random_state=123)),
                                    ])
 
         # pipeline parameters to tune
         hyperparameters = {
             'scaler__with_mean': [True],
             'scaler__with_std': [True],
+            'classifier__criterion': ("friedman_mse", "mse", "mae"),
+            'classifier__max_depth': range(1, 10),
         }
 
-        model_name = "Bagging"
+        model_name = "Gradient Boosting"
 
     ########################################################################################################################
 
@@ -153,7 +172,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
     classifier_grid=grid.fit(X_train, y_train)
 
     ########################################################################################################################
-    if classifier_func in ["decision_tree", "DT", "GBM"]:
+    if classifier_func in ["decision_tree", "DT", "random_forest", "GBM"]:
         criterion=classifier_grid.best_params_['classifier__criterion']
         max_depth=classifier_grid.best_params_['classifier__max_depth']
         print(
@@ -224,11 +243,11 @@ def demo(dataset="Social_Network_Ads", classifier_func="decision_tree"):
 
     Required arguments:
         - dataset:         A string. Possible values: "Social_Network_Ads", "iris", "bank_note_authentication"
-        - classifier_func: A string. Possible values: "decision_tree" or "DT", "GBM", "AdaBoost", "bagging"
+        - classifier_func: A string. Possible values: "decision_tree" or "DT", "random_forest", "bagging", "AdaBoost", "GBM"
     """
 
     available_datasets = ("Social_Network_Ads","iris","bank_note_authentication")
-    available_classifier_functions = ("decision_tree", "DT", "GBM", "AdaBoost", "bagging",)
+    available_classifier_functions = ("decision_tree", "DT", "random_forest", "bagging", "AdaBoost", "GBM",)
 
     if dataset in available_datasets and classifier_func in available_classifier_functions:
         _demo(dataset = dataset, classifier_func = classifier_func)
