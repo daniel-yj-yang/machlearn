@@ -108,8 +108,13 @@ Selected Output:
       Step2: classifier: kNN_classifier(n_neighbors=12, weights='uniform', p=2.00, metric='minkowski').
 
 
-   |image_kNN_iris_confusion_matrix|
+.. list-table::
+   :widths: 25 25
+   :header-rows: 0
 
+   * - |image_kNN_iris_confusion_matrix|
+     -
+   
 
 .. |image_kNN_iris_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/iris_cm.png
    :width: 400px
