@@ -7,6 +7,7 @@
 from machlearn import decision_tree as DT
 
 DT.demo(dataset = "iris", classifier_func = "decision_tree")
+DT.demo(dataset = "bank_note_authentication", classifier_func = "decision_tree")
 
 DT.demo(dataset = "Social_Network_Ads", classifier_func = "decision_tree")
 DT.demo(dataset = "Social_Network_Ads", classifier_func = "GBM")

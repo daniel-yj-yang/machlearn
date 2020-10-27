@@ -72,7 +72,8 @@ def public_dataset(name=None):
         # https://www.vshsolutions.com/blogs/banknote-authentication-using-machine-learning-algorithms/ about whether 0 or 1 = genuine
         import pandas as pd
         df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/bank_note_authentication/data_banknote_authentication.txt")), header=None, encoding='utf8', sep=",")
-        df.columns = ['variance of Wavelet Transformed image', 'skewness of Wavelet Transformed image', 'curtosis of Wavelet Transformed image', 'entropy of image', 'class']
+        # 'variance of Wavelet Transformed image', 'skewness of Wavelet Transformed image', 'curtosis of Wavelet Transformed image', 'entropy of image'
+        df.columns = ['variance', 'skewness', 'curtosis', 'entropy', 'class']
         print(f"The dataset of bank note authentication is a public dataset, where data were extracted from {len(df)} images (400x400 pixels, resolution of about 660 dpi) taken from {df['class'].value_counts()[1]} genuine and {df['class'].value_counts()[0]} forged banknote-like specimens. Wavelet Transform tool were used to extract features from images.\n")
         return df
 

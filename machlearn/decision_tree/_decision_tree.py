@@ -54,6 +54,12 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
         y = data['Purchased'].to_numpy()
         y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
 
+    if dataset == "bank_note_authentication":
+        data = public_dataset(name="bank_note_authentication")
+        y_classes = ['forged', 'genuine']
+        X = data[['variance', 'skewness', 'curtosis', 'entropy']]
+        y = data['class']
+
     from sklearn.model_selection import train_test_split, GridSearchCV
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
 
@@ -187,6 +193,10 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
         if dataset == 'iris':
             feature_cols = list(X.columns)
             class_names = ['0', '1', '2']
+
+        if dataset == 'bank_note_authentication':
+            feature_cols = list(X.columns)
+            class_names = ['0', '1']
         
         if dataset == 'Social_Network_Ads':
             feature_cols=['Age', 'EstimatedSalary']
