@@ -39,7 +39,7 @@ def GBM(*args, **kwargs):
 
 
 
-def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plotting_tree = True): # DT: decision_tree
+def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: decision_tree
     """
     classifier_func: "decision_tree" or "DT", "GBM", "AdaBoost", "bagging"
     """
@@ -208,7 +208,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
             classifier_grid, X_test,  y_test,  y_classes, title=f"{model_desc} / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
 
     # Plotting the tree
-    if classifier_func in ["decision_tree", "DT"] and plotting_tree is True:
+    if classifier_func in ["decision_tree", "DT"]:
 
         if dataset == 'iris':
             feature_cols = list(X.columns)
@@ -227,7 +227,8 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
 
         # Approach 1
         from dtreeviz.trees import dtreeviz
-        viz = dtreeviz(classifier_grid.best_estimator_.steps[1][1], X_train, y_train, target_name="target", feature_names=feature_cols, class_names=class_names)
+        viz = dtreeviz(classifier_grid.best_estimator_.steps[1][1], StandardScaler().fit_transform(X_train), y_train, target_name="target", feature_names=feature_cols, class_names=class_names)
+        # print(type(viz)) # <class 'dtreeviz.trees.DTreeViz'>
         viz.view()
 
         # Approach 2
