@@ -4,7 +4,7 @@ python:
   - "3.7"
   - "3.8"
 before_install:
-#  - sudo apt-get -y install build-essential
+  - sudo apt-get -y install build-essential
   - sudo apt-get -y install graphviz
 install:
   - python setup.py install
