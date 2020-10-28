@@ -7,4 +7,4 @@
 from ._logistic_regression import demo
 
 # this is for "from <package_name>.logistic_regression import *"
-__all__ = ["demo"]
+__all__ = ["demo", "LR_statsmodels"]

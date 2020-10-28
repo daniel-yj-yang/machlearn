@@ -175,6 +175,18 @@ module: model_evaluation
 
 -----
 
+module: datasets
+-------------------
+
+.. csv-table::
+   :header: "function", "description"
+   :widths: 10, 20
+
+   "public_dataset()", "returns a public dataset as specified (e.g., iris, SMS_spam, Social_Network_Ads)"
+
+
+-----
+
 module: kNN
 -----------
 
@@ -214,19 +226,6 @@ module: SVM
 
 -----
 
-module: neural_network
-----------------------
-
-.. csv-table::
-   :header: "function", "description"
-   :widths: 10, 20
-
-   "rnn()", "Recurrent neural network"
-   "demo()", "provides a demo of selected functions in this module"
-
-
------
-
 module: decision_tree
 ---------------------
 
@@ -243,11 +242,26 @@ module: decision_tree
 
 -----
 
-module: datasets
--------------------
+module: logistic_regression
+---------------------------
 
 .. csv-table::
    :header: "function", "description"
    :widths: 10, 20
 
-   "public_dataset()", "returns a public dataset as specified (e.g., iris, SMS_spam, Social_Network_Ads)"
+   "LR_statsmodels()", "a interface using the statsmodels"
+   "demo()", "provides a demo of selected functions in this module"
+
+
+-----
+
+module: neural_network
+----------------------
+
+.. csv-table::
+   :header: "function", "description"
+   :widths: 10, 20
+
+   "rnn()", "Recurrent neural network"
+   "demo()", "provides a demo of selected functions in this module"
+

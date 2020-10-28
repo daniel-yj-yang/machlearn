@@ -6,7 +6,11 @@
 
 
 
-def LogisticRegression_based_on_statsmodels(y_pd_series, X_pd_series):
+def LR_statsmodels(y_pd_series, X_pd_series):
+    """
+    - Required arguments:
+        y_pd_series, X_pd_series
+    """
     from statsmodels.discrete.discrete_model import Logit
     from statsmodels.tools import add_constant
     # fit_intercept
@@ -39,7 +43,7 @@ def _demo(dataset="Social_Network_Ads"):
         y = data['Purchased']
         y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
 
-    LogisticRegression_based_on_statsmodels(y, X)
+    LR_statsmodels(y, X)
 
 
 
