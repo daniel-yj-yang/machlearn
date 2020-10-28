@@ -6,6 +6,7 @@ python:
 before_install:
   - sudo apt-get -y install build-essential
   - sudo apt-get -y install graphviz
+  - choco upgrade cmake
 install:
   - python setup.py install
 script:
