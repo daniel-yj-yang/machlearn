@@ -17,7 +17,7 @@ def LogisticReg_statsmodels(y_pd_series, X_pd_series):
     model = Logit(endog=y_pd_series, exog=add_constant(X_pd_series))
     result = model.fit()
     print(result.summary())
-    print(result.summary2())
+    #print(result.summary2())
     return result.params.values
 
 
@@ -40,11 +40,19 @@ def _demo(dataset="Social_Network_Ads"):
         plt.show()
         # X and y
         X = data[['Male', 'Age', 'EstimatedSalary']]
+        #X = data[['Age']]
         y = data['Purchased']
         y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
 
-    return LogisticReg_statsmodels(y, X)
-
+        params_values = LogisticReg_statsmodels(y, X)
+        beta0 = params_values[0] # exp(beta0) = the baseline "odds_of_prob(y)" when X's=0:
+        beta2 = params_values[2] # Age
+        import math
+        print(f"\nbeta0 (intercept) = {beta0:.2f}. Interpretation: exp^beta0 = {math.exp(beta0):.2f} is the baseline odds of prob(y) when X's = 0.")
+        print(f"\nbeta2 (Age) = {beta2:.2f}. Interpretation: exp^beta2 = {math.exp(beta2):.2f} is the odds ratio associated with Age, meaning that for every 1-unit increase in Age, the odds of prob(y) will be OR = {math.exp(beta2):.2f} times bigger.\n")
+        # beta > 0, meaning increase
+        # beta = 0, meaning no change associated with this X
+        # beta < 0, meaning decrease
 
 
 def demo(dataset="Social_Network_Ads"):
