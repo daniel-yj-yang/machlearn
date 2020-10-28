@@ -233,7 +233,8 @@ module: decision_tree
    :header: "function", "description"
    :widths: 10, 20
 
-   "decision_tree()", "decision_tree classifier"
+   "decision_tree()", "decision tree classifier"
+   "random_forest()", "random forest classifier"
    "bagging()", "bagging classifier"
    "AdaBoost()", "Adaptive Boosting classifier"
    "GBM()", "Gradient Boosting Machines classifier"
