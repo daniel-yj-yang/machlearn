@@ -263,7 +263,7 @@ module: logistic_regression
    :header: "function", "description"
    :widths: 10, 20
 
-   "LogisticReg_statsmodels()", "a solution using the statsmodels"
+   "LogisticReg_statsmodels()", "solutions using the statsmodels"
    "demo()", "provides a demo of selected functions in this module"
 
 
@@ -276,4 +276,6 @@ module: linear_regression
    :header: "function", "description"
    :widths: 10, 20
 
+   "LinearReg_statsmodels()", "solutions using the statsmodels"
+   "LinearReg_normal_equation()", "solutions using normal equation"
    "demo()", "provides a demo of selected functions in this module"
