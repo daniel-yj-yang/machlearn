@@ -265,3 +265,15 @@ module: logistic_regression
 
    "LogisticReg_statsmodels()", "a solution using the statsmodels"
    "demo()", "provides a demo of selected functions in this module"
+
+
+-----
+
+module: linear_regression
+---------------------------
+
+.. csv-table::
+   :header: "function", "description"
+   :widths: 10, 20
+
+   "demo()", "provides a demo of selected functions in this module"
