@@ -25,6 +25,7 @@ def public_dataset(name=None):
         - SMS_spam
         - Social_Network_Ads
         - bank_note_authentication
+        - marketing
         - Fashion_MNIST
         - nltk_data_path
         - scikit_learn_data_path
@@ -69,12 +70,18 @@ def public_dataset(name=None):
 
     if name == "bank_note_authentication":
         # http://archive.ics.uci.edu/ml/datasets/banknote+authentication
-        # https://www.vshsolutions.com/blogs/banknote-authentication-using-machine-learning-algorithms/ about whether 0 or 1 = genuine
         import pandas as pd
         df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/bank_note_authentication/data_banknote_authentication.txt")), header=None, encoding='utf8', sep=",")
         # 'variance of Wavelet Transformed image', 'skewness of Wavelet Transformed image', 'curtosis of Wavelet Transformed image', 'entropy of image'
         df.columns = ['variance', 'skewness', 'curtosis', 'entropy', 'class']
         print(f"The dataset of bank note authentication is a public dataset, where data were extracted from {len(df)} images (400x400 pixels, resolution of about 660 dpi) taken from {df['class'].value_counts()[0]} genuine and {df['class'].value_counts()[1]} forged banknote-like specimens. Wavelet Transform tool were used to extract features from images.\n")
+        return df
+
+    if name == "marketing":
+        # https://cran.r-project.org/web/packages/datarium/datarium.pdf
+        import pandas as pd
+        df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/R_datarium/marketing/marketing.csv")), header=0, encoding='utf8', sep=",")
+        print(f"The dataset of marketing is a public dataset from R-datarium, containing the impact of three advertising medias (youtube, facebook and newspaper) on sales. Data are the advertising budget in thousands of dollars along with the sales. The advertising experiment has been repeated 200 times.\n")
         return df
 
     if name == "Fashion_MNIST":

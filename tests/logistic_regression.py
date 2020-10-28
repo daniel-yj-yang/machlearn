@@ -4,7 +4,7 @@
 #
 # License: BSD 3 clause
 
-from machlearn import logistic_regression as LR
+from machlearn import logistic_regression as LogisticReg
 
-LR.demo(dataset = "Social_Network_Ads")
+LogisticReg.demo(dataset="Social_Network_Ads")
 

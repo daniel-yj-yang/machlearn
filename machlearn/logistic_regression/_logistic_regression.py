@@ -6,7 +6,7 @@
 
 
 
-def LR_statsmodels(y_pd_series, X_pd_series):
+def LogisticReg_statsmodels(y_pd_series, X_pd_series):
     """
     - Required arguments:
         y_pd_series, X_pd_series
@@ -43,7 +43,7 @@ def _demo(dataset="Social_Network_Ads"):
         y = data['Purchased']
         y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
 
-    LR_statsmodels(y, X)
+    LogisticReg_statsmodels(y, X)
 
 
 

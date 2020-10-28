@@ -263,5 +263,5 @@ module: logistic_regression
    :header: "function", "description"
    :widths: 10, 20
 
-   "LR_statsmodels()", "a interface using the statsmodels"
+   "LogisticReg_statsmodels()", "a solution using the statsmodels"
    "demo()", "provides a demo of selected functions in this module"
