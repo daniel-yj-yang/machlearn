@@ -187,18 +187,6 @@ module: datasets
 
 -----
 
-module: kNN
------------
-
-.. csv-table::
-   :header: "function", "description"
-   :widths: 10, 20
-
-   "demo()", "provides a demo of selected functions in this module"
-
-
------
-
 module: naive_bayes
 -------------------
 
@@ -209,6 +197,18 @@ module: naive_bayes
    "naive_bayes_Bernoulli()", "when X are independent binary variables (e.g., whether a word occurs in a document or not)"
    "naive_bayes_multinomial()", "when X are independent discrete variables with 3+ levels (e.g., term frequency in the document)"
    "naive_bayes_Gaussian()", "when X are continuous variables"
+   "demo()", "provides a demo of selected functions in this module"
+
+
+-----
+
+module: kNN
+-----------
+
+.. csv-table::
+   :header: "function", "description"
+   :widths: 10, 20
+
    "demo()", "provides a demo of selected functions in this module"
 
 
@@ -242,19 +242,6 @@ module: decision_tree
 
 -----
 
-module: logistic_regression
----------------------------
-
-.. csv-table::
-   :header: "function", "description"
-   :widths: 10, 20
-
-   "LR_statsmodels()", "a interface using the statsmodels"
-   "demo()", "provides a demo of selected functions in this module"
-
-
------
-
 module: neural_network
 ----------------------
 
@@ -265,3 +252,15 @@ module: neural_network
    "rnn()", "Recurrent neural network"
    "demo()", "provides a demo of selected functions in this module"
 
+
+-----
+
+module: logistic_regression
+---------------------------
+
+.. csv-table::
+   :header: "function", "description"
+   :widths: 10, 20
+
+   "LR_statsmodels()", "a interface using the statsmodels"
+   "demo()", "provides a demo of selected functions in this module"
