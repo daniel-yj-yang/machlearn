@@ -209,23 +209,33 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree", plottin
 
     # Plotting the tree
     if classifier_func in ["decision_tree", "DT"] and plotting_tree is True:
+
+        if dataset == 'iris':
+            feature_cols = list(X.columns)
+            #class_names = ['0', '1', '2']
+            class_names = ['0=setosa', '1=versicolor', '2=virginica']
+
+        if dataset == 'bank_note_authentication':
+            feature_cols = list(X.columns)
+            #class_names = ['0', '1']
+            class_names = ['0=genuine', '1=forged']
+
+        if dataset == 'Social_Network_Ads':
+            feature_cols=['Age', 'EstimatedSalary']
+            #class_names = ['0', '1']
+            class_names = ['0=not purchased', '1=purchased']
+
+        # Approach 1
+        from dtreeviz.trees import dtreeviz
+        viz = dtreeviz(classifier_grid.best_estimator_.steps[1][1], X_train, y_train, target_name="target", feature_names=feature_cols, class_names=class_names)
+        viz.view()
+
+        # Approach 2
         from sklearn.tree import export_graphviz
         import io
         import pydotplus
         # from IPython.display import Image
         dot_data=io.StringIO()
-
-        if dataset == 'iris':
-            feature_cols = list(X.columns)
-            class_names = ['0', '1', '2']
-
-        if dataset == 'bank_note_authentication':
-            feature_cols = list(X.columns)
-            class_names = ['0', '1']
-
-        if dataset == 'Social_Network_Ads':
-            feature_cols=['Age', 'EstimatedSalary']
-            class_names = ['0', '1']
 
         export_graphviz(classifier_grid.best_estimator_.steps[1][1], out_file=dot_data,
                         filled=True, rounded=True,

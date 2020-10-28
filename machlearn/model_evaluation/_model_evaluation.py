@@ -249,6 +249,8 @@ def plot_PR_curve(fitted_model,
             FN = cm[1, 0]
             TPR = TP / (TP+FN)
             FPR = FP / (TN+FP)
+            if TP+FP == 0:
+                continue
             precision = TP / (TP+FP)
             recall = TP / (TP+FN)
             plt.plot([recall], [precision], marker='x', markersize=10,
