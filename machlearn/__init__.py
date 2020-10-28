@@ -9,11 +9,11 @@ from .__about__ import (
 )
 
 # this is for "from <package_name> import *"
-__all__ = ["datasets",
-           "model_evaluation",
+__all__ = ["model_evaluation",
+            "datasets",
            # supervised
-           "naive_bayes",
            "kNN",
+           "naive_bayes",
            "SVM",
            "decision_tree",
            "neural_network",

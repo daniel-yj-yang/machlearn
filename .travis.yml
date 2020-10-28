@@ -9,11 +9,11 @@ before_install:
 install:
   - python setup.py install
 script:
-  - python tests/datasets.py
   - python tests/model_evaluation.py
+  - python tests/datasets.py
   # supervised
-  - python tests/naive_bayes.py
   - python tests/kNN.py
+  - python tests/naive_bayes.py
   - python tests/SVM.py
   - python tests/decision_tree.py
   - python tests/neural_network.py
