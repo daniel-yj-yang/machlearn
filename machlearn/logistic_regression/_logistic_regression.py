@@ -18,7 +18,7 @@ def LogisticReg_statsmodels(y_pd_series, X_pd_series):
     result = model.fit()
     print(result.summary())
     print(result.summary2())
-    return (result.params.values)
+    return result.params.values
 
 
 def _demo(dataset="Social_Network_Ads"):
@@ -43,7 +43,7 @@ def _demo(dataset="Social_Network_Ads"):
         y = data['Purchased']
         y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
 
-    LogisticReg_statsmodels(y, X)
+    return LogisticReg_statsmodels(y, X)
 
 
 
@@ -58,6 +58,6 @@ def demo(dataset="Social_Network_Ads"):
     available_datasets = ("Social_Network_Ads",)
 
     if dataset in available_datasets:
-        _demo(dataset = dataset)
+        return _demo(dataset = dataset)
     else:
         raise TypeError(f"dataset [{dataset}] is not defined")

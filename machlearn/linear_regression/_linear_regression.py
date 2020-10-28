@@ -5,6 +5,44 @@
 # License: BSD 3 clause
 
 
+def LinearReg_statsmodels(y, X):
+    """
+    - Required arguments:
+        y, X: pandas series
+    """
+    X_original = X
+
+    import statsmodels.api as sm
+    X = sm.add_constant(X) # fit_intercept
+    model = sm.OLS(y, X).fit()
+    print(f"Unstandardized estimates:\n{model.summary()}\n")
+    #predictions = model.predict(X)
+
+    from sklearn.preprocessing import scale
+    X_scaled = scale(X_original)
+    y_scaled = scale(y)
+    model_scaled = sm.OLS(y_scaled, X_scaled).fit()
+    print(f"Standardized estimates:\n{model_scaled.summary()}\n")
+
+def LinearReg_normal_equation(y, X):
+    """
+    - Required arguments:
+        y, X: pandas series
+    """
+    X_original = X
+
+    import statsmodels.api as sm
+    X = sm.add_constant(X)
+    from numpy.linalg import inv
+    theta = inv(X.T.dot(X)).dot(X.T).dot(y)
+    print(f"Unstandardized estimates:\n{theta}")
+
+    from sklearn.preprocessing import scale
+    X_scaled = scale(X_original)
+    y_scaled = scale(y)
+    theta_scaled = inv(X_scaled.T.dot(X_scaled)).dot(X_scaled.T).dot(y_scaled)
+    print(f"Standardized estimates:\n{theta_scaled}")
+
 def _demo(dataset="marketing"):
     """
     """
@@ -22,7 +60,11 @@ def _demo(dataset="marketing"):
         X = data[['youtube', 'facebook', 'newspaper']]
         y = data['sales']
 
-    return X, y
+    print("*** Solutions using statsmodel ***\n")
+    LinearReg_statsmodels(y, X)
+
+    print("*** Solutions using normal equation ***\n")
+    LinearReg_normal_equation(y, X)
 
 
 
@@ -37,6 +79,6 @@ def demo(dataset="marketing"):
     available_datasets = ("marketing",)
 
     if dataset in available_datasets:
-        return _demo(dataset = dataset)
+        _demo(dataset = dataset)
     else:
         raise TypeError(f"dataset [{dataset}] is not defined")
