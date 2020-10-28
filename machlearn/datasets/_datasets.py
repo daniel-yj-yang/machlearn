@@ -26,6 +26,7 @@ def public_dataset(name=None):
         - Social_Network_Ads
         - bank_note_authentication
         - marketing
+        - Hitters
         - Fashion_MNIST
         - nltk_data_path
         - scikit_learn_data_path
@@ -82,6 +83,13 @@ def public_dataset(name=None):
         import pandas as pd
         df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/R_datarium/marketing/marketing.csv")), header=0, encoding='utf8', sep=",")
         print(f"The dataset of marketing is a public dataset from R-datarium, containing the impact of three advertising medias (youtube, facebook and newspaper) on sales. Data are the advertising budget in thousands of dollars along with the sales. The advertising experiment has been repeated 200 times.\n")
+        return df
+
+    if name == "Hitters":
+        # https://cran.r-project.org/web/packages/ISLR/index.html
+        import pandas as pd
+        df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/R_ISLR/Hitters/Hitters.csv")), header=0, encoding='utf8', sep=",")
+        print(f"The dataset of Hitters is a public dataset from R-ISLR, containing Major League Baseball Data from the 1986 and 1987 seasons.\n")
         return df
 
     if name == "Fashion_MNIST":

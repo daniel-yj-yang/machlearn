@@ -11,6 +11,15 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, average_precision_score, plot_precision_recall_curve, classification_report
 
 
+def evaluate_continuous_prediction(y_true, y_pred):
+    from statistics import mean
+    SSE = sum((y_true - y_pred) ** 2)
+    RMSE = ( SSE / len(y_true) ) ** 0.5
+    SST = sum((y_true - mean(y_true)) ** 2)
+    R_squared = 1 - (SSE/SST)
+    return RMSE, R_squared
+
+
 __font_size__ = 18
 
 

@@ -7,4 +7,5 @@
 from machlearn import linear_regression as LinearReg
 
 LinearReg.demo()
+LinearReg.demo_regularization()
 
