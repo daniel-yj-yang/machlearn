@@ -7,6 +7,33 @@
 from sklearn.ensemble import RandomForestClassifier, BaggingClassifier, AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.tree import DecisionTreeClassifier
 
+def Gini_impurity(splitted_sample=[]):
+    """
+    For example: [194, 106]
+    """
+    denominator = sum(splitted_sample)
+    Gini = 0
+    for numerator_i in range(len(splitted_sample)):
+        p_i = splitted_sample[numerator_i]/denominator
+        # p_i * (1 - p_i) is the likelihood of misclassifying a new instance
+        Gini += p_i * (1 - p_i)
+    return Gini
+
+def Gini_impurity_plot():
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import pandas as pd
+    n = 200
+    X=np.arange(0,n/2+1,1)
+    Y=X[::-1]
+    Gini=Gini_impurity([X,Y])
+    plt.plot(X,Gini)
+    plt.axhline(y=0.5,color='r',linestyle='--')
+    plt.title('Gini Impurity Graph')
+    plt.xlabel(f'n splitted as y=0 (total #sample = {n})')
+    plt.ylabel('Gini Impurity Measure')
+    plt.ylim([0,1.1])
+    plt.show()
 
 def decision_tree(*args, **kwargs):
     return DecisionTreeClassifier(*args, **kwargs)
@@ -53,11 +80,20 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
 
     if dataset == "Social_Network_Ads":
         data = public_dataset(name="Social_Network_Ads")
-        X = data[['Age', 'EstimatedSalary']].to_numpy()
-        y = data['Purchased'].to_numpy()
-        y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
+        print(f"{data.head()}\n")
+        del data['User ID']
+        # Recode the data: Gender as Male
+        mapper = {'Male': 1, 'Female': 0}
+        data['Male'] = data['Gender'].map(mapper)
+        # pairplot
         import seaborn as sns
         sns.pairplot(data, hue="Purchased", markers=["o", "s"])
+        import matplotlib.pyplot as plt
+        plt.show()
+        # X and y
+        X = data[['Age', 'EstimatedSalary']] # dropping Male to simplify the analysis
+        y = data['Purchased']
+        y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
 
     if dataset == "bank_note_authentication":
         data = public_dataset(name="bank_note_authentication")
@@ -203,9 +239,9 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
     
     if dataset in ['Social_Network_Ads',]:
         visualize_classifier_decision_boundary_with_two_features(
-            classifier_grid, X_train, y_train, y_classes, title=f"{model_desc} / training set", X1_lab='Age', X2_lab='Estimated Salary')
+            classifier_grid, X_train.to_numpy(), y_train.to_numpy(), y_classes, title=f"{model_desc} / training set", X1_lab='Age', X2_lab='Estimated Salary')
         visualize_classifier_decision_boundary_with_two_features(
-            classifier_grid, X_test,  y_test,  y_classes, title=f"{model_desc} / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
+            classifier_grid, X_test.to_numpy(),  y_test.to_numpy(),  y_classes, title=f"{model_desc} / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
 
     # Plotting the tree
     if classifier_func in ["decision_tree", "DT"]:
