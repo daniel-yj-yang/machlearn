@@ -4,7 +4,7 @@
 #
 # License: BSD 3 clause
 
-from ._decision_tree import demo
+from ._decision_tree import demo, demo_metrics
 
 # this is for "from <package_name>.decision_tree import *"
-__all__ = ["demo"]
+__all__ = ["demo", "demo_metrics"]

@@ -29,11 +29,17 @@ def Gini_impurity_plot():
     Gini=Gini_impurity([X,Y])
     plt.plot(X,Gini)
     plt.axhline(y=0.5,color='r',linestyle='--')
-    plt.title('Gini Impurity Graph')
+    plt.title('Gini Impurity Plot (highest = 0.5 for two classes)')
     plt.xlabel(f'n splitted as y=0 (total #sample = {n})')
     plt.ylabel('Gini Impurity Measure')
     plt.ylim([0,1.1])
     plt.show()
+
+def demo_metrics():
+    """
+    These generally measure the homogeneity of the target variable within the subsets.
+    """
+    Gini_impurity_plot()
 
 def decision_tree(*args, **kwargs):
     return DecisionTreeClassifier(*args, **kwargs)
