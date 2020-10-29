@@ -109,7 +109,7 @@ class normal_equation(object):
 class Ridge_regression(OLS):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.alpha = 400
+        self.alpha = 1000
 
     def model(self, y, X):
         if self.use_statsmodels:
@@ -122,7 +122,7 @@ class Lasso_regression(OLS):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.maxiter = 200000
-        self.alpha = 400
+        self.alpha = 1000
 
     def model(self, y, X):
         if self.use_statsmodels:
@@ -143,8 +143,9 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
     print('\nL2 regularization is also known as Ridge regression, while L1 regularization is also known as Lasso regression, and a combination of them is known as elastic net.')
     print('After regularization, we would expect to see better generalization, including reduced RMSE and improved R^2.')
     print('After L2 regularization, we would expect to see smaller variances of the coefficient estimates.')
-    print('After L1 regularization, we would expect to see a simpler model with many coefficient estimates = 0.\n')
-    
+    print('After L1 regularization, we would expect to see a simpler model with many coefficient estimates = 0.')
+    print('For either L2 or L1 regularization, there is also a parameter called alpha (or lambda), which governs the amount of regularization. It takes GridCV to identify the optimal number of alpha (or lambda).\n')
+
     import pandas as pd
     import patsy
 
@@ -153,7 +154,7 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
         from statsmodels.datasets.longley import load_pandas
         y = load_pandas().endog
         X = load_pandas().exog
-        data = pd.concat([y, X], axis=1)
+        data = pd.concat([y, X], axis=1) # https://pandas.pydata.org/pandas-docs/stable/user_guide/merging.html
         print(f"{data.head()}\n")
         formula = 'TOTEMP ~ GNPDEFL + GNP + UNEMP + ARMED + POP + YEAR - 1' # -1 means no intercept
 
@@ -163,12 +164,12 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
         data = data.dropna()
         print(f"{data.head()}\n")
 
-        #data = data.drop(['League', 'NewLeague', 'Division'], axis=1)
-        #formula = 'Salary ~ AtBat + Hits + HmRun + Runs + RBI + Walks + Years + CAtBat + CHits + CHmRun + CRuns + CRBI + CWalks + PutOuts + Assists + Errors - 1'  # -1 means no intercept
-        formula = 'Salary ~ League + NewLeague + Division + AtBat + Hits + HmRun + Runs + RBI + Walks + Years + CAtBat + CHits + CHmRun + CRuns + CRBI + CWalks + PutOuts + Assists + Errors - 1' # -1 means no intercept
+        data = data.drop(['League', 'NewLeague', 'Division'], axis=1)
+        formula = 'Salary ~ AtBat + Hits + HmRun + Runs + RBI + Walks + Years + CAtBat + CHits + CHmRun + CRuns + CRBI + CWalks + PutOuts + Assists + Errors - 1'  # -1 means no intercept
+        #formula = 'Salary ~ League + NewLeague + Division + AtBat + Hits + HmRun + Runs + RBI + Walks + Years + CAtBat + CHits + CHmRun + CRuns + CRBI + CWalks + PutOuts + Assists + Errors - 1' # -1 means no intercept
         #y, X = patsy.dmatrices(formula, data)
         
-    train = data.sample(frac=0.40, random_state=123)
+    train = data.sample(frac=0.50, random_state=123)
     test = data[~data.isin(train).iloc[:, 0]]
     print(f"data size: training set = {len(train)}, testing set = {len(test)}, total = {len(data)}.")
 
