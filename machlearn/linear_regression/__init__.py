@@ -4,7 +4,7 @@
 #
 # License: BSD 3 clause
 
-from ._linear_regression import demo, LinearReg_normal_equation, LinearReg_statsmodels, demo_regularization, Ridge_regression, Lasso_regression
+from ._linear_regression import demo, Linear_regression_normal_equation, Linear_regression, demo_regularization, Ridge_regression, Lasso_regression
 
 # this is for "from <package_name>.linear_regression import *"
-__all__ = ["demo", "LinearReg_normal_equation", "LinearReg_statsmodels", "demo_regularization", "Ridge_regression", "Lasso_regression"]
+__all__ = ["demo", "Linear_regression_normal_equation", "Linear_regression", "demo_regularization", "Ridge_regression", "Lasso_regression"]
