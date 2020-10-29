@@ -276,6 +276,9 @@ module: linear_regression
    :header: "function", "description"
    :widths: 10, 20
 
-   "LinearReg_statsmodels()", "solutions using the statsmodels"
-   "LinearReg_normal_equation()", "solutions using normal equation"
+   "Linear_regression()", "Linear_regression"
+   "Linear_regression_normal_equation()", "Linear_regression_normal_equation"
+   "Ridge_regression()", "Ridge_regression"
+   "Lasso_regression()", "Lasso_regression"
    "demo()", "provides a demo of selected functions in this module"
+   "demo_regularization()", "provides a demo of selected functions in this module"
