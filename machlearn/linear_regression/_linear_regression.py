@@ -109,23 +109,26 @@ class normal_equation(object):
 class Ridge_regression(OLS):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.alpha = 400
 
     def model(self, y, X):
         if self.use_statsmodels:
-            return sm.OLS(y, X).fit_regularized(method='elastic_net', alpha=300, L1_wt=0)
+            return sm.OLS(y, X).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=0)
         else:
-            return linear_model.Ridge(alpha=300, fit_intercept=False).fit(X, y)
+            return linear_model.Ridge(alpha=self.alpha, fit_intercept=False).fit(X, y)
 
 
 class Lasso_regression(OLS):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.maxiter = 200000
+        self.alpha = 400
 
     def model(self, y, X):
         if self.use_statsmodels:
-            return sm.OLS(y, X).fit_regularized(method='elastic_net', alpha=300, L1_wt=1, maxiter=100000)
+            return sm.OLS(y, X).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=1, maxiter=self.maxiter)
         else:
-            return linear_model.Lasso(alpha=300, max_iter=100000, fit_intercept=False).fit(X, y)
+            return linear_model.Lasso(alpha=self.alpha, max_iter=self.maxiter, fit_intercept=False).fit(X, y)
 
 
 
@@ -133,54 +136,65 @@ class Lasso_regression(OLS):
 def _demo_regularization(dataset="Hitters", use_statsmodels=False):
     """
     """
-    from ..datasets import public_dataset
+    print('\nRegularization is to handle overfitting, which means the model fitted with the training data will not well generalize to the testing data.')
+    print('Several possibilities would cause overfitting, including (a) multicolinearity among predictors and (b) model being too complex and having trivial predictors.')
+    print('When (a) there is multicolinearity among predictors, we use L2 Regularization, which adds "squared magnitude" of coefficient (squared L2 norm) as a penalty term to the cost function.')
+    print('When (b) model is too complex and has trivial predictors, we use L1 Regularization, which adds "magnitude" of coefficient (L1 norm) as a penalty term to the cost function.')
+    print('\nL2 regularization is also known as Ridge regression, while L1 regularization is also known as Lasso regression, and a combination of them is known as elastic net.')
+    print('After regularization, we would expect to see better generalization, including reduced RMSE and improved R^2.')
+    print('After L2 regularization, we would expect to see smaller variances of the coefficient estimates.')
+    print('After L1 regularization, we would expect to see a simpler model with many coefficient estimates = 0.\n')
+    
+    import pandas as pd
+    import patsy
 
     if dataset == "Longley":
         # https://www.statsmodels.org/dev/examples/notebooks/generated/ols.html
         from statsmodels.datasets.longley import load_pandas
         y = load_pandas().endog
         X = load_pandas().exog
+        data = pd.concat([y, X], axis=1)
+        print(f"{data.head()}\n")
+        formula = 'TOTEMP ~ GNPDEFL + GNP + UNEMP + ARMED + POP + YEAR - 1' # -1 means no intercept
 
     if dataset == "Hitters":
+        from ..datasets import public_dataset
         data = public_dataset(name="Hitters")
         data = data.dropna()
         print(f"{data.head()}\n")
 
-        import patsy
-        data = data.drop(['League', 'NewLeague', 'Division'], axis=1)
-        #formula = 'Salary ~ League + NewLeague + Division + AtBat + Hits + HmRun + Runs + RBI + Walks + Years + CAtBat + CHits + CHmRun + CRuns + CRBI + CWalks + PutOuts + Assists + Errors - 1'
-        formula = 'Salary ~ AtBat + Hits + HmRun + Runs + RBI + Walks + Years + CAtBat + CHits + CHmRun + CRuns + CRBI + CWalks + PutOuts + Assists + Errors - 1'
-        y, X = patsy.dmatrices(formula, data)
+        #data = data.drop(['League', 'NewLeague', 'Division'], axis=1)
+        #formula = 'Salary ~ AtBat + Hits + HmRun + Runs + RBI + Walks + Years + CAtBat + CHits + CHmRun + CRuns + CRBI + CWalks + PutOuts + Assists + Errors - 1'  # -1 means no intercept
+        formula = 'Salary ~ League + NewLeague + Division + AtBat + Hits + HmRun + Runs + RBI + Walks + Years + CAtBat + CHits + CHmRun + CRuns + CRBI + CWalks + PutOuts + Assists + Errors - 1' # -1 means no intercept
+        #y, X = patsy.dmatrices(formula, data)
         
-        #train = data.sample(frac=0.5, random_state=123)
-        #test = data[~data.isin(train).iloc[:, 0]]
+    train = data.sample(frac=0.40, random_state=123)
+    test = data[~data.isin(train).iloc[:, 0]]
+    print(f"data size: training set = {len(train)}, testing set = {len(test)}, total = {len(data)}.")
 
-        #y_train, X_train = patsy.dmatrices(formula, train)
-        #y_test, X_test = patsy.dmatrices(formula, test)
+    y_train, X_train = patsy.dmatrices(formula, train)
+    y_test, X_test = patsy.dmatrices(formula, test)
 
-        #import pandas as pd
-        #X_train = pd.DataFrame(X_train, columns = X_train.design_info.column_names )
-        #y_train = pd.DataFrame(y_train, columns = y_train.design_info.column_names )
+    X_train = pd.DataFrame(X_train, columns = X_train.design_info.column_names )
+    y_train = pd.DataFrame(y_train, columns = y_train.design_info.column_names )
 
-        #X_test = pd.DataFrame(X_test, columns = X_test.design_info.column_names )
-        #y_test = pd.DataFrame(y_test, columns = y_test.design_info.column_names )
+    X_test = pd.DataFrame(X_test, columns = X_test.design_info.column_names )
+    y_test = pd.DataFrame(y_test, columns = y_test.design_info.column_names )
 
-    for i, model in enumerate([Linear_regression(print_summary = True, use_statsmodels = use_statsmodels), Ridge_regression(print_summary = True, use_statsmodels = use_statsmodels), Lasso_regression(print_summary = True, use_statsmodels = use_statsmodels)]):
+    for i, model in enumerate([Linear_regression(print_summary = False, use_statsmodels = use_statsmodels), Ridge_regression(print_summary = False, use_statsmodels = use_statsmodels), Lasso_regression(print_summary = False, use_statsmodels = use_statsmodels)]):
         print(f"\n{repr(model)}\n")
-        fitted_model = model.run(y.squeeze(), X)
+        #fitted_model = model.run(y, X)
 
-        #trained_model = model.run(y_train, X_train, standardized_estimate=False, print_summary = False)
-        #print(trained_model.get_params())
-        #print(dir(trained_model))
+        fitted_model = model.run(y_train, X_train)
+        y_test_pred = fitted_model.predict(sm.add_constant(X_test))
         
-        #from ..model_evaluation import evaluate_continuous_prediction
-        #RMSE, R_squared = evaluate_continuous_prediction(y.squeeze(), fitted_model.predict(sm.add_constant(X)))
-        ##RMSE, R_squared = evaluate_continuous_prediction(y_test.squeeze(), trained_model.predict(sm.add_constant(X_test)))
-        #print(f"model performance with the testing set: RMSE = {RMSE:.3f}, R-squared = {R_squared:.3f}.\n")
-        #if use_statsmodels:
-        #    print(fitted_model.params)
-        #else:
-        #    print(fitted_model.coef_)
+        from ..model_evaluation import evaluate_continuous_prediction
+        RMSE, R_squared = evaluate_continuous_prediction(y_test.squeeze(), y_test_pred)
+        print(f"model performance with the testing set: RMSE = {RMSE:.3f}, R-squared = {R_squared:.3f}.\n")
+        if use_statsmodels:
+            print(fitted_model.params)
+        else:
+            print(fitted_model.coef_)
 
 
 def _demo(dataset="marketing", use_statsmodels = False):
