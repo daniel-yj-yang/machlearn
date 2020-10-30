@@ -37,7 +37,7 @@ class LogisticReg_sklearn():
         model = LogisticRegression(solver='liblinear', fit_intercept=True, max_iter=1000, tol=1e-9, C=1e9)
         model.fit(X_pd_DataFrame, y_pd_series)
         estimates = list(model.intercept_) + list(model.coef_[0]) # model.intercept_ is <class 'numpy.ndarray'>
-        print(f"{['%.6f' % x for x in estimates]}")
+        print(f"coefficient estimates: {['%.6f' % x for x in estimates]}")
         return estimates
 
 
@@ -49,7 +49,7 @@ def _demo(dataset="Social_Network_Ads"):
     if dataset == "Social_Network_Ads":
         data = public_dataset(name="Social_Network_Ads")
         print(f"{data.head()}\n")
-        del data['User ID']
+        data = data.drop('User ID', 1)
         # Recode the data: Gender as Male
         mapper = {'Male': 1, 'Female': 0}
         data['Male'] = data['Gender'].map(mapper)
@@ -59,13 +59,15 @@ def _demo(dataset="Social_Network_Ads"):
         import matplotlib.pyplot as plt
         plt.show()
         # X and y
+        #from sklearn.preprocessing import scale
+        #X = scale(data[['Male', 'Age', 'EstimatedSalary']])
         X = data[['Male', 'Age', 'EstimatedSalary']]
         #X = data[['Age']]
         y = data['Purchased']
         y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
 
         for model in [LogisticReg_statsmodels(), LogisticReg_sklearn()]:
-            print(f"model: {repr(model)}.\n")
+            print(f"---------------------------------------------------------------------------------------------------------\nmodel: {repr(model)}.\n")
             params_values = model.run(y, X)
             beta0 = params_values[0] # exp(beta0) = the baseline "odds_of_prob(y)" when X's=0:
             beta2 = params_values[2] # Age

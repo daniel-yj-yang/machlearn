@@ -6,7 +6,6 @@
 
 import statsmodels.api as sm
 from sklearn import linear_model
-from statsmodels.stats.outliers_influence import variance_inflation_factor as VIF
 
 class OLS(object):
     def __init__(self, print_summary=True, use_statsmodels=False):
@@ -182,11 +181,9 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
         y, X = patsy.dmatrices(formula, data)
         X = pd.DataFrame(X, columns = X.design_info.column_names )
 
-    vif_data = pd.DataFrame()
-    vif_data["feature"] = X.columns
-    vif_data["VIF"] = [VIF(X.values, i) for i in range(len(X.columns))]
-    print(f"If Variance Inflation Factor (VIF) > 5, the 2+ numbers are collinear of each other and may be reduced to fewer using PCA.\n{vif_data}")
-        
+    from ..model_evaluation import test_for_multicollinearity
+    test_for_multicollinearity(X)
+
     train = data.sample(frac=0.50, random_state=123)
     test = data[~data.isin(train).iloc[:, 0]]
     print(f"data size: training set = {len(train)}, testing set = {len(test)}, total = {len(data)}.")
@@ -233,6 +230,9 @@ def _demo(dataset="marketing", use_statsmodels = False):
         X = data[['youtube', 'facebook', 'newspaper']]
         y = data['sales']
 
+    from ..model_evaluation import test_for_multicollinearity
+    test_for_multicollinearity(X)
+    
     print("----------------------------------\n\n*** Solutions using python package ***\n")
     Linear_regression(print_summary = True, use_statsmodels=use_statsmodels).run(y, X, standardized_estimate=True)
 
