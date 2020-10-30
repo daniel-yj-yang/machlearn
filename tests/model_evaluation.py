@@ -8,3 +8,4 @@
 from machlearn import model_evaluation as me
 
 me.demo()
+me.demo_CV()
