@@ -171,6 +171,7 @@ module: model_evaluation
    "plot_PR_curve()", "plots the precision-recall curve, along with statistics"
    "plot_ROC_and_PR_curves()", "plots both the ROC and the precision-recall curves, along with statistics"
    "demo()", "provides a demo of the major functions in this module"
+   "demo_CV()", "provides a demo of cross validation in this module"
 
 
 -----
@@ -263,7 +264,8 @@ module: logistic_regression
    :header: "function", "description"
    :widths: 10, 20
 
-   "LogisticReg_statsmodels()", "solutions using the statsmodels"
+   "LogisticReg_sklearn()", "solutions using sklearn"
+   "LogisticReg_statsmodels()", "solutions using statsmodels"
    "demo()", "provides a demo of selected functions in this module"
 
 

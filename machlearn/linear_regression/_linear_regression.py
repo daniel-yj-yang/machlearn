@@ -6,6 +6,7 @@
 
 import statsmodels.api as sm
 from sklearn import linear_model
+from statsmodels.stats.outliers_influence import variance_inflation_factor as VIF
 
 class OLS(object):
     def __init__(self, print_summary=True, use_statsmodels=False):
@@ -14,6 +15,8 @@ class OLS(object):
         self.X = None
         self.print_summary = print_summary
         self.use_statsmodels = use_statsmodels
+        self.alpha = 1000
+        self.maxiter = 200000
 
     def model(self, y, X):
         pass
@@ -109,11 +112,11 @@ class normal_equation(object):
 class Ridge_regression(OLS):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.alpha = 1000
+        #self.alpha = 1000
 
     def model(self, y, X):
         if self.use_statsmodels:
-            return sm.OLS(y, X).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=0)
+            return sm.OLS(y, X).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=0, refit = False)
         else:
             return linear_model.Ridge(alpha=self.alpha, fit_intercept=False).fit(X, y)
 
@@ -121,12 +124,12 @@ class Ridge_regression(OLS):
 class Lasso_regression(OLS):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.maxiter = 200000
-        self.alpha = 1000
+        #self.maxiter = 200000
+        #self.alpha = 1000
 
     def model(self, y, X):
         if self.use_statsmodels:
-            return sm.OLS(y, X).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=1, maxiter=self.maxiter)
+            return sm.OLS(y, X).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=1, maxiter=self.maxiter, refit = False)
         else:
             return linear_model.Lasso(alpha=self.alpha, max_iter=self.maxiter, fit_intercept=False).fit(X, y)
 
@@ -149,6 +152,15 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
     import pandas as pd
     import patsy
 
+    if dataset == "boston":
+        from sklearn.datasets import load_boston
+        boston = load_boston()
+        X = pd.DataFrame(data=boston.data,columns=boston.feature_names)
+        y = pd.DataFrame(data=boston.target,columns=['MEDV'])
+        data = pd.concat([y, X], axis=1)
+        print(f"{data.head()}\n")
+        formula = 'MEDV ~ CRIM + ZN + INDUS + CHAS + NOX + RM + AGE + DIS + RAD + TAX + PTRATIO + B + LSTAT - 1'
+
     if dataset == "Longley":
         # https://www.statsmodels.org/dev/examples/notebooks/generated/ols.html
         from statsmodels.datasets.longley import load_pandas
@@ -167,7 +179,13 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
         data = data.drop(['League', 'NewLeague', 'Division'], axis=1)
         formula = 'Salary ~ AtBat + Hits + HmRun + Runs + RBI + Walks + Years + CAtBat + CHits + CHmRun + CRuns + CRBI + CWalks + PutOuts + Assists + Errors - 1'  # -1 means no intercept
         #formula = 'Salary ~ League + NewLeague + Division + AtBat + Hits + HmRun + Runs + RBI + Walks + Years + CAtBat + CHits + CHmRun + CRuns + CRBI + CWalks + PutOuts + Assists + Errors - 1' # -1 means no intercept
-        #y, X = patsy.dmatrices(formula, data)
+        y, X = patsy.dmatrices(formula, data)
+        X = pd.DataFrame(X, columns = X.design_info.column_names )
+
+    vif_data = pd.DataFrame()
+    vif_data["feature"] = X.columns
+    vif_data["VIF"] = [VIF(X.values, i) for i in range(len(X.columns))]
+    print(f"If Variance Inflation Factor (VIF) > 5, the 2+ numbers are collinear of each other and may be reduced to fewer using PCA.\n{vif_data}")
         
     train = data.sample(frac=0.50, random_state=123)
     test = data[~data.isin(train).iloc[:, 0]]
@@ -227,10 +245,10 @@ def demo_regularization(dataset="Hitters", use_statsmodels = False):
     This function provides a demo of selected functions in this module.
 
     Required argument:
-        - dataset:         A string. Possible values: "Longley", "Hitters"
+        - dataset:         A string. Possible values: "Longley", "Hitters", "boston"
         - use_statsmodels: boolean
     """
-    available_datasets = ("Longley", "Hitters",)
+    available_datasets = ("Longley", "Hitters", "boston", )
 
     if dataset in available_datasets:
         return _demo_regularization(dataset = dataset, use_statsmodels = use_statsmodels)

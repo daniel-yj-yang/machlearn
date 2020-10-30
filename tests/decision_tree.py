@@ -16,4 +16,3 @@ DT.demo(dataset = "Social_Network_Ads", classifier_func = "random_forest")
 DT.demo(dataset = "Social_Network_Ads", classifier_func = "bagging")
 DT.demo(dataset = "Social_Network_Ads", classifier_func = "AdaBoost")
 DT.demo(dataset = "Social_Network_Ads", classifier_func = "GBM")
-

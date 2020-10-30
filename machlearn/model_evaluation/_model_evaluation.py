@@ -11,6 +11,29 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, average_precision_score, plot_precision_recall_curve, classification_report
 
 
+from sklearn.model_selection import KFold
+
+
+class K_Fold_CV(KFold):
+    def __init__(self, k=5):
+        super().__init__(n_splits=k, shuffle=True, random_state=123)
+
+
+def demo_CV():
+    # some ideas are from: https://towardsdatascience.com/cross-validation-in-machine-learning-72924a69872f
+    from sklearn import datasets
+    X, y = datasets.make_classification(n_samples=5000, n_features=30, n_classes=2, class_sep=0.8, random_state=123)
+    cv = K_Fold_CV()
+    from sklearn.linear_model import LogisticRegression
+    model = LogisticRegression(solver='liblinear', fit_intercept=True, max_iter=1000, tol=1e-9, C=1e9)
+    from sklearn.model_selection import cross_val_score
+    scores = cross_val_score(model, X, y, scoring='accuracy', cv=cv, n_jobs=-1)
+    # report performance
+    from numpy import mean
+    from numpy import std
+    print(f"Accuracy: mean={mean(scores):.3f} (std={std(scores):.3f})")
+
+
 def evaluate_continuous_prediction(y_true, y_pred):
     from statistics import mean
     SSE = sum((y_true - y_pred) ** 2)
@@ -18,6 +41,7 @@ def evaluate_continuous_prediction(y_true, y_pred):
     SST = sum((y_true - mean(y_true)) ** 2)
     R_squared = 1 - (SSE/SST)
     return RMSE, R_squared
+
 
 
 __font_size__ = 18
@@ -333,3 +357,4 @@ def demo():
     accuracy = plot_confusion_matrix(y_true=y_test, y_pred=y_pred)
     plot_ROC_and_PR_curves(fitted_model=model, X=X_test,
                            y_true=y_test, y_pred_score=y_pred_score[:, 1], model_name='Gaussian NB', plot_threshold=True)
+
