@@ -123,8 +123,8 @@ Selected Output:
 
 -----
 
-Example 3: Decision Boundary Comparison (Binary Classification)
----------------------------------------------------------------
+Example 3: Decision Boundary Comparison (Classification with Two Features)
+--------------------------------------------------------------------------
 
 .. code-block:: python
    
