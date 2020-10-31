@@ -147,7 +147,7 @@ Example 3: Decision Boundary Comparison
    * - |image_SVM_decision_boundary_testing_set|
      - |image_DT_decision_boundary_testing_set|
    * - |image_logistic_regression_decision_boundary_testing_set|
-
+     -
 
 .. |image_kNN_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/Social_Network_Ads_decision_boundary_testing_set.png
    :width: 400px
