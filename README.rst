@@ -57,11 +57,12 @@ Selected Output:
 |image_kNN_iris_confusion_matrix|
    
 
+.. |image_dataset_iris| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/datasets/iris/images/iris.jpg
+   :width: 600px
+
 .. |image_kNN_iris_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/iris_cm.png
    :width: 600px
 
-.. |image_dataset_iris| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/datasets/iris/images/iris.jpg
-   :width: 600px
 
 -----
 
@@ -95,6 +96,7 @@ Selected Output:
       - Classification: spam
 
 
+|image_SMS_spam_text_example|
 |image_naive_bayes_confusion_matrix|
 
 
@@ -104,6 +106,10 @@ Selected Output:
 
    * - |image_naive_bayes_ROC_curve| 
      - |image_naive_bayes_PR_curve| 
+
+
+.. |image_SMS_spam_text_example| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/naive_bayes/images/SMS_spam_text_example.png
+   :width: 600px
 
 .. |image_naive_bayes_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/naive_bayes/images/demo_confusion_matrix.png
    :width: 600px
