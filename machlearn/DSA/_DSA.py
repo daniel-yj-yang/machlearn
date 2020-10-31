@@ -6,4 +6,5 @@
 
 def demo():
     from ._sorting_and_searching import sort_demo
+    from ._trees_and_graphs import tree_demo
     sort_demo()

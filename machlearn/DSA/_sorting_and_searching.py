@@ -7,9 +7,45 @@
 import random
 import timeit
 
+# Time complexity of comparison sort:
+# BubbleSort: n^2
+# TreeSort: nlogn
+# HeapSort: nlogn
+# MergeSort: nlogn
+# QuickSort: nlogn
 
 
-def mergesort_inplace(array):
+def brute_force_sort(array):
+    unsorted_array = array.copy()
+    sorted_array = []
+    while unsorted_array:
+        sorted_array.append(unsorted_array.pop(unsorted_array.index(min(unsorted_array))))
+    return sorted_array
+
+
+def bubble_sort_inplace(array):
+    n = len(array)
+    for i in range(n):
+        swap_occurred = False
+        for j in range(0, n-i-1): # why n-i-1? because the last i elements are already sorted in place
+            if array[j] > array[j+1]:
+                array[j], array[j+1] = array[j+1], array[j]
+                swap_occurred = True
+        if swap_occurred == False:
+            break
+
+
+def tree_sort(array):
+    from ._trees_and_graphs import binary_search_tree
+    BST = binary_search_tree()
+    return BST.tree_sort(array)
+
+
+def heap_sort():
+    pass
+
+
+def merge_sort_inplace(array):
     """
     Reference: https://www.youtube.com/watch?v=JSceec-wEyw
     """
@@ -18,8 +54,8 @@ def mergesort_inplace(array):
         L_half = array[:mid_idx] # Dividing the array elements into 2 halves
         R_half = array[mid_idx:] 
  
-        mergesort_inplace(L_half) # Sorting the left half
-        mergesort_inplace(R_half) # Sorting the right half
+        merge_sort_inplace(L_half) # Sorting the left half
+        merge_sort_inplace(R_half) # Sorting the right half
  
         left_idx = right_idx = k = 0
          
@@ -45,7 +81,7 @@ def mergesort_inplace(array):
             k += 1
 
 
-def mergesort(array):
+def merge_sort(array):
 
     if array == []:
         return []
@@ -55,8 +91,8 @@ def mergesort(array):
         mid_idx = len(array)//2   # Finding the mid of the array
         L_half = array[:mid_idx]  # Dividing the array elements into 2 halves
         R_half = array[mid_idx:]
-        L_half = mergesort(L_half)
-        R_half = mergesort(R_half)
+        L_half = merge_sort(L_half)
+        R_half = merge_sort(R_half)
 
         sorted_array = []
 
@@ -98,7 +134,7 @@ def identify_correct_partition_idx(array, begin_idx, end_idx):
     return smaller_element_idx+1
 
 
-def quicksort_inplace(array, begin_idx, end_idx):
+def quick_sort_inplace(array, begin_idx, end_idx):
     """
     A divide-and-conquer algorithm
     """
@@ -109,11 +145,11 @@ def quicksort_inplace(array, begin_idx, end_idx):
         correct_partitioning_idx = identify_correct_partition_idx(array, begin_idx, end_idx)
 
         # Using the "correct_partitioning_idx" to divide and conquer in a recursive manner
-        quicksort_inplace(array, begin_idx, correct_partitioning_idx-1)
-        quicksort_inplace(array, correct_partitioning_idx+1, end_idx)
+        quick_sort_inplace(array, begin_idx, correct_partitioning_idx-1)
+        quick_sort_inplace(array, correct_partitioning_idx+1, end_idx)
 
 
-def quicksort(array):
+def quick_sort(array):
     """
     Not Inplace, but Standard version
     """
@@ -121,28 +157,40 @@ def quicksort(array):
         return []
     else:
         pivot = array[-1]
-        smaller = quicksort([x for x in array[0:-1] if x <= pivot])
-        larger = quicksort([x for x in array[0:-1] if x > pivot])
+        smaller = quick_sort([x for x in array[0:-1] if x <= pivot])
+        larger = quick_sort([x for x in array[0:-1] if x > pivot])
         return smaller + [pivot] + larger
 
 
-def sort_profile():
+def sort_profiling():
 
-    def test_mergesort_inplace():
+    def test_brute_force_sort():
         test_array = random.sample(range(1, 1000000), 300)
-        mergesort_inplace(test_array)
+        brute_force_sort(test_array)
 
-    def test_mergesort():
+    def test_bubble_sort_inplace():
         test_array = random.sample(range(1, 1000000), 300)
-        mergesort(test_array)
+        bubble_sort_inplace(test_array)
+
+    def test_tree_sort():
+        test_array = random.sample(range(1, 1000000), 300)
+        tree_sort(test_array)
+
+    def test_merge_sort_inplace():
+        test_array = random.sample(range(1, 1000000), 300)
+        merge_sort_inplace(test_array)
+
+    def test_merge_sort():
+        test_array = random.sample(range(1, 1000000), 300)
+        merge_sort(test_array)
     
-    def test_quicksort_inplace():
+    def test_quick_sort_inplace():
         test_array = random.sample(range(1, 1000000), 300)
-        quicksort_inplace(test_array, 0, len(test_array)-1)
+        quick_sort_inplace(test_array, 0, len(test_array)-1)
         
-    def test_quicksort():
+    def test_quick_sort():
         test_array = random.sample(range(1, 1000000), 300)
-        quicksort(test_array)
+        quick_sort(test_array)
         
     def test_python_array_sort():
         test_array = random.sample(range(1, 1000000), 300)
@@ -153,24 +201,27 @@ def sort_profile():
         sorted(test_array)    
 
     print("\nBenchmarking:")
-    print(f"mergesort_inplace(): {timeit.timeit(test_mergesort_inplace, number=10000):.2f} sec")
-    print(f"mergesort(): {        timeit.timeit(test_mergesort,         number=10000):.2f} sec")  
-    print(f"quicksort_inplace(): {timeit.timeit(test_quicksort_inplace, number=10000):.2f} sec")
-    print(f"quicksort(): {        timeit.timeit(test_quicksort,         number=10000):.2f} sec")
-    print(f"python [].sort(): {   timeit.timeit(test_python_array_sort, number=10000):.2f} sec")
-    print(f"python sorted(): {    timeit.timeit(test_python_sorted,     number=10000):.2f} sec")
+    print(f"brute_force_sort(): {   timeit.timeit(test_brute_force_sort,    number=10000):.2f} sec")
+    print(f"bubble_sort_inplace(): {timeit.timeit(test_bubble_sort_inplace, number=10000):.2f} sec")
+    print(f"tree_sort(): {          timeit.timeit(test_tree_sort,           number=10000):.2f} sec")
+    print(f"merge_sort_inplace(): { timeit.timeit(test_merge_sort_inplace,  number=10000):.2f} sec")
+    print(f"merge_sort(): {         timeit.timeit(test_merge_sort,          number=10000):.2f} sec")  
+    print(f"quick_sort_inplace(): { timeit.timeit(test_quick_sort_inplace,  number=10000):.2f} sec")
+    print(f"quick_sort(): {         timeit.timeit(test_quick_sort,          number=10000):.2f} sec")
+    print(f"python [].sort(): {     timeit.timeit(test_python_array_sort,   number=10000):.2f} sec")
+    print(f"python sorted(): {      timeit.timeit(test_python_sorted,       number=10000):.2f} sec")
 
 
 def sort_demo():
     test_array = random.sample(range(1, 1000000), 10)
-    print("\nmergesort():")
+    print("\nmerge_sort():")
     print(f"before sorting: {test_array}")
-    print(f"after sorting: {mergesort(test_array)}")
+    print(f"after sorting: {merge_sort(test_array)}")
 
     test_array = random.sample(range(1, 1000000), 10)
-    print("\nquicksort_inplace():")
+    print("\nquick_sort_inplace():")
     print(f"before sorting: {test_array}")
-    quicksort_inplace(test_array, 0, len(test_array)-1)
+    quick_sort_inplace(test_array, 0, len(test_array)-1)
     print(f"after sorting: {test_array}")
     
-    sort_profile()
+    sort_profiling()
