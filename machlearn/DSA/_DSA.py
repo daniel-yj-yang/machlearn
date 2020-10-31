@@ -5,5 +5,5 @@
 # License: BSD 3 clause
 
 def demo():
-    from ._sorting_and_searching import quicksort_demo
-    quicksort_demo()
+    from ._sorting_and_searching import sort_demo
+    sort_demo()
