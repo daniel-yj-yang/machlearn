@@ -185,7 +185,7 @@ module: model_evaluation
 -----
 
 module: datasets
--------------------
+----------------
 
 .. csv-table::
    :header: "function", "description"
@@ -224,7 +224,7 @@ module: naive_bayes
 -----
 
 module: SVM
--------------------
+-----------
 
 .. csv-table::
    :header: "function", "description"
@@ -280,7 +280,7 @@ module: logistic_regression
 -----
 
 module: linear_regression
----------------------------
+-------------------------
 
 .. csv-table::
    :header: "function", "description"
@@ -292,3 +292,15 @@ module: linear_regression
    "Lasso_regression()", "Lasso_regression"
    "demo()", "provides a demo of selected functions in this module"
    "demo_regularization()", "provides a demo of selected functions in this module"
+
+
+-----
+
+module: DSA
+-----------
+
+.. csv-table::
+   :header: "function", "description"
+   :widths: 10, 20
+
+   "demo()", "provides a demo of selected functions in this module"
