@@ -5,6 +5,8 @@
 # License: BSD 3 clause
 
 
+__font_size__ = 18
+
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -55,7 +57,6 @@ def evaluate_continuous_prediction(y_true, y_pred):
 
 
 
-__font_size__ = 18
 
 
 def visualize_classifier_decision_boundary_with_two_features(classifier, X, y, y_classes, title='Classifier', X1_lab='X1', X2_lab='X2', figsize=(8, 7)):

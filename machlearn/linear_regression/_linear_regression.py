@@ -197,11 +197,11 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
     X_test = pd.DataFrame(X_test, columns = X_test.design_info.column_names )
     y_test = pd.DataFrame(y_test, columns = y_test.design_info.column_names )
 
-    for i, model in enumerate([Linear_regression(print_summary = False, use_statsmodels = use_statsmodels), Ridge_regression(print_summary = False, use_statsmodels = use_statsmodels), Lasso_regression(print_summary = False, use_statsmodels = use_statsmodels)]):
+    for i, model in enumerate([Linear_regression, Ridge_regression, Lasso_regression]):
         print(f"\n{repr(model)}\n")
         #fitted_model = model.run(y, X)
 
-        fitted_model = model.run(y_train, X_train)
+        fitted_model = model(print_summary = False, use_statsmodels = use_statsmodels).run(y_train, X_train)
         y_test_pred = fitted_model.predict(sm.add_constant(X_test))
         
         from ..model_evaluation import evaluate_continuous_prediction
