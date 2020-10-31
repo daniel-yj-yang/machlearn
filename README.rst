@@ -161,7 +161,7 @@ Example 3: Decision Boundary Comparison
 .. |image_DT_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/decision_tree/images/Social_Network_Ads_DT_decision_boundary_testing_set.png
    :width: 400px
 
-.. |image_logitstic_regression_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/logistic_regression/images/Social_Network_Ads_logistic_regression_decision_boundary_testing_set.png
+.. |image_logitstic_regression_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/logistic_regression/images/Social_Network_Ads_decision_boundary_testing_set.png
    :width: 400px
 
 
