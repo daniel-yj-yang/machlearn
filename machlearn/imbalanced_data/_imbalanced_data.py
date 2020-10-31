@@ -33,6 +33,10 @@ def _demo():
     plt.title("Transaction Fraud Simulation (Extreme Imbalanced Data)")
     plt.show()
 
+    # method 1: try training on the true distribution to see how well it generalizes
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=1)
+
 
 
 def demo():

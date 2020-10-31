@@ -356,17 +356,15 @@ def demo():
         f"This demo uses a made-up classification dataset.\n")
     from sklearn import datasets
     X, y = datasets.make_classification(
-        n_samples=5000, n_features=30, n_classes=2, class_sep=0.8, random_state=123)
+        n_samples=5000, n_features=30, n_classes=2, class_sep=0.8, random_state=1)
 
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.20, random_state=123)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=1)
 
     from ..naive_bayes import naive_bayes_Gaussian
     model = naive_bayes_Gaussian().fit(X_train, y_train)
     y_pred_score = model.predict_proba(X_test)
     y_pred = model.predict(X_test)
     accuracy = plot_confusion_matrix(y_true=y_test, y_pred=y_pred)
-    plot_ROC_and_PR_curves(fitted_model=model, X=X_test,
-                           y_true=y_test, y_pred_score=y_pred_score[:, 1], model_name='Gaussian NB', plot_threshold=True)
+    plot_ROC_and_PR_curves(fitted_model=model, X=X_test, y_true=y_test, y_pred_score=y_pred_score[:, 1], model_name='Gaussian NB', plot_threshold=True)
 

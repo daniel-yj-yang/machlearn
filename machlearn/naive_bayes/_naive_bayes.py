@@ -15,31 +15,29 @@ from textblob import TextBlob
 import pandas as pd
 
 
-def naive_bayes_Bernoulli(*args, **kwargs):
+class naive_bayes_Bernoulli(BernoulliNB):
     """
-
-    This function is used when X are independent binary variables (e.g., whether a word occurs in a document or not).
-
+    This class is used when X are independent binary variables (e.g., whether a word occurs in a document or not).
     """
-    return BernoulliNB(*args, **kwargs)
+    def __init__(self, *, alpha=1.0, binarize=0.0, fit_prior=True, class_prior=None):
+        super().__init__(alpha=alpha, binarize=binarize, fit_prior=fit_prior, class_prior=class_prior)
 
 
-def naive_bayes_multinomial(*args, **kwargs):
+class naive_bayes_multinomial(MultinomialNB):
     """
-
-    This function is used when X are independent discrete variables with 3+ levels (e.g., term frequency in the document).
-
+    This class is used when X are independent discrete variables with 3+ levels (e.g., term frequency in the document).
     """
-    return MultinomialNB(*args, **kwargs)
+    # note: In Python 3, adding * to a function's signature forces calling code to pass every argument defined after the asterisk as a keyword argument
+    def __init__(self, *, alpha=1.0, fit_prior=True, class_prior=None): 
+        super().__init__(alpha=alpha, fit_prior=fit_prior, class_prior=class_prior)
 
 
-def naive_bayes_Gaussian(*args, **kwargs):
+class naive_bayes_Gaussian(GaussianNB):
     """
-
-    This function is used when X are continuous variables.
-
+    This class is used when X are continuous variables.
     """
-    return GaussianNB(*args, **kwargs)
+    def __init__(self, *, priors=None, var_smoothing=1e-09):
+        super().__init__(priors=priors, var_smoothing=var_smoothing)
 
 
 class _naive_bayes_demo():
@@ -106,7 +104,7 @@ class _naive_bayes_demo():
         # pipeline parameters to tune
         hyperparameters = {
             'count_matrix_transformer__ngram_range': ((1, 1), (1, 2)),
-            'count_matrix_transformer__analyzer': ('word', self._tokens, self._lemmas),
+            'count_matrix_transformer__analyzer': (self._tokens, self._lemmas), # 'word', 
             'count_matrix_normalizer__use_idf': (True, False),
         }
         grid = GridSearchCV(
@@ -186,7 +184,7 @@ class _naive_bayes_demo_SMS_spam(_naive_bayes_demo):
         custom_message = "URGENT! We are trying to contact U. Todays draw shows that you have won a 2000 prize GUARANTEED. Call 090 5809 4507 from a landline. Claim 3030. Valid 12hrs only."
         custom_results = self.classifier_grid.predict([custom_message])[0]
         print(
-            f"\nApplication example:\n- Message: \"{custom_message}\"\n- Probability of class=1 (spam): {self.classifier_grid.predict_proba([custom_message])[0][1]:.2%}\n- Classification: {custom_results}\n")
+            f"\nApplication example:\n- Message: \"{custom_message}\"\n- Probability of spam (class=1): {self.classifier_grid.predict_proba([custom_message])[0][1]:.2%}\n- Classification: {custom_results}\n")
 
     def run(self):
         """

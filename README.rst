@@ -79,20 +79,21 @@ Selected Output:
 
 .. code-block::
 
-   This demo uses a public dataset of SMS spam, which has a total of 5574 messages = 747 spam and 4827 ham (legitimate).
+   This demo uses a public dataset of SMS spam, which has a total of 5574 messages = 4827 ham (legitimate) and 747 spam.
    The goal is to use 'term frequency in message' to predict whether the message is ham (class=0) or spam (class=1).
 
    Using a grid search and a multinomial naive bayes classifier, the best hyperparameters were found as following:
-      Step1: Tokenizing text: CountVectorizer(analyzer = 'word', ngram_range = (1, 1));
+      Step1: Tokenizing text: CountVectorizer(analyzer = <_lemmas>, ngram_range = (1, 1));
       Step2: Transforming from occurrences to frequency: TfidfTransformer(use_idf = True).
 
    The top 2 terms with highest probability of a message being a spam (the classification is either spam or ham):
-      "claim": 80.73%
-      "prize": 80.06%
+      "claim": 81.28%
+      "prize": 80.24%
+      "won": 76.29%
 
    Application example:
       - Message: "URGENT! We are trying to contact U. Todays draw shows that you have won a 2000 prize GUARANTEED. Call 090 5809 4507 from a landline. Claim 3030. Valid 12hrs only."
-      - Probability of class=1 (spam): 98.32%
+      - Probability of spam (class=1): 95.85%
       - Classification: spam
 
 
