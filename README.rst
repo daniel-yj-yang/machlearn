@@ -109,7 +109,7 @@ Selected Output:
 
 
 .. |image_SMS_spam_text_example| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/naive_bayes/images/SMS_spam_text_example.png
-   :width: 200px
+   :width: 600px
 
 .. |image_naive_bayes_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/naive_bayes/images/demo_confusion_matrix.png
    :width: 600px
