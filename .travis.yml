@@ -21,3 +21,4 @@ script:
   - "python tests/neural_network.py"
   - "python tests/logistic_regression.py"
   - "python tests/linear_regression.py"
+  - "python tests/DSA.py"

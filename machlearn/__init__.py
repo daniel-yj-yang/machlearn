@@ -19,6 +19,7 @@ __all__ = ["model_evaluation",
            "neural_network",
            "logistic_regression",
            "linear_regression",
+           "DSA",
            ]
 
 # this was originally for _naive_bayes.py and is more widely applicable to other modules
