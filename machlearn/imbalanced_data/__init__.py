@@ -7,4 +7,4 @@
 from ._imbalanced_data import demo
 
 # this is for "from <package_name>.imbalanced_data import *"
-__all__ = ["demo""]
+__all__ = ["demo",]
