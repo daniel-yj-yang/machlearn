@@ -117,8 +117,8 @@ Selected Output:
 
 -----
 
-Example 3: Decision Boundary Comparison
----------------------------------------
+Example 3: Decision Boundary Comparison (Binary Classification)
+---------------------------------------------------------------
 
 .. code-block:: python
    
