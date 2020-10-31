@@ -6,8 +6,8 @@
 
 # Data Structure & Algorithm
 
-from ._sorting_and_searching import quicksort, quicksort_demo
+from ._sorting_and_searching import quicksort_inplace, quicksort, quicksort_demo
 from ._DSA import demo
 
 # this is for "from <package_name>.DSA import *"
-__all__ = ["quicksort","quicksort_demo","demo",]
+__all__ = ["quicksort_inplace","quicksort","quicksort_demo","demo",]
