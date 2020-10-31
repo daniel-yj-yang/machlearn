@@ -15,29 +15,50 @@ from textblob import TextBlob
 import pandas as pd
 
 
-class naive_bayes_Bernoulli(BernoulliNB):
-    """
-    This class is used when X are independent binary variables (e.g., whether a word occurs in a document or not).
-    """
-    def __init__(self, *, alpha=1.0, binarize=0.0, fit_prior=True, class_prior=None):
-        super().__init__(alpha=alpha, binarize=binarize, fit_prior=fit_prior, class_prior=class_prior)
+#class naive_bayes_Bernoulli(BernoulliNB):
+#    """
+#    This class is used when X are independent binary variables (e.g., whether a word occurs in a document or not).
+#    """
+#    def __init__(self, *, alpha=1.0, binarize=0.0, fit_prior=True, class_prior=None):
+#        super().__init__(alpha=alpha, binarize=binarize, fit_prior=fit_prior, class_prior=class_prior)
 
 
-class naive_bayes_multinomial(MultinomialNB):
-    """
-    This class is used when X are independent discrete variables with 3+ levels (e.g., term frequency in the document).
-    """
-    # note: In Python 3, adding * to a function's signature forces calling code to pass every argument defined after the asterisk as a keyword argument
-    def __init__(self, *, alpha=1.0, fit_prior=True, class_prior=None): 
-        super().__init__(alpha=alpha, fit_prior=fit_prior, class_prior=class_prior)
+#class naive_bayes_multinomial(MultinomialNB):
+#    """
+#    This class is used when X are independent discrete variables with 3+ levels (e.g., term frequency in the document).
+#    """
+#    # note: In Python 3, adding * to a function's signature forces calling code to pass every argument defined after the asterisk as a keyword argument
+#    def __init__(self, *, alpha=1.0, fit_prior=True, class_prior=None): 
+#        super().__init__(alpha=alpha, fit_prior=fit_prior, class_prior=class_prior)
 
 
-class naive_bayes_Gaussian(GaussianNB):
+#class naive_bayes_Gaussian(GaussianNB):
+#    """
+#    This class is used when X are continuous variables.
+#    """
+#    def __init__(self, *, priors=None, var_smoothing=1e-09):
+#        super().__init__(priors=priors, var_smoothing=var_smoothing)
+
+
+def naive_bayes_Bernoulli(*args, **kwargs):
     """
-    This class is used when X are continuous variables.
+    This function is used when X are independent binary variables (e.g., whether a word occurs in a document or not).
     """
-    def __init__(self, *, priors=None, var_smoothing=1e-09):
-        super().__init__(priors=priors, var_smoothing=var_smoothing)
+    return BernoulliNB(*args, **kwargs)
+
+
+def naive_bayes_multinomial(*args, **kwargs):
+    """
+    This function is used when X are independent discrete variables with 3+ levels (e.g., term frequency in the document).
+    """
+    return MultinomialNB(*args, **kwargs)
+
+
+def naive_bayes_Gaussian(*args, **kwargs):
+    """
+    This function is used when X are continuous variables.
+    """
+    return GaussianNB(*args, **kwargs)
 
 
 class _naive_bayes_demo():
