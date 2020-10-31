@@ -129,40 +129,46 @@ def quicksort(array):
 def sort_profile():
 
     def test_mergesort_inplace():
-        test_array = random.sample(range(1, 1000), 300)
+        test_array = random.sample(range(1, 1000000), 300)
         mergesort_inplace(test_array)
 
     def test_mergesort():
-        test_array = random.sample(range(1, 1000), 300)
+        test_array = random.sample(range(1, 1000000), 300)
         mergesort(test_array)
     
     def test_quicksort_inplace():
-        test_array = random.sample(range(1, 1000), 300)
+        test_array = random.sample(range(1, 1000000), 300)
         quicksort_inplace(test_array, 0, len(test_array)-1)
         
     def test_quicksort():
-        test_array = random.sample(range(1, 1000), 300)
+        test_array = random.sample(range(1, 1000000), 300)
         quicksort(test_array)
         
     def test_python_array_sort():
-        test_array = random.sample(range(1, 1000), 300)
+        test_array = random.sample(range(1, 1000000), 300)
         test_array.sort()
         
     def test_python_sorted():
-        test_array = random.sample(range(1, 1000), 300)
+        test_array = random.sample(range(1, 1000000), 300)
         sorted(test_array)    
 
-    print(f"mergesort_inplace(): {timeit.timeit(test_mergesort_inplace, number=30000):.2f} sec")
-    print(f"mergesort(): {        timeit.timeit(test_mergesort,         number=30000):.2f} sec")  
-    print(f"quicksort_inplace(): {timeit.timeit(test_quicksort_inplace, number=30000):.2f} sec")
-    print(f"quicksort(): {        timeit.timeit(test_quicksort,         number=30000):.2f} sec")
-    print(f"python [].sort(): {   timeit.timeit(test_python_array_sort, number=30000):.2f} sec")
-    print(f"python sorted(): {    timeit.timeit(test_python_sorted,     number=30000):.2f} sec")
+    print("\nBenchmarking:")
+    print(f"mergesort_inplace(): {timeit.timeit(test_mergesort_inplace, number=10000):.2f} sec")
+    print(f"mergesort(): {        timeit.timeit(test_mergesort,         number=10000):.2f} sec")  
+    print(f"quicksort_inplace(): {timeit.timeit(test_quicksort_inplace, number=10000):.2f} sec")
+    print(f"quicksort(): {        timeit.timeit(test_quicksort,         number=10000):.2f} sec")
+    print(f"python [].sort(): {   timeit.timeit(test_python_array_sort, number=10000):.2f} sec")
+    print(f"python sorted(): {    timeit.timeit(test_python_sorted,     number=10000):.2f} sec")
 
 
 def sort_demo():
-    test_array = random.sample(range(1, 1000), 10)
-    print("quicksort_inplace():")
+    test_array = random.sample(range(1, 1000000), 10)
+    print("\nmergesort():")
+    print(f"before sorting: {test_array}")
+    print(f"after sorting: {mergesort(test_array)}")
+
+    test_array = random.sample(range(1, 1000000), 10)
+    print("\nquicksort_inplace():")
     print(f"before sorting: {test_array}")
     quicksort_inplace(test_array, 0, len(test_array)-1)
     print(f"after sorting: {test_array}")
