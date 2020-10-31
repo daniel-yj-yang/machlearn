@@ -36,9 +36,14 @@ def bubble_sort_inplace(array):
 
 
 def tree_sort(array):
+    if len(array) <= 1:
+        return array
     from ._trees_and_graphs import binary_search_tree
     BST = binary_search_tree()
-    return BST.tree_sort(array)
+    BST.construct_BST(array)
+    return_array = []
+    BST.order(BST.root_node, return_array, type="Inorder")
+    return return_array
 
 
 def heap_sort():
@@ -200,16 +205,17 @@ def sort_profiling():
         test_array = random.sample(range(1, 1000000), 300)
         sorted(test_array)    
 
-    print("\nBenchmarking:")
-    print(f"brute_force_sort(): {   timeit.timeit(test_brute_force_sort,    number=10000):.2f} sec")
+    print("\nBenchmarking (in an order from slow to fast):")
     print(f"bubble_sort_inplace(): {timeit.timeit(test_bubble_sort_inplace, number=10000):.2f} sec")
+    print(f"brute_force_sort(): {   timeit.timeit(test_brute_force_sort,    number=10000):.2f} sec")
     print(f"tree_sort(): {          timeit.timeit(test_tree_sort,           number=10000):.2f} sec")
+    print(f"merge_sort(): {         timeit.timeit(test_merge_sort,          number=10000):.2f} sec")
     print(f"merge_sort_inplace(): { timeit.timeit(test_merge_sort_inplace,  number=10000):.2f} sec")
-    print(f"merge_sort(): {         timeit.timeit(test_merge_sort,          number=10000):.2f} sec")  
+    print(f"quick_sort(): {         timeit.timeit(test_quick_sort,          number=10000):.2f} sec")  
     print(f"quick_sort_inplace(): { timeit.timeit(test_quick_sort_inplace,  number=10000):.2f} sec")
-    print(f"quick_sort(): {         timeit.timeit(test_quick_sort,          number=10000):.2f} sec")
-    print(f"python [].sort(): {     timeit.timeit(test_python_array_sort,   number=10000):.2f} sec")
     print(f"python sorted(): {      timeit.timeit(test_python_sorted,       number=10000):.2f} sec")
+    print(f"python [].sort(): {     timeit.timeit(test_python_array_sort,   number=10000):.2f} sec")
+
 
 
 def sort_demo():
