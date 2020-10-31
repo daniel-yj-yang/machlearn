@@ -13,8 +13,10 @@ def _demo():
 
     from collections import Counter
     counts = Counter(y)
-    print(counts)
-    mapper = {0: 'Legitimate', 1: 'Fraud'}
+    # print(counts)
+    y_classes = ['Legitimate', 'Fraud']
+    #mapper = {0: 'Legitimate', 1: 'Fraud'}
+    mapper = dict(zip([0, 1], y_classes))
 
     # bar chart of y
     import matplotlib.pyplot as plt
@@ -30,18 +32,28 @@ def _demo():
     # 
     plt.xlabel("Transaction Type")
     plt.ylabel("No. of Transactions")
-    plt.title("Transaction Fraud Simulation (Extreme Imbalanced Data)")
+    plt.title(f"Transaction Fraud Simulation (Extreme Imbalanced Data: {100 * bars_y[1] / sum(bars_y):.2f}% positive)")
     plt.show()
 
-    # method 1: try training on the true distribution to see how well it generalizes
+    # solution 1: first try training on the true distribution to see how well it generalizes
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=1)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=26)
 
+    from ..decision_tree import decision_tree_classifier
+    classifier = decision_tree_classifier(max_depth=4, random_state=26).fit(X_train, y_train)
+
+    y_pred = classifier.predict(X_test)
+    y_pred_score = classifier.predict_proba(X_test)
+
+    from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
+    plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=y_classes)
+    plot_ROC_and_PR_curves(fitted_model=classifier, X=X_test, y_true=y_test, y_pred_score=y_pred_score[:, 1], y_pos_label=1, model_name=f"Decision Tree")
+
+    # solution 2:
 
 
 def demo():
     """
     This function provides a demo of selected functions in this module.
     """
-
-    _demo()
+    return _demo()

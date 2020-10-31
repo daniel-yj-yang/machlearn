@@ -41,7 +41,7 @@ def demo_metrics():
     """
     Gini_impurity_plot()
 
-def decision_tree(*args, **kwargs):
+def decision_tree_classifier(*args, **kwargs):
     return DecisionTreeClassifier(*args, **kwargs)
 
 def random_forest(*args, **kwargs):
@@ -124,7 +124,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
     ########################################################################################################################
     if classifier_func in ["decision_tree", "DT"]:
         pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
-                                   ('classifier', decision_tree(max_depth=1, random_state=123)),  # default criterion = 'gini'
+                                   ('classifier', decision_tree_classifier(max_depth=1, random_state=123)),  # default criterion = 'gini'
                                    ])
 
         # pipeline parameters to tune
