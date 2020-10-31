@@ -22,3 +22,4 @@ script:
   - "python tests/logistic_regression.py"
   - "python tests/linear_regression.py"
   - "python tests/DSA.py"
+  - "python tests/imbalanced_data.py"

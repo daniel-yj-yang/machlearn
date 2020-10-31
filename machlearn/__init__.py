@@ -20,6 +20,7 @@ __all__ = ["model_evaluation",
            "logistic_regression",
            "linear_regression",
            "DSA",
+           "imbalanced_data",
            ]
 
 # this was originally for _naive_bayes.py and is more widely applicable to other modules
