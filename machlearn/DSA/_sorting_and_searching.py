@@ -46,8 +46,41 @@ def tree_sort(array):
     return return_array
 
 
-def heap_sort():
-    pass
+def heap_sort_inplace(array):
+    heap_sort(array)
+    
+class heap_sort():
+    def __init__(self, array):
+        self.array = array
+        self.sort_inplace()
+        
+    def heapify(self, arr, n, i):
+        # Find largest among root and children
+        largest = i
+        l = 2 * i + 1
+        r = 2 * i + 2
+
+        if l < n and arr[i] < arr[l]:
+            largest = l
+
+        if r < n and arr[largest] < arr[r]:
+            largest = r
+
+        # If root is not largest, swap with largest and continue heapifying
+        if largest != i:
+            arr[i], arr[largest] = arr[largest], arr[i]
+            self.heapify(arr, n, largest)
+
+    def sort_inplace(self):
+        n = len(self.array)
+
+        # Build max heap
+        for i in range(n//2, -1, -1):
+            self.heapify(self.array, n, i)
+
+        for i in range(n-1, 0, -1):
+            self.array[i], self.array[0] = self.array[0], self.array[i] # swap
+            self.heapify(self.array, i, 0)  # Heapify root element
 
 
 def merge_sort_inplace(array):
@@ -169,45 +202,52 @@ def quick_sort(array):
 
 def sort_profiling():
 
+    n_samples = 500
+
     def test_brute_force_sort():
-        test_array = random.sample(range(1, 1000000), 300)
+        test_array = random.sample(range(1, 1000000), n_samples)
         brute_force_sort(test_array)
 
     def test_bubble_sort_inplace():
-        test_array = random.sample(range(1, 1000000), 300)
+        test_array = random.sample(range(1, 1000000), n_samples)
         bubble_sort_inplace(test_array)
 
     def test_tree_sort():
-        test_array = random.sample(range(1, 1000000), 300)
+        test_array = random.sample(range(1, 1000000), n_samples)
         tree_sort(test_array)
 
+    def test_heap_sort_inplace():
+        test_array = random.sample(range(1, 1000000), n_samples)
+        heap_sort_inplace(test_array)
+
     def test_merge_sort_inplace():
-        test_array = random.sample(range(1, 1000000), 300)
+        test_array = random.sample(range(1, 1000000), n_samples)
         merge_sort_inplace(test_array)
 
     def test_merge_sort():
-        test_array = random.sample(range(1, 1000000), 300)
+        test_array = random.sample(range(1, 1000000), n_samples)
         merge_sort(test_array)
     
     def test_quick_sort_inplace():
-        test_array = random.sample(range(1, 1000000), 300)
+        test_array = random.sample(range(1, 1000000), n_samples)
         quick_sort_inplace(test_array, 0, len(test_array)-1)
         
     def test_quick_sort():
-        test_array = random.sample(range(1, 1000000), 300)
+        test_array = random.sample(range(1, 1000000), n_samples)
         quick_sort(test_array)
         
     def test_python_array_sort():
-        test_array = random.sample(range(1, 1000000), 300)
+        test_array = random.sample(range(1, 1000000), n_samples)
         test_array.sort()
         
     def test_python_sorted():
-        test_array = random.sample(range(1, 1000000), 300)
+        test_array = random.sample(range(1, 1000000), n_samples)
         sorted(test_array)    
 
-    print("\nBenchmarking (in an order from slow to fast):")
+    print("\nBenchmarking (from slow to fast):")
     print(f"bubble_sort_inplace(): {timeit.timeit(test_bubble_sort_inplace, number=10000):.2f} sec")
     print(f"brute_force_sort(): {   timeit.timeit(test_brute_force_sort,    number=10000):.2f} sec")
+    print(f"heap_sort_inplace(): {  timeit.timeit(test_heap_sort_inplace,   number=10000):.2f} sec")
     print(f"tree_sort(): {          timeit.timeit(test_tree_sort,           number=10000):.2f} sec")
     print(f"merge_sort(): {         timeit.timeit(test_merge_sort,          number=10000):.2f} sec")
     print(f"merge_sort_inplace(): { timeit.timeit(test_merge_sort_inplace,  number=10000):.2f} sec")
