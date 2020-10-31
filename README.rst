@@ -219,7 +219,7 @@ module: naive_bayes
 -------------------
 
 .. csv-table::
-   :header: "function", "description"
+   :header: "function/class", "description"
    :widths: 10, 20
 
    "naive_bayes_Bernoulli()", "when X are independent binary variables (e.g., whether a word occurs in a document or not)"
@@ -246,7 +246,7 @@ module: decision_tree
 ---------------------
 
 .. csv-table::
-   :header: "function", "description"
+   :header: "function/class", "description"
    :widths: 10, 20
 
    "decision_tree()", "decision tree classifier"
