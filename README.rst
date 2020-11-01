@@ -247,6 +247,17 @@ Explanation:
 
 -----
 
+Example 5: Regularization
+-------------------------
+
+.. code-block:: python
+   
+   from machlearn import linear_regression as linreg
+   linreg.demo_regularization()
+
+
+-----
+
 module: model_evaluation
 ------------------------
 

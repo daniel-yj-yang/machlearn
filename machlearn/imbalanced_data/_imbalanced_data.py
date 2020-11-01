@@ -187,11 +187,12 @@ def _demo(classifier_func= "logistic_regression"):
 
         print(f"\nmanually specified class_weight: {class_weight_dict}")
         classifier_step2b.append( run_classification(y, X, classifier_func=classifier_func, class_weight=class_weight_dict, sample_weight_dict=sample_weight_dict) ) # 2b.
+        # Some references:
+        # https://github.com/scikit-learn-contrib/imbalanced-learn
         # https://stackoverflow.com/questions/30972029/how-does-the-class-weight-parameter-in-scikit-learn-work
         # https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
         # https://imbalanced-learn.org/stable/auto_examples/index.html
 
-        # https://github.com/scikit-learn-contrib/imbalanced-learn
         # https://machinelearningmastery.com/tactics-to-combat-imbalanced-classes-in-your-machine-learning-dataset/
         # https://developers.google.com/machine-learning/data-prep/construct/sampling-splitting/imbalanced-data
         # https://chrisalbon.com/machine_learning/preprocessing_structured_data/handling_imbalanced_classes_with_downsampling/
