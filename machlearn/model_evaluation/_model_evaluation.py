@@ -90,6 +90,21 @@ def visualize_classifier_decision_boundary_with_two_features(classifier, X, y, y
     plt.show()
 
 
+def Matthew_Correlation_Coefficient(TP, TN, FP, FN):
+    """
+    A correlation coefficient between the observed and predicted classifications
+    Least influenced by imbalanced data.
+    Range: -1 ~ 1
+    1 = perfect prediction
+    0 = andom prediction
+    -1 = worst possible prediction.
+    """
+    try:
+        MCC = ((TP*TN)-(FP*FN)) / (((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))**0.5)
+    except:
+        MCC = None
+    return MCC
+
 def plot_confusion_matrix(y_true,
                           y_pred,
                           y_classes='auto',
@@ -146,8 +161,9 @@ def plot_confusion_matrix(y_true,
         FPR = FP / (TN+FP)
         specificity = 1 - FPR
         geometric_mean = (TPR * (1-FPR)) ** 0.5 # GM measures the balance between classification performances on both the majority and minority classes. Insensitive to imbalance classes
-        stats_text = "\n\nAccuracy(higher TP and TN) = (TP+TN)/Total = {:0.3f}\nF1 Score(lower FP and FN) = TP/(TP+0.5*(FP+FN)) = {:0.3f}\nG-Mean = sqrt(TPR*(1-FPR)) = {:0.3f}\n\nTPR/recall/sensitivity = 1-FNR = p($y_{{pred}}$=1 | $y_{{true}}$=1) = {:0.3f}\nFPR = p($y_{{pred}}$=1 | $y_{{true}}$=0) = {:0.3f}\n\nPrecision = 1-FDR = p($y_{{true}}$=1 | $y_{{pred}}$=1) = {:0.3f}".format(
-            accuracy, f1_score, geometric_mean, recall, FPR, precision)
+        MCC = Matthew_Correlation_Coefficient(TP, TN, FP, FN)
+        stats_text = "\n\nAccuracy(higher TP and TN) = (TP+TN)/Total = {:0.3f}\nF1 Score(lower FP and FN) = TP/(TP+0.5*(FP+FN)) = {:0.3f}\nG-Mean = sqrt(TPR*(1-FPR)) = {:0.3f}\nMatthew's Correlation Coefficient = {:0.3f}\n\nTPR/recall/sensitivity = 1-FNR = p($y_{{pred}}$=1 | $y_{{true}}$=1) = {:0.3f}\nFPR = p($y_{{pred}}$=1 | $y_{{true}}$=0) = {:0.3f}\n\nPrecision = 1-FDR = p($y_{{true}}$=1 | $y_{{pred}}$=1) = {:0.3f}".format(
+            accuracy, f1_score, geometric_mean, MCC, recall, FPR, precision)
     else:
         stats_text = "\n\nAccuracy={:0.3f}".format(accuracy)
 
