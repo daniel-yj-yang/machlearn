@@ -199,6 +199,8 @@ Explanation:
 
    * - |image_extreme_imbalanced_data_bar_chart|
      - |image_balanced_data_bar_chart|
+   * - |image_extreme_imbalanced_data_confusion_matrix|
+     - |image_balanced_data_confusion_matrix|
    * - |image_extreme_imbalanced_data_ROC_curve|
      - |image_balanced_data_ROC_curve|
    * - |image_extreme_imbalanced_data_PR_curve|
@@ -209,6 +211,12 @@ Explanation:
    :width: 400px
 
 .. |image_balanced_data_bar_chart| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/imbalanced_data/images/majority_downsampled_balanced_data_bar_chart.png
+   :width: 400px
+
+.. |image_extreme_imbalanced_data_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/imbalanced_data/images/extreme_imbalanced_data_logistic_regression_confusion_matrix.png
+   :width: 400px
+
+.. |image_balanced_data_confusion_matrix| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/imbalanced_data/images/majority_downsampled_balanced_data_logistic_regression_confusion_matrix.png
    :width: 400px
 
 .. |image_extreme_imbalanced_data_ROC_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/imbalanced_data/images/extreme_imbalanced_data_logistic_regression_ROC_curve.png

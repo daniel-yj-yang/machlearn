@@ -136,7 +136,10 @@ def plot_confusion_matrix(y_true,
         TN = cm[0, 0]
         FP = cm[0, 1]
         FN = cm[1, 0]
-        precision = TP / (TP+FP)
+        try:
+            precision = TP / (TP+FP)
+        except:
+            precision = None
         recall = TP / (TP+FN)
         # or, 2*precision*recall / (precision + recall)
         f1_score = TP / (TP + 0.5*(FP+FN))
@@ -293,9 +296,10 @@ def plot_PR_curve(fitted_model,
             FN = cm[1, 0]
             TPR = TP / (TP+FN)
             FPR = FP / (TN+FP)
-            if TP+FP == 0:
-                continue
-            precision = TP / (TP+FP)
+            try:
+                precision = TP / (TP+FP)
+            except:
+                precision = None
             recall = TP / (TP+FN)
             plt.plot([recall], [precision], marker='x', markersize=10,
                      color="red", label=f"d={threshold:4.2f}")

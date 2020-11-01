@@ -57,15 +57,22 @@ def _demo(classifier_func= "logistic_regression"):
         plt.title(f"Transaction Fraud Simulation ({desc}{imbalance_pct:.2f}% positive)")
         plt.show()
 
-    def run_classification(y, X, classifier_func, class_weight=None):
+    def run_classification(y, X, classifier_func, class_weight=None, sample_weight_dict=None):
 
         from sklearn.model_selection import train_test_split
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=1)
 
+        sample_weight=None
+        if sample_weight_dict is not None:
+            def sample_weight_func(x):
+                return sample_weight_dict[x]
+            sample_weight = np.vectorize(sample_weight_func)(y_train)
+        print(f"\nmanually specified sample_weight: {sample_weight})
+
         if classifier_func == "logistic_regression":
             from ..logistic_regression import logistic_regression_classifier
-            classifier = logistic_regression_classifier(solver='liblinear', fit_intercept=True, max_iter=1e5, tol=1e-8, C=1e10, random_state = 26, class_weight = class_weight)
-            classifier.fit(X_train, y_train)
+            classifier = logistic_regression_classifier(solver='liblinear', fit_intercept=True, max_iter=1e5, tol=1e-8, C=1e10, random_state=26, class_weight=class_weight)
+            classifier.fit(X_train, y_train, sample_weight=sample_weight)
             model_name = 'Logistic Regression'
 
         if classifier_func == "decision_tree":
@@ -85,7 +92,7 @@ def _demo(classifier_func= "logistic_regression"):
                 scoring='accuracy',
                 cv=5,
             )
-            classifier_grid = grid.fit(X_train, y_train)
+            classifier_grid = grid.fit(X_train, y_train, classifier__sample_weight=sample_weight)
             criterion = classifier_grid.best_params_['classifier__criterion']
             max_depth = classifier_grid.best_params_['classifier__max_depth']
             classifier = classifier_grid
@@ -121,7 +128,7 @@ def _demo(classifier_func= "logistic_regression"):
     print(f"------------------------------------------------------------------------------------------")
     print(f"Step1: try training on the true distribution to see how well it generalizes.")
     bar_chart(y)
-    classifier_step1 = run_classification(y, X, classifier_func=classifier_func, class_weight='balanced') # 1.
+    classifier_step1 = run_classification(y, X, classifier_func=classifier_func, class_weight=None) # 1.
 
     # step 2: downsample the majority class (to match minority class), and then upweight the majority class
     y_original = y
@@ -147,7 +154,7 @@ def _demo(classifier_func= "logistic_regression"):
         y_class0_n = len(y_class0_idx)
         y_class1_n = len(y_class1_idx)
 
-        y_class0_n_downsampled = y_class0_n // down_sampling_factor 
+        y_class0_n_downsampled = y_class0_n // down_sampling_factor
 
         np.random.seed(1)
         y_class0_idx_downsampled = np.random.choice(y_class0_idx, size=y_class0_n_downsampled, replace=False)
@@ -161,9 +168,9 @@ def _demo(classifier_func= "logistic_regression"):
         print(f"Step2b: try upweighting the majority class to see how well it generalizes.\n")
         y_class0_weight = down_sampling_factor
         y_class1_weight = 1
-        total_classes_weights = y_class0_weight + y_class1_weight
-        y_class0_weight /= total_classes_weights
-        y_class1_weight /= total_classes_weights
+        #total_classes_weights = y_class0_weight + y_class1_weight
+        #y_class0_weight /= total_classes_weights
+        #y_class1_weight /= total_classes_weights
         class_weight_dict = {0: y_class0_weight, 1: y_class1_weight}
 
         # sklearn's 'balanced' is to upweight the minority class, not the majority class
@@ -172,8 +179,13 @@ def _demo(classifier_func= "logistic_regression"):
             computed_class_weight = class_weight.compute_class_weight(class_weight=class_weight_param, classes = np.array([0,1]), y = y)
             print(f"sklearn computed class_weight for class_weight=[{class_weight_param}]: {computed_class_weight}")
 
+        # sample_weight provides a more granular way to specify sample-specific weight than class weight
+        # but if the whole class has the same weight, it is the same as class_weight
+        class_weight_dict = None
+        sample_weight_dict = {0: down_sampling_factor, 1: 1}
+
         print(f"\nmanually specified class_weight: {class_weight_dict}")
-        classifier_step2b.append( run_classification(y, X, classifier_func=classifier_func, class_weight=class_weight_dict) ) # 2b.
+        classifier_step2b.append( run_classification(y, X, classifier_func=classifier_func, class_weight=class_weight_dict, sample_weight_dict=sample_weight_dict) ) # 2b.
         # https://stackoverflow.com/questions/30972029/how-does-the-class-weight-parameter-in-scikit-learn-work
         # https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
         # https://imbalanced-learn.org/stable/auto_examples/index.html
@@ -184,6 +196,7 @@ def _demo(classifier_func= "logistic_regression"):
         # https://chrisalbon.com/machine_learning/preprocessing_structured_data/handling_imbalanced_classes_with_downsampling/
 
     return classifier_step1, classifier_step2a, classifier_step2b
+
 
 def demo(classifier_func="logistic_regression"):
     """
