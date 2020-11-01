@@ -156,6 +156,7 @@ Example 3: Decision Boundary Comparison (Classification with Two Features)
    * - |image_logistic_regression_decision_boundary_testing_set|
      -
 
+
 .. |image_kNN_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/Social_Network_Ads_decision_boundary_testing_set.png
    :width: 400px
 
@@ -169,6 +170,48 @@ Example 3: Decision Boundary Comparison (Classification with Two Features)
    :width: 400px
 
 .. |image_logistic_regression_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/logistic_regression/images/Social_Network_Ads_decision_boundary_testing_set.png
+   :width: 400px
+
+
+-----
+
+Example 4: Imbalanced Data
+--------------------------
+
+.. code-block:: python
+   
+   from machlearn import imbalanced_data
+   imbalanced_data.demo()
+
+
+.. list-table::
+   :widths: 25 25
+   :header-rows: 0
+
+   * - |image_extreme_imbalanced_data_bar_chart|
+     - |image_balanced_data_bar_chart|
+   * - |image_extreme_imbalanced_data_ROC_curve|
+     - |image_balanced_data_ROC_curve|
+   * - |image_extreme_imbalanced_data_PR_curve|
+     - |image_balanced_data_PR_curve|
+
+
+.. |image_extreme_imbalanced_data_bar_chart| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/imbalanced_data/images/extreme_imbalanced_data_bar_chart.png
+   :width: 400px
+
+.. |image_balanced_data_bar_chart| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/imbalanced_data/images/majority_downsampled_balanced_data_bar_chart.png
+   :width: 400px
+
+.. |image_extreme_imbalanced_data_ROC_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/imbalanced_data/images/extreme_imbalanced_data_logistic_regression_ROC_curve.png
+   :width: 400px
+
+.. |image_balanced_data_ROC_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/imbalanced_data/images/majority_downsampled_balanced_data_logistic_regression_ROC_curve.png
+   :width: 400px
+
+.. |image_extreme_imbalanced_data_PR_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/imbalanced_data/images/extreme_imbalanced_data_logistic_regression_PR_curve.png
+   :width: 400px
+
+.. |image_balanced_data_PR_curve| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/imbalanced_data/images/majority_downsampled_balanced_data_logistic_regression_PR_curve.png
    :width: 400px
 
 
