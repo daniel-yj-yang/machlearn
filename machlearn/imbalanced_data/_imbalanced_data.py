@@ -8,6 +8,7 @@
 
 
 def _demo(classifier_func= "logistic_regression"):
+    
     available_classifiers = ['logistic_regression', 'decision_tree',] # these classifiers accept class_weight param
     if classifier_func not in available_classifiers:
         raise ValueError(f'provided classifier_func [classifier_func] has not been defined. available options: {available_classifiers}.')
@@ -67,7 +68,7 @@ def _demo(classifier_func= "logistic_regression"):
             def sample_weight_func(x):
                 return sample_weight_dict[x]
             sample_weight = np.vectorize(sample_weight_func)(y_train)
-        print(f"\nmanually specified sample_weight: {sample_weight})
+        print(f"\nmanually specified sample_weight: {sample_weight}")
 
         if classifier_func == "logistic_regression":
             from ..logistic_regression import logistic_regression_classifier
