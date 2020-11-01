@@ -4,8 +4,13 @@
 #
 # License: BSD 3 clause
 
+from sklearn.linear_model import LogisticRegression
 
-class LogisticReg_statsmodels(object):
+def logistic_regression_classifier(*args, **kwargs):
+    return LogisticRegression(*args, **kwargs)
+
+
+class logisticReg_statsmodels(object):
     def __init__(self):
         super().__init__()
     
@@ -24,7 +29,7 @@ class LogisticReg_statsmodels(object):
         return result.params.values
 
 
-class LogisticReg_sklearn(object):
+class logisticReg_sklearn(object):
     def __init__(self):
         super().__init__()
     
@@ -33,8 +38,7 @@ class LogisticReg_sklearn(object):
         - Required arguments:
             y_pd_series, X_pd_DataFrame
         """
-        from sklearn.linear_model import LogisticRegression
-        model = LogisticRegression(solver='liblinear', fit_intercept=True, max_iter=1e5, tol=1e-8, C=1e10)
+        model = logistic_regression_classifier(solver='liblinear', fit_intercept=True, max_iter=1e5, tol=1e-8, C=1e10)
         model.fit(X_pd_DataFrame, y_pd_series)
         estimates = list(model.intercept_) + list(model.coef_[0]) # model.intercept_ is <class 'numpy.ndarray'>
         print(f"coefficient estimates: {['%.6f' % x for x in estimates]}")
@@ -66,7 +70,7 @@ def _demo(dataset="Social_Network_Ads"):
         y = data['Purchased']
         y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
 
-        for model in [LogisticReg_statsmodels, LogisticReg_sklearn]:
+        for model in [logisticReg_statsmodels, logisticReg_sklearn]:
             print(f"---------------------------------------------------------------------------------------------------------\nmodel: {repr(model)}.\n")
             params_values = model().run(y, X)
             beta0 = params_values[0] # exp(beta0) = the baseline "odds_of_prob(y)" when X's=0:
@@ -86,10 +90,9 @@ def _demo(dataset="Social_Network_Ads"):
 
         from sklearn.pipeline import Pipeline
         from sklearn.preprocessing import StandardScaler
-        from sklearn.linear_model import LogisticRegression
 
         pipeline = Pipeline(steps=[('scaler', StandardScaler()),
-                                   ('classifier', LogisticRegression()), ])
+                                   ('classifier', logistic_regression_classifier()), ])
         hyperparameters = {
             'scaler__with_mean': [True],
             'scaler__with_std': [True],
