@@ -209,7 +209,7 @@ Explanation:
 
 
    * - Extreme Imbalanced Data
-     - Majority Class Downsampled to Match Minority Class
+     - Majority Downsampled to Match Minority Class
    * - |image_extreme_imbalanced_data_bar_chart|
      - |image_balanced_data_bar_chart|
    * - |image_extreme_imbalanced_data_confusion_matrix|
