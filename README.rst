@@ -188,8 +188,9 @@ Explanation
 .. code-block::
 
    To mitigate the problem associated with class imbalance, downsampling the majority class (y=0) to match the minority case (y=1).
-   ROC curve is independent of class imbalance.
-   PR curve is indicative of the problem associated with class imbalance.
+   Note:
+   - ROC curve is independent of class imbalance.
+   - PR curve is indicative of the problem associated with class imbalance.
 
 
 .. list-table::
