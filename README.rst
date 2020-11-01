@@ -183,6 +183,14 @@ Example 4: Imbalanced Data
    from machlearn import imbalanced_data
    imbalanced_data.demo()
 
+Explanation
+
+.. code-block::
+
+   To mitigate the problem associated with class imbalance, downsampling the majority class (y=0) to match the minority case (y=1).
+   ROC curve is independent of class imbalance.
+   PR curve is indicative of the problem associated with class imbalance.
+
 
 .. list-table::
    :widths: 25 25
