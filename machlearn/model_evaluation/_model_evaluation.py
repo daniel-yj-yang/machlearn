@@ -202,8 +202,7 @@ def plot_ROC_curve(y_true,
 
     """
 
-    fpr, tpr, thresholds = roc_curve(
-        y_true=y_true, y_score=y_pred_score, pos_label=y_pos_label)
+    fpr, tpr, thresholds = roc_curve(y_true=y_true, y_score=y_pred_score, pos_label=y_pos_label)
     auc = roc_auc_score(y_true, y_pred_score)
     # auc = np.trapz(tpr,fpr) # alternatively
 
