@@ -188,9 +188,19 @@ Explanation:
 .. code-block::
 
    To mitigate the problem associated with class imbalance, downsampling the majority class (y=0) to match the minority case (y=1).
-   Note:
-   - ROC curve is independent of class imbalance.
-   - PR curve is indicative of the problem associated with class imbalance.
+   
+   These are insensitive to class imbalance:
+   - Area Under ROC curve
+   - Geometric mean
+   - Matthew's Correlation Coefficient
+   - Recall, TPR
+   - Specificity, 1-FPR
+
+   These are sensitive to class imbalance:
+   - Area Under PR curve
+   - Accuracy
+   - F1 score
+   - Precision
 
 
 .. list-table::
@@ -199,7 +209,7 @@ Explanation:
 
 
    * - Extreme Imbalanced Data
-     - Majority Downsampled to Match Minority Class
+     - Majority Class Downsampled to Match Minority Class
    * - |image_extreme_imbalanced_data_bar_chart|
      - |image_balanced_data_bar_chart|
    * - |image_extreme_imbalanced_data_confusion_matrix|
