@@ -197,6 +197,8 @@ Explanation:
    :widths: 25 25
    :header-rows: 0
 
+   * - Extreme Imbalanced Data
+     - Majority Downsampled to Match Minority
    * - |image_extreme_imbalanced_data_bar_chart|
      - |image_balanced_data_bar_chart|
    * - |image_extreme_imbalanced_data_confusion_matrix|
