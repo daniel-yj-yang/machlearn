@@ -195,8 +195,8 @@ Explanation:
 
 .. list-table::
    :widths: 25 25
-   :header-rows: 0
-   :align: center
+   :header-rows: 1
+   :align: "center"
 
    * - Extreme Imbalanced Data
      - Majority Downsampled to Match Minority
