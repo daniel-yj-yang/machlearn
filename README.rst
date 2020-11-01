@@ -183,7 +183,7 @@ Example 4: Imbalanced Data
    from machlearn import imbalanced_data
    imbalanced_data.demo()
 
-Explanation
+Explanation:
 
 .. code-block::
 
