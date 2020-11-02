@@ -8,13 +8,13 @@ import statsmodels.api as sm
 from sklearn import linear_model
 
 class OLS(object):
-    def __init__(self, print_summary=True, use_statsmodels=False):
+    def __init__(self, print_summary=True, use_statsmodels=False, alpha = 1000):
         super().__init__()
         self.y = None
         self.X = None
         self.print_summary = print_summary
         self.use_statsmodels = use_statsmodels
-        self.alpha = 1000
+        self.alpha = alpha
         self.max_iter = 200000
 
     def model(self, y, X):
@@ -109,9 +109,10 @@ class normal_equation(object):
 
 
 class Ridge_regression(OLS):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.alpha = 11628
+    def __init__(self, alpha=1000, *args, **kwargs):
+        super().__init__(alpha=alpha, *args, **kwargs)
+        self.alpha = alpha
+        print(f"alpha = [{alpha}]")
 
     def model(self, y, X):
         if self.use_statsmodels:
@@ -121,10 +122,10 @@ class Ridge_regression(OLS):
 
 
 class Lasso_regression(OLS):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        #self.max_iter = 200000
-        self.alpha = 109
+    def __init__(self, alpha = 1000, *args, **kwargs):
+        super().__init__(alpha = alpha, *args, **kwargs)
+        self.alpha = alpha
+        print(f"alpha = [{alpha}]")
 
     def model(self, y, X):
         if self.use_statsmodels:
@@ -158,7 +159,7 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
     print('After regularization, we would expect to see better generalization, including reduced RMSE and improved R^2.')
     print('After L2 regularization, we would expect to see smaller variances among the coefficient estimates, that is, the estimates less likely changing rapidly.')
     print('After L1 regularization, we would expect to see a simpler model with many coefficient estimates = 0.')
-    print('For either L2 or L1 regularization, there is also a parameter called alpha (or lambda), which governs the amount of regularization. It takes GridCV to identify the optimal number of alpha (or lambda).\n')
+    print('For either L2 or L1 regularization, there is also a parameter called alpha (or lambda), which governs the amount of regularization. It takes GridCV (e.g., RidgeCV or LassoCV) to identify the optimal number of alpha (or lambda).\n')
 
     import pandas as pd
     import patsy
@@ -190,14 +191,15 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
         data = data.drop(['League', 'NewLeague', 'Division'], axis=1)
         formula = 'Salary ~ AtBat + Hits + HmRun + Runs + RBI + Walks + Years + CAtBat + CHits + CHmRun + CRuns + CRBI + CWalks + PutOuts + Assists + Errors - 1'  # -1 means no intercept
         #formula = 'Salary ~ League + NewLeague + Division + AtBat + Hits + HmRun + Runs + RBI + Walks + Years + CAtBat + CHits + CHmRun + CRuns + CRBI + CWalks + PutOuts + Assists + Errors - 1' # -1 means no intercept
-        y, X = patsy.dmatrices(formula, data)
-        X = pd.DataFrame(X, columns = X.design_info.column_names )
+    
+    y, X = patsy.dmatrices(formula, data)
+    X = pd.DataFrame(X, columns = X.design_info.column_names )
 
     import numpy as np
-    best_Ridge_regression_alpha = identify_best_alpha_for_Ridge_regression(y.ravel(), sm.add_constant(X), alphas=np.exp(np.linspace(7,11,100000)))
+    best_Ridge_regression_alpha = identify_best_alpha_for_Ridge_regression(y.ravel(), sm.add_constant(X), alphas=np.exp(np.linspace(-5,15,100000)))
     print(f"best alpha for Ridge regression: {best_Ridge_regression_alpha}")
 
-    best_Lasso_regression_alpha = identify_best_alpha_for_Lasso_regression(y.ravel(), sm.add_constant(X), alphas=np.exp(np.linspace(3, 6,10000)))
+    best_Lasso_regression_alpha = identify_best_alpha_for_Lasso_regression(y.ravel(), sm.add_constant(X), alphas=np.exp(np.linspace(-5,15, 10000)))
     print(f"best alpha for Lasso regression: {best_Lasso_regression_alpha}")
 
     from ..model_evaluation import test_for_multicollinearity
@@ -221,7 +223,14 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
         print(f"{repr(model)}\n")
         #fitted_model = model.run(y, X)
 
-        fitted_model = model(print_summary = False, use_statsmodels = use_statsmodels).run(y_train, X_train)
+        if i == 0:
+            alpha = None
+        elif i == 1:
+            alpha = best_Ridge_regression_alpha
+        elif i == 2:
+            alpha = best_Lasso_regression_alpha
+
+        fitted_model = model(print_summary = False, use_statsmodels = use_statsmodels, alpha = alpha).run(y_train, X_train)
         y_test_pred = fitted_model.predict(sm.add_constant(X_test))
         
         from ..model_evaluation import evaluate_continuous_prediction
