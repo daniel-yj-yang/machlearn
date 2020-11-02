@@ -8,10 +8,10 @@ import numpy as np
 
 class batch_gradient_descent(object):
 
-    def __init__(self, X, y, learning_rate=0.01, num_iter=100000, verbose=False, use_simplified_cost=False):
+    def __init__(self, learning_rate=0.01, num_iter=100000, verbose=False, use_simplified_cost=False):
         super().__init__()
-        self.X = X
-        self.y = y
+        self.X = None
+        self.y = None
         self.h = None  # y-hat
         self.cost = None
         self.theta = None
@@ -21,6 +21,10 @@ class batch_gradient_descent(object):
         self.verbose = verbose
         self.use_simplified_cost = use_simplified_cost
 
+    # the following three functions are the core of BGD:
+    # θ = _y_pred
+    # J(θ) = _cost_function
+    # ∂J(θ)/∂θ = _gradient
     def _y_pred(self):
         """
         to get self.h (y-hat)
@@ -88,8 +92,8 @@ class batch_gradient_descent(object):
         plt.figure(figsize=(5, 5))
         plt.plot(np.arange(0, len(self.training_history)), np.array(self.training_history, dtype=object)[:, 1], label='BGD Training Loss')
         plt.legend(loc=1)
-        plt.xlabel("Epoch #")
-        plt.ylabel("Loss")
+        plt.xlabel("Training Epoch #")
+        plt.ylabel("Error/Cost/Loss, J(θ)")
         plt.show()
 
 
@@ -98,8 +102,6 @@ class logistic_regression_BGD_classifier(batch_gradient_descent):
     def __init__(self, fit_intercept=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fit_intercept = fit_intercept
-        if self.fit_intercept:
-            self.X = self._add_intercept(self.X)
 
     def _add_intercept(self, X):
         intercept = np.ones((X.shape[0], 1))
@@ -108,6 +110,10 @@ class logistic_regression_BGD_classifier(batch_gradient_descent):
     def _sigmoid(self, z):
         return 1 / (1 + np.exp(-z))
 
+    # the following three functions are the core of BGD:
+    # θ = _y_pred
+    # J(θ) = _cost_function
+    # ∂J(θ)/∂θ = _gradient
     def _y_pred(self):
         """
         to get self.h (y-hat)
@@ -128,6 +134,13 @@ class logistic_regression_BGD_classifier(batch_gradient_descent):
         the slope, the partial derivative of the cost function with respect to theta
         """
         return self.X.T.dot(self.h - self.y) / self.y.size
+
+    def fit(self, X, y):
+        self.X = X
+        self.y = y
+        if self.fit_intercept:
+            self.X = self._add_intercept(self.X)
+        super().fit()
 
     def predict_prob(self, X):
         if self.fit_intercept:
@@ -198,9 +211,9 @@ def _demo(dataset, classifier_func, learning_rate=None, num_iter=None):
             params_values = logisticReg_statsmodels().run(y, X)
             print(params_values)
         # gradient descent classifier
-        classifier = logistic_regression_BGD_classifier(X = X, y = y, learning_rate=learning_rate, num_iter=num_iter)
+        classifier = logistic_regression_BGD_classifier(learning_rate=learning_rate, num_iter=num_iter)
 
-    classifier.fit()
+    classifier.fit(X=X, y=y)
     classifier.plot_loss_history()
     print(f"Theta estimates from batch gradient descent: {classifier.theta}")
     y_pred = classifier.predict(X)
