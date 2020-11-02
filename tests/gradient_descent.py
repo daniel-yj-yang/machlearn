@@ -6,5 +6,6 @@
 
 from machlearn import gradient_descent as GD
 
-GD.demo()
-
+GD.demo("Gender")
+GD.demo("Social_Network_Ads")
+GD.demo("iris_binarized")

@@ -183,7 +183,7 @@ Example 4: Imbalanced Data
    from machlearn import imbalanced_data
    imbalanced_data.demo()
 
-Explanation:
+Summary of output:
 
 .. code-block::
 
@@ -262,6 +262,43 @@ Summary of output:
    Issues: (a) high multicollinearity and (b) too many features; these lead to overfitting and poor generalization.
    - After L2 Regularization (Ridge regression), lower variance among the coefficient estimates [more stable estimates], and better R-squared and lower RMSE with the testing set [better generalization]
    - After L1 Regularization (Lasso regression), coefficient estimates becoming 0 for relatively trivial features [a simpler model], and better R-squared and lower RMSE with the testing set [better generalization]
+
+
+-----
+
+Example 6: Gradient Descent
+---------------------------
+
+.. code-block:: python
+   
+   from machlearn import gradient_descent as GD
+   GD.demo("Gender")
+
+Summary of output:
+
+.. code-block::
+
+   This example uses a cost function associated with logistic regression with Male (1, 0) as the target.
+   Via a batch gradient descent iterative process, the theta estimates of [const, Height, Weight] are as follows:
+   [ 0.69254314, -0.49262002, 0.19834042]
+
+
+.. list-table::
+   :widths: 25 25
+   :header-rows: 1
+
+
+   * - Descriptive statistics
+     - Batch Gradient Descent Training Loss vs. Epoch
+   * - |image_Gender_pairplot|
+     - |image_Gender_batch_gradient_descent_training_loss_plot|
+
+
+.. |image_Gender_pairplot| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/gradient_descent/images/Gender_pairplot.png
+   :width: 400px
+
+.. |image_Gender_batch_gradient_descent_training_loss_plot| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/gradient_descent/images/Gender_BGD_training_loss_history.png
+   :width: 400px
 
 
 -----

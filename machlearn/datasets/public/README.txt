@@ -7,10 +7,10 @@
 
 Disclaimer:
 
-- The datasets are shared with the sole intention of providing the convenience to access public datasets and reproduce/compare results.
+- The datasets are shared with the sole intention of providing the convenience to access publicly available datasets and reproduce/compare results.
 - They are shared under a good-faith understanding that they are widely viewed and accepted as public-domain datasets.
 - If there is any misunderstanding, please contact the author.
-- The the author does not own any of these datasets.
+- The author does not own any of these datasets.
 - The readme in respective folder (or related Internet link) should be followed for citation/license requirements.
 
 Datasets:
@@ -26,7 +26,6 @@ Dataset description: "This corpus has been collected from free or free for resea
 URL: https://www.kaggle.com/akram24/social-network-ads/activity
 Download Date: 2020-09-23
 License: CC0: Public Domain
-Visibility: Public
 
 3. NLTK (Natural Language Toolkit) data
 
@@ -47,3 +46,32 @@ Here is the rule regarding redistributing of nltk data (see https://github.com/n
 Download Date: 2020-09-25
 Download commands:
     fetch_20newsgroups(subset='all')
+
+5. Fashion MNIST
+
+URL: https://github.com/zalandoresearch/fashion-mnist
+Download Date: 2020-10-01
+License: MIT
+
+6. bank_note_authentication (more precisely, counterfeit)
+
+URL: https://archive.ics.uci.edu/ml/datasets/banknote+authentication
+Download Date: 2020-10-27
+
+7. R_ISLR
+
+URL: https://cran.r-project.org/web/packages/ISLR/index.html
+Download Date: 2020-10-28
+License: GPL-2
+
+8. R_datarium
+
+URL: https://cran.r-project.org/web/packages/datarium/index.html
+Download Date: 2020-10-28
+License: GPL-2
+
+9. ML_for_Hackers
+
+URL: https://github.com/johnmyleswhite/ML_for_Hackers
+Download Date: 2020-11-02
+License: FreeBSD
