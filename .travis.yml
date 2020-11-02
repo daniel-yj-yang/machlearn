@@ -23,3 +23,4 @@ script:
   - "python tests/linear_regression.py"
   - "python tests/DSA.py"
   - "python tests/imbalanced_data.py"
+  - "python tests/dimensionality_reduction.py"

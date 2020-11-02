@@ -415,3 +415,16 @@ module: imbalanced_data
    :widths: 10, 20
 
    "demo()", "provides a demo of selected functions in this module"
+
+
+-----
+
+module: dimensionality_reduction
+--------------------------------
+
+.. csv-table::
+   :header: "function", "description"
+   :widths: 10, 20
+
+   "demo()", "provides a demo of selected functions in this module"
+   
