@@ -348,7 +348,7 @@ module: naive_bayes
 -------------------
 
 .. csv-table::
-   :header: "function/class", "description"
+   :header: "class/function", "description"
    :widths: 10, 20
 
    "naive_bayes_Bernoulli()", "when X are independent binary variables (e.g., whether a word occurs in a document or not)"
@@ -375,7 +375,7 @@ module: decision_tree
 ---------------------
 
 .. csv-table::
-   :header: "function/class", "description"
+   :header: "class/function", "description"
    :widths: 10, 20
 
    "decision_tree()", "decision tree classifier"
@@ -472,8 +472,10 @@ module: gradient_descent
 ------------------------
 
 .. csv-table::
-   :header: "function", "description"
+   :header: "class/function", "description"
    :widths: 10, 20
 
+   "logistic_regression_BGD_classifier()", "logistic_regression_BGD_classifier class"
+   "batch_gradient_descent()", "batch_gradient_descent class"
    "demo()", "provides a demo of selected functions in this module"
    
