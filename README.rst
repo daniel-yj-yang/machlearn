@@ -409,6 +409,7 @@ module: decision_tree
    "AdaBoost()", "Adaptive Boosting classifier"
    "GBM()", "Gradient Boosting Machines classifier"
    "demo()", "provides a demo of selected functions in this module"
+   "demo_DT_from_scratch()", "provides a demo of selected functions in this module"
 
 
 -----
