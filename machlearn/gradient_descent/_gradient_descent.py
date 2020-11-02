@@ -86,7 +86,7 @@ class batch_gradient_descent(object):
         import matplotlib.pyplot as plt
         # construct a figure that plots the loss over time
         plt.figure(figsize=(5, 5))
-        plt.plot(np.arange(0, len(self.training_history)), np.array(self.training_history, dtype=object)[:, 1], label='Training Loss')
+        plt.plot(np.arange(0, len(self.training_history)), np.array(self.training_history, dtype=object)[:, 1], label='BGD Training Loss')
         plt.legend(loc=1)
         plt.xlabel("Epoch #")
         plt.ylabel("Loss")

@@ -279,7 +279,7 @@ Summary of output:
 .. code-block::
 
    This example uses a cost function associated with logistic regression with Male (1, 0) as the target.
-   Via a batch gradient descent iterative process, the theta estimates of [const, Height, Weight] are as follows:
+   Via a batch gradient descent iterative process, the theta estimates of [const, Height (inch), Weight (lbs)] are as follows:
    [ 0.69254314, -0.49262002, 0.19834042]
 
 
