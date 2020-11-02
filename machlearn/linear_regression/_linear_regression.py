@@ -15,7 +15,7 @@ class OLS(object):
         self.print_summary = print_summary
         self.use_statsmodels = use_statsmodels
         self.alpha = 1000
-        self.maxiter = 200000
+        self.max_iter = 200000
 
     def model(self, y, X):
         pass
@@ -111,7 +111,7 @@ class normal_equation(object):
 class Ridge_regression(OLS):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        #self.alpha = 1000
+        self.alpha = 11628
 
     def model(self, y, X):
         if self.use_statsmodels:
@@ -123,16 +123,28 @@ class Ridge_regression(OLS):
 class Lasso_regression(OLS):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        #self.maxiter = 200000
-        #self.alpha = 1000
+        #self.max_iter = 200000
+        self.alpha = 109
 
     def model(self, y, X):
         if self.use_statsmodels:
-            return sm.OLS(y, X).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=1, maxiter=self.maxiter, refit = False)
+            return sm.OLS(y, X).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=1, maxiter=self.max_iter, refit = False)
         else:
-            return linear_model.Lasso(alpha=self.alpha, max_iter=self.maxiter, fit_intercept=False).fit(X, y)
+            return linear_model.Lasso(alpha=self.alpha, max_iter=self.max_iter, fit_intercept=False).fit(X, y)
 
 
+def identify_best_alpha_for_Ridge_regression(y, X, alphas = [0.1, 1.0, 10.0]):
+    from sklearn.linear_model import RidgeCV
+    Ridge_regression_CV = RidgeCV(alphas=alphas, fit_intercept=False)
+    model_cv = Ridge_regression_CV.fit(X, y)
+    return model_cv.alpha_
+
+
+def identify_best_alpha_for_Lasso_regression(y, X, alphas=[0.1, 1.0, 10.0]):
+    from sklearn.linear_model import LassoCV
+    Lasso_regression_CV = LassoCV(alphas=alphas, fit_intercept=False, max_iter=200000)
+    model_cv = Lasso_regression_CV.fit(X, y)
+    return model_cv.alpha_
 
 
 def _demo_regularization(dataset="Hitters", use_statsmodels=False):
@@ -144,7 +156,7 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
     print('When (b) model is too complex and has trivial predictors, we use L1 Regularization, which adds "magnitude" of coefficient (L1 norm) as a penalty term to the cost function.')
     print('\nL2 regularization is also known as Ridge regression, while L1 regularization is also known as Lasso regression, and a combination of them is known as elastic net.')
     print('After regularization, we would expect to see better generalization, including reduced RMSE and improved R^2.')
-    print('After L2 regularization, we would expect to see smaller variances of the coefficient estimates.')
+    print('After L2 regularization, we would expect to see smaller variances among the coefficient estimates, that is, the estimates less likely changing rapidly.')
     print('After L1 regularization, we would expect to see a simpler model with many coefficient estimates = 0.')
     print('For either L2 or L1 regularization, there is also a parameter called alpha (or lambda), which governs the amount of regularization. It takes GridCV to identify the optimal number of alpha (or lambda).\n')
 
@@ -181,6 +193,13 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
         y, X = patsy.dmatrices(formula, data)
         X = pd.DataFrame(X, columns = X.design_info.column_names )
 
+    import numpy as np
+    best_Ridge_regression_alpha = identify_best_alpha_for_Ridge_regression(y.ravel(), sm.add_constant(X), alphas=np.exp(np.linspace(7,11,100000)))
+    print(f"best alpha for Ridge regression: {best_Ridge_regression_alpha}")
+
+    best_Lasso_regression_alpha = identify_best_alpha_for_Lasso_regression(y.ravel(), sm.add_constant(X), alphas=np.exp(np.linspace(3, 6,10000)))
+    print(f"best alpha for Lasso regression: {best_Lasso_regression_alpha}")
+
     from ..model_evaluation import test_for_multicollinearity
     test_for_multicollinearity(X)
 
@@ -198,7 +217,8 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
     y_test = pd.DataFrame(y_test, columns = y_test.design_info.column_names )
 
     for i, model in enumerate([Linear_regression, Ridge_regression, Lasso_regression]):
-        print(f"\n{repr(model)}\n")
+        print(f"------------------------------------------------------------------------------")
+        print(f"{repr(model)}\n")
         #fitted_model = model.run(y, X)
 
         fitted_model = model(print_summary = False, use_statsmodels = use_statsmodels).run(y_train, X_train)
@@ -211,6 +231,8 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
             print(fitted_model.params)
         else:
             print(fitted_model.coef_)
+            variance = np.var(fitted_model.coef_)
+            print(f"\nvariance among the coefficients: {variance:.2f}")
 
 
 def _demo(dataset="marketing", use_statsmodels = False):
