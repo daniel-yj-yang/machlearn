@@ -93,7 +93,7 @@ class batch_gradient_descent(object):
         plt.show()
 
 
-class logistic_regression_batch_gradient_descent_classifier(batch_gradient_descent):
+class logistic_regression_BGD_classifier(batch_gradient_descent):
 
     def __init__(self, fit_intercept=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -198,11 +198,15 @@ def _demo(dataset, classifier_func, learning_rate=None, num_iter=None):
             params_values = logisticReg_statsmodels().run(y, X)
             print(params_values)
         # gradient descent classifier
-        classifier = logistic_regression_batch_gradient_descent_classifier(X = X, y = y, learning_rate=learning_rate, num_iter=num_iter)
+        classifier = logistic_regression_BGD_classifier(X = X, y = y, learning_rate=learning_rate, num_iter=num_iter)
 
     classifier.fit()
     classifier.plot_loss_history()
-    print(f"theta estimates from batch gradient descent: {classifier.theta}")
+    print(f"Theta estimates from batch gradient descent: {classifier.theta}")
+    y_pred = classifier.predict(X)
+    from sklearn.metrics import accuracy_score
+    accuracy = accuracy_score(y, y_pred)
+    print(f"Accuracy of prediction: {accuracy: .3f}")
     return classifier
 
 

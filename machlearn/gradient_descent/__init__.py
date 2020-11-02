@@ -4,7 +4,7 @@
 #
 # License: BSD 3 clause
 
-from ._gradient_descent import demo
+from ._gradient_descent import demo, batch_gradient_descent, logistic_regression_BGD_classifier
 
 # this is for "from <package_name>.gradient_descent import *"
-__all__ = ["demo",]
+__all__ = ["demo", "batch_gradient_descent", "logistic_regression_BGD_classifier", ]
