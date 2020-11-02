@@ -316,7 +316,7 @@ Summary of output:
 
 .. code-block::
 
-   Results of demo_DT_from_scratch() provides identical results as the tree graph below.
+   Results from DT.demo_DT_from_scratch() provides identical results as the tree graph below.
 
 
 |image_Social_Networks_Ad_DT_notscaled_entropy_maxdepth=2|
