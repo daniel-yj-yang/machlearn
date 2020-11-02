@@ -481,11 +481,10 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
             class_names = ['0=not purchased', '1=purchased']
 
         # Approach 1
-        if False:
-            from dtreeviz.trees import dtreeviz
-            viz = dtreeviz(classifier_grid.best_estimator_.steps[1][1], StandardScaler().fit_transform(X_train), y_train, target_name="target", feature_names=feature_cols, class_names=class_names)
-            # print(type(viz)) # <class 'dtreeviz.trees.DTreeViz'>
-            viz.view()
+        from dtreeviz.trees import dtreeviz
+        viz = dtreeviz(classifier_grid.best_estimator_.steps[1][1], StandardScaler().fit_transform(X_train), y_train, target_name="target", feature_names=feature_cols, class_names=class_names)
+        # print(type(viz)) # <class 'dtreeviz.trees.DTreeViz'>
+        viz.view()
 
         # Approach 2
         from sklearn.tree import export_graphviz
@@ -531,7 +530,7 @@ def demo_DT_from_scratch(data="Social_Network_Ads"):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
     tree = decision_tree_classifier_based_on_entropy(max_depth = 2)
     from sklearn.preprocessing import scale
-    tree.find_best_split_in_one_specific_feature(scale(X_train['Age']), y_train)
-    tree.find_best_split_across_all_features(scale(X_train), y_train)
-    root_node = tree.fit(scale(X_train), y_train)
-    tree.order(root_node, type="Preorder")
+    print(tree.find_best_split_in_one_specific_feature(scale(X_train['Age']), y_train))
+    print(tree.find_best_split_across_all_features(scale(X_train), y_train))
+    root_node = tree.fit(X_train, y_train)
+    print(tree.order(root_node, type="Preorder"))
