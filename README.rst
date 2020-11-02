@@ -141,8 +141,8 @@ Example 3: Decision Boundary Comparison (Classification with Two Features)
    from machlearn import decision_tree as DT
    DT.demo("Social_Network_Ads", classifier_func = "DT")
 
-   from machlearn import logistic_regression
-   logistic_regression.demo("Social_Network_Ads")
+   from machlearn import logistic_regression as logreg
+   logreg.demo("Social_Network_Ads")
 
 
 .. list-table::
@@ -255,7 +255,7 @@ Example 5: Regularization
    from machlearn import linear_regression as linreg
    linreg.demo_regularization()
 
-Summary of the output:
+Summary of output:
 
 .. code-block::
 
