@@ -427,4 +427,16 @@ module: dimensionality_reduction
    :widths: 10, 20
 
    "demo()", "provides a demo of selected functions in this module"
+
+
+-----
+
+module: gradient_descent
+------------------------
+
+.. csv-table::
+   :header: "function", "description"
+   :widths: 10, 20
+
+   "demo()", "provides a demo of selected functions in this module"
    
