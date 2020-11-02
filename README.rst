@@ -260,7 +260,7 @@ Summary of the output:
 .. code-block::
 
    Issues: (a) high multicollinearity and (b) too many features; these lead to overfitting and poor generalization.
-   - After L2 Regularization (Ridge regression), much lower variance among the coefficient estimates [more stable estimates], and better R-squared and lower RMSE with the testing set [better generalization]
+   - After L2 Regularization (Ridge regression), lower variance among the coefficient estimates [more stable estimates], and better R-squared and lower RMSE with the testing set [better generalization]
    - After L1 Regularization (Lasso regression), coefficient estimates becoming 0 for relatively trivial features [a simpler model], and better R-squared and lower RMSE with the testing set [better generalization]
 
 
