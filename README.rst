@@ -310,13 +310,13 @@ Example 7: Decision Tree
    
    from machlearn import decision_tree as DT
    DT.demo()
-   DT.demo_DT_from_scratch()
+   DT.demo_DT_from_scratch() # not scaled, entropy, max_depth=2
 
 Summary of output:
 
 .. code-block::
 
-   Results of demo_DT_from_scratch() provides identical results as the tree graph
+   Results of demo_DT_from_scratch() provides identical results as the tree graph below.
 
 
 |image_Social_Networks_Ad_DT_notscaled_entropy_maxdepth=2|
