@@ -6,6 +6,8 @@
 
 from machlearn import decision_tree as DT
 
+DT.demo_DT_from_scratch()
+
 DT.demo_metrics()
 
 DT.demo(dataset = "iris", classifier_func = "decision_tree")

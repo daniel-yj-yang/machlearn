@@ -303,6 +303,33 @@ Summary of output:
 
 -----
 
+Example 7: Decision Tree
+------------------------
+
+.. code-block:: python
+   
+   from machlearn import decision_tree as DT
+   DT.demo()
+   DT.demo_DT_from_scratch()
+
+Summary of output:
+
+.. code-block::
+
+   This example uses a batch gradient descent (BGD) procedure, a cost function of logistic regression and a learning rate of 0.00025, with Male (1, 0) as the target.
+   - Theta estimates of [const, Height (inch), Weight (lbs)]: [0.69254314, -0.49262002, 0.19834042]
+   - Accuracy of prediction:  0.913
+
+
+|image_Social_Networks_Ad_DT_notscaled_entropy_maxdepth=2|
+
+
+.. |image_Social_Networks_Ad_DT_notscaled_entropy_maxdepth=2| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/decision_tree/images/Social_Network_Ads_DT_notscaled_entropy_max_depth=2_tree_graph.png
+   :width: 800px
+
+
+-----
+
 module: model_evaluation
 ------------------------
 

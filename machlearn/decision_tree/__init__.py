@@ -4,7 +4,7 @@
 #
 # License: BSD 3 clause
 
-from ._decision_tree import demo, demo_metrics, decision_tree_classifier
+from ._decision_tree import demo, demo_DT_from_scratch, demo_metrics, decision_tree_classifier, Gini_impurity, Entropy, decision_tree_classifier_based_on_entropy
 
 # this is for "from <package_name>.decision_tree import *"
-__all__ = ["demo", "demo_metrics", "decision_tree_classifier", ]
+__all__ = ["demo", "demo_DT_from_scratch", "demo_metrics", "decision_tree_classifier", "Gini_impurity", "Entropy", "decision_tree_classifier_based_on_entropy", ]

@@ -7,45 +7,258 @@
 from sklearn.ensemble import RandomForestClassifier, BaggingClassifier, AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.tree import DecisionTreeClassifier
 
+import numpy as np
+import pandas as pd
+
+# Reduction in uncertainty = gain in information
+#def Information_Gain(y, X):
+#   IG(y, X) = Entropy(y) - Entropy(y | X)
+
+
+# “purity” means how homogenized a group is.
+
+from numpy import ma # masked array
+
+# A good read: https://towardsdatascience.com/entropy-how-decision-trees-make-decisions-2946b9c18c8#:~:text=Entropy%20is%20a%20measure%20of,general%20is%20to%20reduce%20uncertainty.&text=This%20is%20called%20Information%20Gain,gained%20about%20Y%20from%20X.
+def Entropy(splitted_sample=[]):
+    """
+    For example: [194, 106]
+    Entropy is a measure of disorder/uncertainty (= low purity, a lack of dominant class)
+    Entropy vs. Gini impurity: both of them involve p_j * p_j, but Entropy takes the form of S = k_b*ln(Ω)
+    """
+    denominator = sum(splitted_sample)
+    if denominator == 0:
+        return 0
+    Entropy_index = 0
+    for numerator_i in range(len(splitted_sample)):
+        p_i = splitted_sample[numerator_i]/denominator
+        Entropy_index -= p_i * ma.array(ma.log2(p_i)).filled(0) # handle log2(0) warning
+    return Entropy_index
+
+
 def Gini_impurity(splitted_sample=[]):
     """
     For example: [194, 106]
+    note: summation( p_j * (1 - p_j) ) = 1 - summation( p_j^2 )
     """
     denominator = sum(splitted_sample)
-    Gini = 0
+    Gini_index = 0
     for numerator_i in range(len(splitted_sample)):
         p_i = splitted_sample[numerator_i]/denominator
-        # p_i * (1 - p_i) is the likelihood of misclassifying a new instance
-        Gini += p_i * (1 - p_i)
-    return Gini
+        # p_j * (1 - p_j) is the likelihood of misclassifying a new instance
+        Gini_index += p_i * (1 - p_i)
+    return Gini_index
 
-def Gini_impurity_plot():
+
+def Impurity_plot():
+
     import matplotlib.pyplot as plt
-    import numpy as np
-    import pandas as pd
+
     n = 200
-    X=np.arange(0,n/2+1,1)
-    Y=X[::-1]
-    Gini=Gini_impurity([X,Y])
-    plt.plot(X,Gini)
-    plt.axhline(y=0.5,color='r',linestyle='--')
-    plt.title('Gini Impurity Plot (highest = 0.5 for two classes)')
-    plt.xlabel(f'n splitted as y=0 (total #sample = {n})')
-    plt.ylabel('Gini Impurity Measure')
-    plt.ylim([0,1.1])
-    plt.show()
+    X = np.arange(0,n/2+1,1)
+    Y = X[::-1]
+
+    def plot(impurity_index, X, index_name="", title="", y_ref=None):
+        plt.figure(figsize=(5, 5))
+        plt.plot(X, impurity_index)
+        plt.axhline(y=y_ref, color='r', linestyle='--')
+        plt.title(f"{title}")
+        plt.xlabel(f'n splitted as y=0 (total #sample = {n})')
+        plt.ylabel(f"{index_name}")
+        plt.ylim([0, 1.1])
+        plt.show()
+
+    plot(Gini_impurity([X, Y]), X, index_name="Gini Impurity", title="Gini Impurity Plot (highest = 0.5 for two classes)", y_ref=0.5)
+    plot(Entropy([X, Y]),       X, index_name="Entropy",       title="Entropy Plot (highest = 1.0 for two classes)",       y_ref=1.0)
+
 
 def demo_metrics():
     """
     These generally measure the homogeneity of the target variable within the subsets.
     """
-    Gini_impurity_plot()
+    Impurity_plot()
+
+class decision_tree_node(object):
+    def __init__(self, curr_depth=None, curr_entropy=None, curr_sample_size=None, curr_y_distribution={}, best_split_feature_i=None, best_x_cutoff_value=None):
+        self.curr_depth = curr_depth
+        self.curr_entropy = curr_entropy
+        self.curr_sample_size = curr_sample_size
+        self.curr_y_distribution = curr_y_distribution
+        self.best_split_feature_i = best_split_feature_i
+        self.best_x_cutoff_value = best_x_cutoff_value
+        self.left = None
+        self.right = None
+    
+    def to_dict(self):
+        return {'curr_depth': self.curr_depth, 'curr_entropy': f"{self.curr_entropy:.3f}", 'curr_sample_size': self.curr_sample_size, 'curr_y_distribution': self.curr_y_distribution, 'best_split_feature_i': self.best_split_feature_i if self.best_x_cutoff_value is not None else None, 'best_x_cutoff_value': f"{self.best_x_cutoff_value:.3f}" if self.best_x_cutoff_value is not None else None}
+
+class decision_tree_classifier_based_on_entropy(object):
+
+    def __init__(self, max_depth = 10):
+        self.max_depth = max_depth
+        self.verbose = False
+
+    def find_best_split_in_one_specific_feature(self, x, y_true):
+
+        if type(x) == pd.DataFrame:
+            x = x.to_numpy()
+
+        if type(y_true) == pd.DataFrame:
+            y_true = y_true.to_numpy()
+
+        best_entropy = float('Inf')
+
+        from sortedcontainers import SortedSet
+
+        y_classes_values = list(SortedSet(y_true))
+        if len(y_classes_values) != 2:
+            raise ValueError("y must be binary")
+
+        from collections import Counter
+
+        y_counts = Counter(y_true)
+        before_split_entropy = Entropy([ y_counts[y_classes_values[0]], y_counts[y_classes_values[1]] ])
+
+        x_values_array = list(SortedSet(x))
+        x_values_array_length = len(x_values_array)
+
+        for value_i, this_x_value in enumerate(x_values_array):  # iterating through each value in this feature
+
+            if value_i < (x_values_array_length-1):
+                this_x_cutoff_value = (this_x_value + x_values_array[value_i+1]) / 2
+            else:
+                this_x_cutoff_value = this_x_value
+
+            # let's say we split y on this value of x
+            y_pred_left_node_counts  = Counter(y_true[x <= this_x_cutoff_value])
+            left_node_y_true_array  = [ y_pred_left_node_counts[y_classes_values[0]],  y_pred_left_node_counts[ y_classes_values[1]] ]
+            left_node_entropy  = Entropy(left_node_y_true_array)
+            left_node_n = sum(y_pred_left_node_counts.values())
+            
+            y_pred_right_node_counts = Counter(y_true[x >  this_x_cutoff_value])
+            right_node_y_true_array = [ y_pred_right_node_counts[y_classes_values[0]], y_pred_right_node_counts[y_classes_values[1]] ]
+            right_node_entropy = Entropy(right_node_y_true_array)
+            right_node_n = sum(y_pred_right_node_counts.values())
+
+            this_y_true_split_array = [left_node_y_true_array, right_node_y_true_array]
+
+            total_n = left_node_n + right_node_n
+            if total_n != len(y_true):
+                raise ValueError("internal inconsistency")
+
+            this_weighted_entropy = (left_node_entropy * left_node_n / total_n) + (right_node_entropy * right_node_n / total_n)
+            this_information_gain = before_split_entropy - this_weighted_entropy
+
+            if self.verbose:
+                print(f"#{value_i:3d}: x_cutoff_value = {this_x_cutoff_value: .3f}, entropy = {this_weighted_entropy:.3f}, information_gain = {this_information_gain:.3f}, split_y_true_array = {this_y_true_split_array}")
+
+            if this_weighted_entropy < best_entropy:
+                best_entropy = this_weighted_entropy
+                best_information_gain = this_information_gain
+                best_x_cutoff_value = this_x_cutoff_value
+                best_y_true_split_array = this_y_true_split_array
+
+            if best_entropy == 0: # a perfect split was found
+                break
+
+        return best_x_cutoff_value, best_entropy, best_information_gain, best_y_true_split_array
+
+
+    def find_best_split_across_all_features(self, X, y_true):
+
+        if type(X) == pd.DataFrame:
+            X = X.to_numpy()
+
+        if type(y_true) == pd.DataFrame:
+            y_true = y_true.to_numpy()
+
+        best_entropy = float('Inf')
+
+        n_samples = X.shape[0]        
+        n_features = X.shape[1]
+
+        for feature_i in range(n_features):
+            x_cutoff_value, entropy, information_gain, y_true_split_array = self.find_best_split_in_one_specific_feature(X[:,feature_i], y_true)
+            if self.verbose:
+                print(f"feature # {feature_i: 2d}, x_cutoff_value = {x_cutoff_value: .3f}, entropy = {entropy:.3f}, information_gain = {information_gain:.3f}, y_true_split_array = {y_true_split_array}")
+            if entropy == 0:  # a perfect split was found
+                best_split_feature_i = feature_i
+                best_x_cutoff_value, best_entropy, best_information_gain, best_y_true_split_array = x_cutoff_value, entropy, information_gain, y_true_split_array
+                break
+            elif entropy < best_entropy:
+                best_split_feature_i = feature_i
+                best_x_cutoff_value, best_entropy, best_information_gain, best_y_true_split_array = x_cutoff_value, entropy, information_gain, y_true_split_array
+
+        return best_split_feature_i, best_x_cutoff_value, best_entropy, best_information_gain, best_y_true_split_array
+
+    def fit(self, X, y_true, depth=0):
+
+        from collections import Counter
+        
+        if self.verbose:
+            print(f"depth={depth}")
+
+        if type(X) == pd.DataFrame:
+            X = X.to_numpy()
+
+        if type(y_true) == pd.DataFrame:
+            y_true = y_true.to_numpy()
+
+        curr_sample_size = len(y_true)
+        if curr_sample_size == 0:  # no data left to be split
+            return None
+
+        from sortedcontainers import SortedDict
+        curr_y_distribution = SortedDict(Counter(y_true))
+
+        curr_entropy = Entropy(list(Counter(y_true).values()))
+        if curr_entropy == 0 or depth == self.max_depth: # curr_entropy = 0 means already perfect, no need to split
+            curr_node = decision_tree_node(curr_depth = depth, curr_entropy = curr_entropy, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = None, best_x_cutoff_value = None)
+            return curr_node
+
+        best_split_feature_i, best_x_cutoff_value, best_entropy, best_information_gain, best_y_true_split_array = self.find_best_split_across_all_features(X, y_true)
+        left_rows = X[:, best_split_feature_i] <= best_x_cutoff_value
+        right_rows = X[:, best_split_feature_i] > best_x_cutoff_value
+        X_left, X_right = X[left_rows], X[right_rows]
+        y_true_left, y_true_right = y_true[left_rows], y_true[right_rows]
+        curr_node = decision_tree_node(curr_depth = depth, curr_entropy = curr_entropy, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = best_split_feature_i, best_x_cutoff_value = best_x_cutoff_value)
+        # adding left and right children nodes into the node dict
+        curr_node.left  = self.fit( X_left,  y_true_left,  depth+1)
+        curr_node.right = self.fit( X_right, y_true_right, depth+1)
+        #print(parent_node)
+
+        return curr_node
+
+    def order(self, curr_node, type="Inorder"):
+        # Recursive travesal
+        if curr_node:
+            if type == "Inorder":
+                return_dict = {}
+                return_dict['left'] = self.order(curr_node.left, type=type)
+                return_dict['curr'] = curr_node.to_dict()
+                return_dict['right'] = self.order(curr_node.right, type=type)
+                return return_dict
+            if type == "Preorder":
+                return_dict = {}
+                return_dict['curr'] = curr_node.to_dict()
+                return_dict['left'] = self.order(curr_node.left, type=type)
+                return_dict['right'] = self.order(curr_node.right, type=type)
+                return return_dict
+            if type == "Postorder":
+                return_dict = {}
+                return_dict['left'] = self.order(curr_node.left, type=type)
+                return_dict['right'] = self.order(curr_node.right, type=type)
+                return_dict['curr'] = curr_node.to_dict()
+                return return_dict
+
 
 def decision_tree_classifier(*args, **kwargs):
     return DecisionTreeClassifier(*args, **kwargs)
 
+
 def random_forest(*args, **kwargs):
     return RandomForestClassifier(*args, **kwargs)
+
 
 def bagging(*args, **kwargs):
     return BaggingClassifier(*args, **kwargs)
@@ -268,10 +481,11 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
             class_names = ['0=not purchased', '1=purchased']
 
         # Approach 1
-        from dtreeviz.trees import dtreeviz
-        viz = dtreeviz(classifier_grid.best_estimator_.steps[1][1], StandardScaler().fit_transform(X_train), y_train, target_name="target", feature_names=feature_cols, class_names=class_names)
-        # print(type(viz)) # <class 'dtreeviz.trees.DTreeViz'>
-        viz.view()
+        if False:
+            from dtreeviz.trees import dtreeviz
+            viz = dtreeviz(classifier_grid.best_estimator_.steps[1][1], StandardScaler().fit_transform(X_train), y_train, target_name="target", feature_names=feature_cols, class_names=class_names)
+            # print(type(viz)) # <class 'dtreeviz.trees.DTreeViz'>
+            viz.view()
 
         # Approach 2
         from sklearn.tree import export_graphviz
@@ -303,6 +517,21 @@ def demo(dataset="Social_Network_Ads", classifier_func="decision_tree"):
     available_classifier_functions = ("decision_tree", "DT", "random_forest", "bagging", "AdaBoost", "GBM",)
 
     if dataset in available_datasets and classifier_func in available_classifier_functions:
-        _demo(dataset = dataset, classifier_func = classifier_func)
+        return _demo(dataset = dataset, classifier_func = classifier_func)
     else:
         raise TypeError(f"either dataset [{dataset}] or classifier function [{classifier_func}] is not defined")
+
+
+def demo_DT_from_scratch(data="Social_Network_Ads"):
+    from ..datasets import public_dataset
+    data = public_dataset('Social_Network_Ads')
+    X = data[['Age', 'EstimatedSalary']]
+    y = data['Purchased']
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
+    tree = decision_tree_classifier_based_on_entropy(max_depth = 2)
+    from sklearn.preprocessing import scale
+    tree.find_best_split_in_one_specific_feature(scale(X_train['Age']), y_train)
+    tree.find_best_split_across_all_features(scale(X_train), y_train)
+    root_node = tree.fit(scale(X_train), y_train)
+    tree.order(root_node, type="Preorder")
