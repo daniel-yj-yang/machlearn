@@ -313,8 +313,7 @@ def plot_PR_curve(fitted_model,
 
     if plot_threshold:
         for threshold in (0.01, 0.50, 0.99):
-            cm = confusion_matrix((y_true == y_pos_label).astype(bool),
-                                  (y_pred_score >= threshold).astype(bool))
+            cm = confusion_matrix((y_true == y_pos_label).astype(bool), (y_pred_score >= threshold).astype(bool))
             TP = cm[1, 1]
             TN = cm[0, 0]
             FP = cm[0, 1]
@@ -326,10 +325,9 @@ def plot_PR_curve(fitted_model,
             else:
                 precision = TP / (TP+FP)
             recall = TP / (TP+FN)
-            plt.plot([recall], [precision], marker='x', markersize=10,
-                     color="red", label=f"d={threshold:4.2f}")
-            plt.annotate(text=f"d={threshold:4.2f}", xy=(
-                recall+0.01, precision+0.01), color="red")
+            if precision is not None:
+                plt.plot([recall], [precision], marker='x', markersize=10, color="red", label=f"d={threshold:4.2f}")
+                plt.annotate(text=f"d={threshold:4.2f}", xy=(recall+0.01, precision+0.01), color="red")
 
     fig.tight_layout()
     plt.show()
