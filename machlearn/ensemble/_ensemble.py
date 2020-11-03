@@ -189,7 +189,7 @@ def _demo(dataset):
 
         # ensemble
         estimator_list = [("kNN", grid_kNN.best_estimator_), ("log_reg", model_log_reg), ("random_forest", grid_random_forest.best_estimator_)]
-        ensemble_classifier = voting(estimator_list, random_state=1) # make predicitons by majority vote
+        ensemble_classifier = voting(estimator_list) # make predicitons by majority vote
         ensemble_classifier.fit(X_train, y_train)
         print(f"- ensemble (voting, make predicitons by majority vote): {ensemble_classifier.score(X_test, y_test)}")
 
