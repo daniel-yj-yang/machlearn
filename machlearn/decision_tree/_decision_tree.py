@@ -431,8 +431,8 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
         hyperparameters={
             'scaler__with_mean': [True],
             'scaler__with_std': [True],
-            'classifier__criterion': ("gini", ),#"entropy",),
-            'classifier__max_depth': (2,), #range(1, 10),
+            'classifier__criterion': ("gini", "entropy",),
+            'classifier__max_depth': range(1, 15),
         }
 
         model_name = "Decision Tree"
@@ -609,7 +609,10 @@ def demo(dataset="Social_Network_Ads", classifier_func="decision_tree"):
 
 
 def demo_DT_from_scratch(data="Social_Network_Ads", impurity_measure='entropy', max_depth=2):
-
+    """
+    impurity_measure: 'entropy' or 'gini_impurity'
+    """
+    
     from ..datasets import public_dataset
     data = public_dataset('Social_Network_Ads')
     X = data[['Age', 'EstimatedSalary']]
