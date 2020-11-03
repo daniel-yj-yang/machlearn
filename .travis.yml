@@ -2,7 +2,8 @@
 os: linux
 dist: xenial
 before_install:
-  - "if [[ \"$TRAVIS_OS_NAME\" == \"linux\" ]]; then CMAKE_INSTALLER=install-cmake.sh; curl -sSL https://cmake.org/files/v3.18/cmake-3.18.4-Linux-x86_64.sh -o ${CMAKE_INSTALLER}; chmod +x ${CMAKE_INSTALLER}; sudo ./${CMAKE_INSTALLER} --prefix=/usr/local --skip-license; export PATH=/usr/local/bin:${PATH}; fi"
+  #- "if [[ \"$TRAVIS_OS_NAME\" == \"linux\" ]]; then CMAKE_INSTALLER=install-cmake.sh; curl -sSL https://cmake.org/files/v3.18/cmake-3.18.4-Linux-x86_64.sh -o ${CMAKE_INSTALLER}; chmod +x ${CMAKE_INSTALLER}; sudo ./${CMAKE_INSTALLER} --prefix=/usr/local --skip-license; export PATH=/usr/local/bin:${PATH}; fi"
+  - "CMAKE_INSTALLER=.travis_ci.dependencies/install-cmake-3.18.4-Linux-x86_64.sh; chmod +x ${CMAKE_INSTALLER}; sudo ${CMAKE_INSTALLER} --prefix=/usr/local --skip-license; export PATH=/usr/local/bin:${PATH}"
   - "sudo apt-get -y install graphviz"
 install: 
   - "python setup.py install"
