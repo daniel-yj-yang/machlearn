@@ -21,7 +21,7 @@ __all__ = ["model_evaluation",
            "linear_regression",
            "DSA",
            "imbalanced_data",
-           "dimensionality_reduction",
+           "decomposition",
            "ensemble",
            ]
 

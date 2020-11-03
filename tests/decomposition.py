@@ -4,7 +4,7 @@
 #
 # License: BSD 3 clause
 
-from machlearn import dimensionality_reduction as DimsR
+from machlearn import decomposition as DimsR
 
 DimsR.demo()
 

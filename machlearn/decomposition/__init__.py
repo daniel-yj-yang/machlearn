@@ -4,7 +4,7 @@
 #
 # License: BSD 3 clause
 
-from ._dimensionality_reduction import demo, principal_component_analysis, independent_component_analysis, canonical_correlation_analysis
+from ._decomposition import demo, principal_component_analysis, independent_component_analysis, canonical_correlation_analysis
 
-# this is for "from <package_name>.dimensionality_reduction import *"
+# this is for "from <package_name>.decomposition import *"
 __all__ = ["demo", "principal_component_analysis", "independent_component_analysis", "canonical_correlation_analysis", ]

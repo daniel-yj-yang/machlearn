@@ -484,8 +484,8 @@ module: imbalanced_data
 
 -----
 
-module: dimensionality_reduction
---------------------------------
+module: decomposition
+---------------------
 
 .. csv-table::
    :header: "function", "description"
