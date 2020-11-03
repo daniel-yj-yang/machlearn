@@ -158,7 +158,7 @@ def _demo(dataset):
         from sklearn.model_selection import train_test_split
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, stratify=y, random_state=1) # Setting ‘stratify’ to y makes our training split represent the proportion of each value in the y variable. 
         
-        print("Hyperparameters:")
+        print("\nHyperparameters:")
 
         # model_1: kNN
         from sklearn.model_selection import GridSearchCV
