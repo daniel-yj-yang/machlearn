@@ -141,8 +141,8 @@ Example 3: Decision Boundary Comparison (Classification with Two Features)
    from machlearn import decision_tree as DT
    DT.demo("Social_Network_Ads", classifier_func = "DT")
 
-   from machlearn import logistic_regression as logreg
-   logreg.demo("Social_Network_Ads")
+   from machlearn import logistic_regression as log_reg
+   log_reg.demo("Social_Network_Ads")
 
    from machlearn import neural_network as NN
    NN.demo("Social_Network_Ads")
@@ -266,7 +266,7 @@ Summary of output:
 .. code-block::
 
    Issues: (a) high multicollinearity and (b) too many features; these lead to overfitting and poor generalization.
-   - After L2 Regularization (Ridge regression), lower variance among the coefficient estimates [more stable estimates], and better R-squared and lower RMSE with the testing set [better generalization]
+   - After L2 Regularization (Ridge regression), reduced variance among the coefficient estimates [more robust/stable estimates], and better R-squared and lower RMSE with the testing set [better generalization]
    - After L1 Regularization (Lasso regression), coefficient estimates becoming 0 for relatively trivial features [a simpler model], and better R-squared and lower RMSE with the testing set [better generalization]
 
 

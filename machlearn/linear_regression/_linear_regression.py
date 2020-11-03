@@ -157,7 +157,7 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
     print('When (b) model is too complex and has trivial predictors, we use L1 Regularization, which adds "magnitude" of coefficient (L1 norm) as a penalty term to the cost function.')
     print('\nL2 regularization is also known as Ridge regression, while L1 regularization is also known as Lasso regression, and a combination of them is known as elastic net.')
     print('After regularization, we would expect to see better generalization, including reduced RMSE and improved R^2.')
-    print('After L2 regularization, we would expect to see smaller variances among the coefficient estimates, that is, the estimates less likely changing rapidly.')
+    print('After L2 regularization, we would expect to see smaller variances among the coefficient estimates, that is, the estimates less likely changing rapidly and hence more robust.')
     print('After L1 regularization, we would expect to see a simpler model with many coefficient estimates = 0.')
     print('For either L2 or L1 regularization, there is also a parameter called alpha (or lambda), which governs the amount of regularization. It takes GridCV (e.g., RidgeCV or LassoCV) to identify the optimal number of alpha (or lambda).\n')
 
