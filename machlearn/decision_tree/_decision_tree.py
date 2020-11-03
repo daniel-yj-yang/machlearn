@@ -27,9 +27,11 @@ def Entropy(splitted_sample=[]):
     Entropy vs. Gini impurity: both of them involve p_j * p_j, but Entropy takes the form of S = k_b*ln(Ω)
     """
     denominator = sum(splitted_sample)
+    if denominator == 0:
+        return 0
     Entropy_index = 0
     for numerator_i in range(len(splitted_sample)):
-        p_i = ma.array(splitted_sample[numerator_i]/denominator).filled(0)
+        p_i = splitted_sample[numerator_i]/denominator
         Entropy_index -= p_i * ma.array(ma.log2(p_i)).filled(0) # handle log2(0) warning
     return Entropy_index
 
@@ -66,8 +68,15 @@ def Impurity_plot():
         plt.ylim([0, 1.1])
         plt.show()
 
-    plot(Gini_impurity([X, Y]), X, index_name="Gini Impurity", title="Gini Impurity Plot (highest = 0.5 for two classes)", y_ref=0.5)
-    plot(Entropy([X, Y]),       X, index_name="Entropy",       title="Entropy Plot (highest = 1.0 for two classes)",       y_ref=1.0)
+    measure = np.empty_like(X)
+    for i in range(len(X)):
+        measure[i] = Gini_impurity([X[i], Y[i]])
+    plot(measure, X, index_name="Gini Impurity", title="Gini Impurity Plot (highest = 0.5 for two classes)", y_ref=0.5)
+
+    measure = np.empty_like(X)
+    for i in range(len(X)):
+        measure[i] = Entropy([X[i], Y[i]])
+    plot(measure, X, index_name="Entropy",       title="Entropy Plot (highest = 1.0 for two classes)",       y_ref=1.0)
 
 
 def demo_metrics():
