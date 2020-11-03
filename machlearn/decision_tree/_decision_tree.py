@@ -27,11 +27,9 @@ def Entropy(splitted_sample=[]):
     Entropy vs. Gini impurity: both of them involve p_j * p_j, but Entropy takes the form of S = k_b*ln(Ω)
     """
     denominator = sum(splitted_sample)
-    if denominator == 0:
-        return 0
     Entropy_index = 0
     for numerator_i in range(len(splitted_sample)):
-        p_i = splitted_sample[numerator_i]/denominator
+        p_i = ma.array(splitted_sample[numerator_i]/denominator).filled(0)
         Entropy_index -= p_i * ma.array(ma.log2(p_i)).filled(0) # handle log2(0) warning
     return Entropy_index
 
