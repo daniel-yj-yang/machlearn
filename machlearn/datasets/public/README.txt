@@ -7,7 +7,7 @@
 
 Disclaimer:
 
-- The datasets are shared with the sole intention of providing the convenience to access publicly available datasets and reproduce/compare results.
+- The datasets are shared with the sole intention to provide the convenience of accessing publicly available datasets and reproducing/comparing results.
 - They are shared under a good-faith understanding that they are widely viewed and accepted as public-domain datasets.
 - If there is any misunderstanding, please contact the author.
 - The author does not own any of these datasets.

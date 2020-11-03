@@ -86,6 +86,7 @@ def demo_metrics():
     """
     Impurity_plot()
 
+
 class decision_tree_node(object):
     def __init__(self, curr_depth=None, curr_impurity=None, curr_sample_size=None, curr_y_distribution={}, best_split_feature_i=None, best_x_cutoff_value=None):
         self.curr_depth = curr_depth
@@ -340,15 +341,24 @@ class decision_tree_classifier_from_scratch(object):
 
 
 def decision_tree_classifier(*args, **kwargs):
+    """
+    base model
+    """
     return DecisionTreeClassifier(*args, **kwargs)
 
 
-def random_forest(*args, **kwargs):
-    return RandomForestClassifier(*args, **kwargs)
-
-
 def bagging(*args, **kwargs):
+    """
+    an improvement to DT
+    """
     return BaggingClassifier(*args, **kwargs)
+
+
+def random_forest(*args, **kwargs):
+    """
+    an improvement to bagging
+    """
+    return RandomForestClassifier(*args, **kwargs)
 
 
 def AdaBoost(*args, **kwargs):
@@ -611,6 +621,10 @@ def demo(dataset="Social_Network_Ads", classifier_func="decision_tree"):
 def demo_DT_from_scratch(data="Social_Network_Ads", impurity_measure='entropy', max_depth=2):
     """
     impurity_measure: 'entropy' or 'gini_impurity'
+
+    shortcoming of DT: 
+    (1) biggest information gain locally, but globally; that is, there is always a better tree in the overall picture
+    (2) we may be asking too trivial questions at the greater depths (e.g., > 5 or 6-depth)
     """
     
     from ..datasets import public_dataset
@@ -634,3 +648,25 @@ def demo_DT_from_scratch(data="Social_Network_Ads", impurity_measure='entropy', 
     y_pred_score = DT_model.predict_proba(X_test)
     plot_confusion_matrix(y_true=y_test, y_pred=DT_model.predict(X_test), y_classes=y_classes)
     plot_ROC_curve(y_true=y_test, y_pred_score=y_pred_score[:,1])
+
+#
+# References
+#
+# decision tree:
+#
+# 1. Gini impurity: 
+# https://towardsdatascience.com/gini-impurity-measure-dbd3878ead33
+# http://www.learnbymarketing.com/481/decision-tree-flavors-gini-info-gain/
+# https://towardsdatascience.com/gini-index-vs-information-entropy-7a7e4fed3fcb
+# https://medium.com/analytics-steps/understanding-the-gini-index-and-information-gain-in-decision-trees-ab4720518ba8
+#
+# 2. Entropy: 
+# https://www.geeksforgeeks.org/gini-impurity-and-entropy-in-decision-tree-ml/
+#
+# 3. DT from scratch in Python: 
+# https://medium.com/@penggongting/implementing-decision-tree-from-scratch-in-python-c732e7c69aea
+# https://towardsdatascience.com/decision-tree-from-scratch-in-python-46e99dfea775
+#
+# 4. older version of DT from scratch in Python: 
+# https://machinelearningmastery.com/implement-decision-tree-algorithm-scratch-python/
+#
