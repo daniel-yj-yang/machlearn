@@ -6,5 +6,5 @@
 
 from machlearn import neural_network as NN
 
-NN.demo("Fashion_MNIST")
+NN.demo("Social_Network_Ads")
 
