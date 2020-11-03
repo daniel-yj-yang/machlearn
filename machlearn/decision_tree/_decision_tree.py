@@ -303,9 +303,9 @@ class decision_tree_classifier_based_on_entropy(object):
 
         n_rows = X.shape[0]
         if proba:
-            prediction = np.array([-999.] * n_rows, dtype='float64')
+            prediction = np.zeros(shape=(n_rows, 2))
         else:
-            prediction = np.array([-999] * n_rows, dtype='int64')
+            prediction = np.zeros(shape=(n_rows, 1))
         for this_row_i in range(n_rows):
             prediction[this_row_i] = self._predict(X[this_row_i,:], proba=proba)
         return prediction
@@ -325,9 +325,9 @@ class decision_tree_classifier_based_on_entropy(object):
                 curr_node = curr_node.right
         # arriving at a leaf node now
         if proba:
-            return curr_node.y_class1_prob
+            return np.array([1-curr_node.y_class1_prob, curr_node.y_class1_prob])
         else:
-            return curr_node.y_dominant_class
+            return np.array([curr_node.y_dominant_class])
 
 
 def decision_tree_classifier(*args, **kwargs):
@@ -616,6 +616,6 @@ def demo_DT_from_scratch(data="Social_Network_Ads", max_depth=2):
     #print(DT_model.predict(X_train))
     #print(DT_model.predict_proba(X_train))
     from ..model_evaluation import plot_confusion_matrix, plot_ROC_curve, plot_ROC_and_PR_curves
+    y_pred_score = DT_model.predict_proba(X_test)
     plot_confusion_matrix(y_true=y_test, y_pred=DT_model.predict(X_test), y_classes=y_classes)
-    plot_ROC_curve(y_true=y_test, y_pred_score=DT_model.predict_proba(X_test))
-    
+    plot_ROC_curve(y_true=y_test, y_pred_score=y_pred_score[:,1])
