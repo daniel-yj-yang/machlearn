@@ -144,6 +144,9 @@ Example 3: Decision Boundary Comparison (Classification with Two Features)
    from machlearn import logistic_regression as logreg
    logreg.demo("Social_Network_Ads")
 
+   from machlearn import neural_network as NN
+   NN.demo("Social_Network_Ads")
+
 
 .. list-table::
    :widths: 25 25
@@ -154,7 +157,7 @@ Example 3: Decision Boundary Comparison (Classification with Two Features)
    * - |image_SVM_decision_boundary_testing_set|
      - |image_DT_decision_boundary_testing_set|
    * - |image_logistic_regression_decision_boundary_testing_set|
-     -
+     - |image_NN_MLP_decision_boundary_testing_set|
 
 
 .. |image_kNN_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/Social_Network_Ads_decision_boundary_testing_set.png
@@ -170,6 +173,9 @@ Example 3: Decision Boundary Comparison (Classification with Two Features)
    :width: 400px
 
 .. |image_logistic_regression_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/logistic_regression/images/Social_Network_Ads_decision_boundary_testing_set.png
+   :width: 400px
+
+.. |image_NN_MLP_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/neural_network/images/Social_Nework_Ads_MLP_decision_boundary_testing_set.png
    :width: 400px
 
 
