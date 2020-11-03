@@ -99,9 +99,11 @@ def Matthew_Correlation_Coefficient(TP, TN, FP, FN):
     0 = andom prediction
     -1 = worst possible prediction.
     """
-    try:
-        MCC = ((TP*TN)-(FP*FN)) / (((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))**0.5)
-    except:
+    num = (TP*TN)-(FP*FN)
+    denom = ((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))**0.5
+    if denom != 0:
+        MCC = num / denom
+    else:
         MCC = None
     return MCC
 
@@ -151,10 +153,12 @@ def plot_confusion_matrix(y_true,
         TN = cm[0, 0]
         FP = cm[0, 1]
         FN = cm[1, 0]
-        try:
+        if (TP+FP) !=0:
             precision = TP / (TP+FP)
-        except:
+            precision_text = f"{precision:.3f}"
+        else:
             precision = None
+            precision_text = "nan"
         sensitivity = TPR = recall = TP / (TP+FN)
         # or, f1_score = 2*precision*recall / (precision + recall) # f1_score is sensitive to class imbalance
         f1_score = TP / (TP + 0.5*(FP+FN))
@@ -162,10 +166,13 @@ def plot_confusion_matrix(y_true,
         specificity = 1 - FPR
         geometric_mean = (TPR * (1-FPR)) ** 0.5 # GM measures the balance between classification performances on both the majority and minority classes. Insensitive to imbalance classes
         MCC = Matthew_Correlation_Coefficient(TP, TN, FP, FN)
-        stats_text = "\n\nAccuracy(higher TP and TN) = (TP+TN)/Total = {:0.3f}\nF1 Score(lower FP and FN) = TP/(TP+0.5*(FP+FN)) = {:0.3f}\nG-Mean = sqrt(TPR*(1-FPR)) = {:0.3f}\nMatthew's Correlation Coefficient = {:0.3f}\n\nTPR/recall/sensitivity = 1-FNR = p($y_{{pred}}$=1 | $y_{{true}}$=1) = {:0.3f}\nFPR = p($y_{{pred}}$=1 | $y_{{true}}$=0) = {:0.3f}\n\nPrecision = 1-FDR = p($y_{{true}}$=1 | $y_{{pred}}$=1) = {:0.3f}".format(
-            accuracy, f1_score, geometric_mean, MCC, recall, FPR, precision)
+        if MCC is None:
+            MCC_text = 'nan'
+        else:
+            MCC_text = f"{MCC:.3f}"
+        stats_text = f"\n\nAccuracy(higher TP and TN) = (TP+TN)/Total = {accuracy:0.3f}\nF1 Score(lower FP and FN) = TP/(TP+0.5*(FP+FN)) = {f1_score:0.3f}\nG-Mean = sqrt(TPR*(1-FPR)) = {geometric_mean:0.3f}\nMatthew's Correlation Coefficient = {MCC_text}\n\nTPR/recall/sensitivity = 1-FNR = p($y_{{pred}}$=1 | $y_{{true}}$=1) = {recall:0.3f}\nFPR = p($y_{{pred}}$=1 | $y_{{true}}$=0) = {FPR:0.3f}\n\nPrecision = 1-FDR = p($y_{{true}}$=1 | $y_{{pred}}$=1) = {precision_text}"
     else:
-        stats_text = "\n\nAccuracy={:0.3f}".format(accuracy)
+        stats_text = f"\n\nAccuracy={accuracy:0.3f}"
 
     old_font_size = plt.rcParams.get('font.size')
     plt.rcParams.update({'font.size': __font_size__})
@@ -314,10 +321,10 @@ def plot_PR_curve(fitted_model,
             FN = cm[1, 0]
             TPR = TP / (TP+FN)
             FPR = FP / (TN+FP)
-            try:
-                precision = TP / (TP+FP)
-            except:
+            if TP+FP == 0:
                 precision = None
+            else:
+                precision = TP / (TP+FP)
             recall = TP / (TP+FN)
             plt.plot([recall], [precision], marker='x', markersize=10,
                      color="red", label=f"d={threshold:4.2f}")

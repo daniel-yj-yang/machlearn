@@ -14,7 +14,6 @@ import pandas as pd
 #def Information_Gain(y, X):
 #   IG(y, X) = Entropy(y) - Entropy(y | X)
 
-
 # “purity” means how homogenized a group is.
 
 from numpy import ma # masked array
@@ -42,6 +41,8 @@ def Gini_impurity(splitted_sample=[]):
     note: summation( p_j * (1 - p_j) ) = 1 - summation( p_j^2 )
     """
     denominator = sum(splitted_sample)
+    if denominator == 0:
+        return 0
     Gini_index = 0
     for numerator_i in range(len(splitted_sample)):
         p_i = splitted_sample[numerator_i]/denominator
@@ -86,9 +87,9 @@ def demo_metrics():
     Impurity_plot()
 
 class decision_tree_node(object):
-    def __init__(self, curr_depth=None, curr_entropy=None, curr_sample_size=None, curr_y_distribution={}, best_split_feature_i=None, best_x_cutoff_value=None):
+    def __init__(self, curr_depth=None, curr_impurity=None, curr_sample_size=None, curr_y_distribution={}, best_split_feature_i=None, best_x_cutoff_value=None):
         self.curr_depth = curr_depth
-        self.curr_entropy = curr_entropy
+        self.curr_impurity = curr_impurity
         self.curr_sample_size = curr_sample_size
         self.curr_y_distribution = curr_y_distribution
 
@@ -126,14 +127,22 @@ class decision_tree_node(object):
         self.right = None
     
     def to_dict(self):
-        return {'curr_depth': self.curr_depth, 'curr_entropy': f"{self.curr_entropy:.3f}", 'curr_sample_size': self.curr_sample_size, 'curr_y_distribution': self.curr_y_distribution, 'curr_dominant_y_class': self.y_dominant_class, 'curr_y_class1_prob': f"{self.y_class1_prob:.3f}" if self.y_class1_prob is not None else None, 'best_split_feature_i': self.best_split_feature_i if self.best_x_cutoff_value is not None else None, 'best_x_cutoff_value': f"{self.best_x_cutoff_value:.3f}" if self.best_x_cutoff_value is not None else None}
+        return {'curr_depth': self.curr_depth, 'curr_impurity': f"{self.curr_impurity:.3f}", 'curr_sample_size': self.curr_sample_size, 'curr_y_distribution': self.curr_y_distribution, 'curr_dominant_y_class': self.y_dominant_class, 'curr_y_class1_prob': f"{self.y_class1_prob:.3f}" if self.y_class1_prob is not None else None, 'best_split_feature_i': self.best_split_feature_i if self.best_x_cutoff_value is not None else None, 'best_x_cutoff_value': f"{self.best_x_cutoff_value:.3f}" if self.best_x_cutoff_value is not None else None}
 
-class decision_tree_classifier_based_on_entropy(object):
 
-    def __init__(self, max_depth = 10):
+class decision_tree_classifier_from_scratch(object):
+
+    def __init__(self, max_depth = 10, impurity_measure='entropy'):
         self.max_depth = max_depth
         self.verbose = False
         self.root_node = decision_tree_node()
+        if impurity_measure not in ['entropy', 'gini_impurity']:
+            raise ValueError('invalid impurity_measure value')
+        self.impurity_measure = impurity_measure
+        if self.impurity_measure == 'entropy':
+            self.impurity_func = Entropy
+        elif self.impurity_measure == 'gini_impurity':
+            self.impurity_func = Gini_impurity
 
     def find_best_split_in_one_specific_feature(self, x, y_true):
 
@@ -143,7 +152,7 @@ class decision_tree_classifier_based_on_entropy(object):
         if type(y_true) == pd.DataFrame:
             y_true = y_true.to_numpy()
 
-        best_entropy = float('Inf')
+        best_impurity = float('Inf')
 
         from sortedcontainers import SortedSet
 
@@ -154,7 +163,7 @@ class decision_tree_classifier_based_on_entropy(object):
         from collections import Counter
 
         y_counts = Counter(y_true)
-        before_split_entropy = Entropy([ y_counts[y_classes_values[0]], y_counts[y_classes_values[1]] ])
+        before_split_impurity = self.impurity_func([ y_counts[y_classes_values[0]], y_counts[y_classes_values[1]] ])
 
         x_values_array = list(SortedSet(x))
         x_values_array_length = len(x_values_array)
@@ -169,12 +178,12 @@ class decision_tree_classifier_based_on_entropy(object):
             # let's say we split y on this value of x
             y_pred_left_node_counts  = Counter(y_true[x <= this_x_cutoff_value])
             left_node_y_true_array  = [ y_pred_left_node_counts[y_classes_values[0]],  y_pred_left_node_counts[ y_classes_values[1]] ]
-            left_node_entropy  = Entropy(left_node_y_true_array)
+            left_node_impurity  = self.impurity_func(left_node_y_true_array)
             left_node_n = sum(y_pred_left_node_counts.values())
             
             y_pred_right_node_counts = Counter(y_true[x >  this_x_cutoff_value])
             right_node_y_true_array = [ y_pred_right_node_counts[y_classes_values[0]], y_pred_right_node_counts[y_classes_values[1]] ]
-            right_node_entropy = Entropy(right_node_y_true_array)
+            right_node_impurity = self.impurity_func(right_node_y_true_array)
             right_node_n = sum(y_pred_right_node_counts.values())
 
             this_y_true_split_array = [left_node_y_true_array, right_node_y_true_array]
@@ -183,22 +192,22 @@ class decision_tree_classifier_based_on_entropy(object):
             if total_n != len(y_true):
                 raise ValueError("internal inconsistency")
 
-            this_weighted_entropy = (left_node_entropy * left_node_n / total_n) + (right_node_entropy * right_node_n / total_n)
-            this_information_gain = before_split_entropy - this_weighted_entropy
+            this_weighted_impurity = (left_node_impurity * left_node_n / total_n) + (right_node_impurity * right_node_n / total_n)
+            this_information_gain = before_split_impurity - this_weighted_impurity
 
             if self.verbose:
-                print(f"#{value_i:3d}: x_cutoff_value = {this_x_cutoff_value: .3f}, entropy = {this_weighted_entropy:.3f}, information_gain = {this_information_gain:.3f}, split_y_true_array = {this_y_true_split_array}")
+                print(f"#{value_i:3d}: x_cutoff_value = {this_x_cutoff_value: .3f}, impurity = {this_weighted_impurity:.3f}, information_gain = {this_information_gain:.3f}, split_y_true_array = {this_y_true_split_array}")
 
-            if this_weighted_entropy < best_entropy:
-                best_entropy = this_weighted_entropy
+            if this_weighted_impurity < best_impurity:
+                best_impurity = this_weighted_impurity
                 best_information_gain = this_information_gain
                 best_x_cutoff_value = this_x_cutoff_value
                 best_y_true_split_array = this_y_true_split_array
 
-            if best_entropy == 0: # a perfect split was found
+            if best_impurity == 0: # a perfect split was found
                 break
 
-        return best_x_cutoff_value, best_entropy, best_information_gain, best_y_true_split_array
+        return best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array
 
 
     def find_best_split_across_all_features(self, X, y_true):
@@ -209,24 +218,24 @@ class decision_tree_classifier_based_on_entropy(object):
         if type(y_true) == pd.DataFrame:
             y_true = y_true.to_numpy()
 
-        best_entropy = float('Inf')
+        best_impurity = float('Inf')
 
         n_samples = X.shape[0]        
         n_features = X.shape[1]
 
         for feature_i in range(n_features):
-            x_cutoff_value, entropy, information_gain, y_true_split_array = self.find_best_split_in_one_specific_feature(X[:,feature_i], y_true)
+            x_cutoff_value, impurity, information_gain, y_true_split_array = self.find_best_split_in_one_specific_feature(X[:,feature_i], y_true)
             if self.verbose:
-                print(f"feature # {feature_i: 2d}, x_cutoff_value = {x_cutoff_value: .3f}, entropy = {entropy:.3f}, information_gain = {information_gain:.3f}, y_true_split_array = {y_true_split_array}")
-            if entropy == 0:  # a perfect split was found
+                print(f"feature # {feature_i: 2d}, x_cutoff_value = {x_cutoff_value: .3f}, impurity = {impurity:.3f}, information_gain = {information_gain:.3f}, y_true_split_array = {y_true_split_array}")
+            if impurity == 0:  # a perfect split was found
                 best_split_feature_i = feature_i
-                best_x_cutoff_value, best_entropy, best_information_gain, best_y_true_split_array = x_cutoff_value, entropy, information_gain, y_true_split_array
+                best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array = x_cutoff_value, impurity, information_gain, y_true_split_array
                 break
-            elif entropy < best_entropy:
+            elif impurity < best_impurity:
                 best_split_feature_i = feature_i
-                best_x_cutoff_value, best_entropy, best_information_gain, best_y_true_split_array = x_cutoff_value, entropy, information_gain, y_true_split_array
+                best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array = x_cutoff_value, impurity, information_gain, y_true_split_array
 
-        return best_split_feature_i, best_x_cutoff_value, best_entropy, best_information_gain, best_y_true_split_array
+        return best_split_feature_i, best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array
 
     def fit(self, X, y_true, depth=0):
 
@@ -248,18 +257,18 @@ class decision_tree_classifier_based_on_entropy(object):
         from sortedcontainers import SortedDict
         curr_y_distribution = SortedDict(Counter(y_true))
 
-        curr_entropy = Entropy(list(Counter(y_true).values()))
+        curr_impurity = self.impurity_func(list(Counter(y_true).values()))
 
-        if curr_entropy == 0 or depth == self.max_depth: # curr_entropy = 0 means already perfect, no need to split
-            curr_node = decision_tree_node(curr_depth = depth, curr_entropy = curr_entropy, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = None, best_x_cutoff_value = None)
+        if curr_impurity == 0 or depth == self.max_depth: # curr_impurity = 0 means already perfect, no need to split
+            curr_node = decision_tree_node(curr_depth = depth, curr_impurity = curr_impurity, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = None, best_x_cutoff_value = None)
             return curr_node
 
-        best_split_feature_i, best_x_cutoff_value, best_entropy, best_information_gain, best_y_true_split_array = self.find_best_split_across_all_features(X, y_true)
+        best_split_feature_i, best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array = self.find_best_split_across_all_features(X, y_true)
         left_rows = X[:, best_split_feature_i] <= best_x_cutoff_value
         right_rows = X[:, best_split_feature_i] > best_x_cutoff_value
         X_left, X_right = X[left_rows], X[right_rows]
         y_true_left, y_true_right = y_true[left_rows], y_true[right_rows]
-        curr_node = decision_tree_node(curr_depth = depth, curr_entropy = curr_entropy, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = best_split_feature_i, best_x_cutoff_value = best_x_cutoff_value)
+        curr_node = decision_tree_node(curr_depth = depth, curr_impurity = curr_impurity, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = best_split_feature_i, best_x_cutoff_value = best_x_cutoff_value)
         # adding left and right children nodes into the node dict
         curr_node.left  = self.fit( X_left,  y_true_left,  depth+1)
         curr_node.right = self.fit( X_right, y_true_right, depth+1)
@@ -422,8 +431,8 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
         hyperparameters={
             'scaler__with_mean': [True],
             'scaler__with_std': [True],
-            'classifier__criterion': ("gini", "entropy",),
-            'classifier__max_depth': range(1, 10),
+            'classifier__criterion': ("gini", ),#"entropy",),
+            'classifier__max_depth': (2,), #range(1, 10),
         }
 
         model_name = "Decision Tree"
@@ -599,7 +608,8 @@ def demo(dataset="Social_Network_Ads", classifier_func="decision_tree"):
         raise TypeError(f"either dataset [{dataset}] or classifier function [{classifier_func}] is not defined")
 
 
-def demo_DT_from_scratch(data="Social_Network_Ads", max_depth=2):
+def demo_DT_from_scratch(data="Social_Network_Ads", impurity_measure='entropy', max_depth=2):
+
     from ..datasets import public_dataset
     data = public_dataset('Social_Network_Ads')
     X = data[['Age', 'EstimatedSalary']]
@@ -607,10 +617,12 @@ def demo_DT_from_scratch(data="Social_Network_Ads", max_depth=2):
     y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
     from sklearn.model_selection import train_test_split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
-    DT_model = decision_tree_classifier_based_on_entropy(max_depth = max_depth)
+
+    DT_model = decision_tree_classifier_from_scratch(impurity_measure=impurity_measure, max_depth = max_depth)
     from sklearn.preprocessing import scale
     print(DT_model.find_best_split_in_one_specific_feature(scale(X_train['Age']), y_train))
     print(DT_model.find_best_split_across_all_features(scale(X_train), y_train))
+
     DT_model.fit(X_train, y_train)
     print(DT_model.order(type="Preorder"))
     #print(DT_model.predict(X_train))
