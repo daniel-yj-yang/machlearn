@@ -267,8 +267,9 @@ class decision_tree_classifier_based_on_entropy(object):
 
         if depth == 0:
             self.root_node = curr_node
-
-        return curr_node
+            return self
+        else:
+            return curr_node
 
     def _order(self, curr_node, type="Inorder"):
         # Recursive travesal
@@ -610,12 +611,11 @@ def demo_DT_from_scratch(data="Social_Network_Ads", max_depth=2):
     from sklearn.preprocessing import scale
     print(DT_model.find_best_split_in_one_specific_feature(scale(X_train['Age']), y_train))
     print(DT_model.find_best_split_across_all_features(scale(X_train), y_train))
-    root_node = DT_model.fit(X_train, y_train)
+    DT_model.fit(X_train, y_train)
     print(DT_model.order(type="Preorder"))
     #print(DT_model.predict(X_train))
     #print(DT_model.predict_proba(X_train))
-    from ..model_evaluation import plot_confusion_matrix, plot_ROC_curve
+    from ..model_evaluation import plot_confusion_matrix, plot_ROC_curve, plot_ROC_and_PR_curves
     plot_confusion_matrix(y_true=y_test, y_pred=DT_model.predict(X_test), y_classes=y_classes)
     plot_ROC_curve(y_true=y_test, y_pred_score=DT_model.predict_proba(X_test))
-
     
