@@ -137,4 +137,4 @@ def demo(dataset="Social_Network_Ads"):
     if dataset in available_datasets:
         return _demo(dataset = dataset)
     else:
-        raise TypeError(f"dataset [{dataset}] is not defined")
+        raise ValueError(f"dataset [{dataset}] is not defined")

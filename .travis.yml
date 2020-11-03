@@ -26,3 +26,4 @@ script:
   - "python tests/imbalanced_data.py"
   - "python tests/dimensionality_reduction.py"
   - "python tests/gradient_descent.py"
+  - "python tests/ensemble.py"

@@ -4,7 +4,6 @@
 #
 # License: BSD 3 clause
 
-from sklearn.ensemble import RandomForestClassifier, BaggingClassifier, AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.tree import DecisionTreeClassifier
 
 import numpy as np
@@ -16,7 +15,7 @@ import pandas as pd
 
 # “purity” means how homogenized a group is.
 
-from numpy import ma # masked array
+#from numpy import ma # masked array
 
 # A good read: https://towardsdatascience.com/entropy-how-decision-trees-make-decisions-2946b9c18c8#:~:text=Entropy%20is%20a%20measure%20of,general%20is%20to%20reduce%20uncertainty.&text=This%20is%20called%20Information%20Gain,gained%20about%20Y%20from%20X.
 def Entropy(splitted_sample=[]):
@@ -25,13 +24,18 @@ def Entropy(splitted_sample=[]):
     Entropy is a measure of disorder/uncertainty (= low purity, a lack of dominant class)
     Entropy vs. Gini impurity: both of them involve p_j * p_j, but Entropy takes the form of S = k_b*ln(Ω)
     """
+
+    import math
+
     denominator = sum(splitted_sample)
     if denominator == 0:
         return 0
     Entropy_index = 0
     for numerator_i in range(len(splitted_sample)):
         p_i = splitted_sample[numerator_i]/denominator
-        Entropy_index -= p_i * ma.array(ma.log2(p_i)).filled(0) # handle log2(0) warning
+        if p_i != 0:
+            Entropy_index -= p_i * math.log2(p_i)
+        #Entropy_index -= p_i * ma.array(ma.log2(p_i)).filled(0) # handle log2(0) warning
     return Entropy_index
 
 
@@ -347,46 +351,12 @@ def decision_tree_classifier(*args, **kwargs):
     return DecisionTreeClassifier(*args, **kwargs)
 
 
-def bagging(*args, **kwargs):
-    """
-    an improvement to DT
-    """
-    return BaggingClassifier(*args, **kwargs)
-
-
-def random_forest(*args, **kwargs):
-    """
-    an improvement to bagging
-    """
-    return RandomForestClassifier(*args, **kwargs)
-
-
-def AdaBoost(*args, **kwargs):
-    """
-    The idea of boosting: one is weak, together is strong, iterative training leads to the best model.
-    Strategy: To improve the predictive power by training a sequence of weak models. Each additional weak model is to compensate the weaknesses of its predecessors.
-
-    AdaBoost, Adaptive Boosting: at every step the sample distribution was adapted to put more weight on misclassified samples and less weight on correctly classified samples.
-    """
-    return AdaBoostClassifier(*args, **kwargs)
-
-
-def GBM(*args, **kwargs):
-    """
-    The idea of boosting: one is weak, together is strong, iterative training leads to the best model.
-    Strategy: To improve the predictive power by training a sequence of weak models. Each additional weak model is to compensate the weaknesses of its predecessors.
-
-    GBM: Gradient Boosting Machines, including XGBOOST
-    """
-    return GradientBoostingClassifier(*args, **kwargs)
-
-
-
 def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: decision_tree
     """
     classifier_func: "decision_tree" or "DT", "GBM", "AdaBoost", "bagging"
     """
     from ..datasets import public_dataset
+    from ..ensemble import bagging, random_forest, boosting, gradient_boosting
 
     if dataset == "iris":
         data = public_dataset(name="iris")
@@ -448,6 +418,20 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
         model_name = "Decision Tree"
 
     ########################################################################################################################
+    if classifier_func == "bagging":
+        pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
+                                   ('classifier', bagging(random_state=123)),
+                                   ])
+
+        # pipeline parameters to tune
+        hyperparameters = {
+            'scaler__with_mean': [True],
+            'scaler__with_std': [True],
+        }
+
+        model_name = "Bagging"
+        
+    ########################################################################################################################
     if classifier_func in ["random_forest"]:
         pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
                                    ('classifier', random_forest(max_depth=1, random_state=123)),  # default criterion = 'gini'
@@ -464,23 +448,9 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
         model_name = "Random Forest"
 
     ########################################################################################################################
-    if classifier_func == "bagging":
-        pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
-                                   ('classifier', bagging(random_state=123)),
-                                   ])
-
-        # pipeline parameters to tune
-        hyperparameters = {
-            'scaler__with_mean': [True],
-            'scaler__with_std': [True],
-        }
-
-        model_name = "Bagging"
-
-    ########################################################################################################################
     if classifier_func == "AdaBoost":
         pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
-                                   ('classifier', AdaBoost(random_state=123)),
+                                   ('classifier', boosting(random_state=123)),
                                    ])
 
         # pipeline parameters to tune
@@ -494,7 +464,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
     ########################################################################################################################
     if classifier_func == "GBM":
         pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
-                                   ('classifier', GBM(max_depth=1, random_state=123)),
+                                   ('classifier', gradient_boosting(max_depth=1, random_state=123)),
                                    ])
 
         # pipeline parameters to tune
@@ -662,11 +632,22 @@ def demo_DT_from_scratch(data="Social_Network_Ads", impurity_measure='entropy', 
 #
 # 2. Entropy: 
 # https://www.geeksforgeeks.org/gini-impurity-and-entropy-in-decision-tree-ml/
+# 
+# 3. Gini vs. Entropy
+# https://datascience.stackexchange.com/questions/10228/when-should-i-use-gini-impurity-as-opposed-to-information-gain-entropy
 #
-# 3. DT from scratch in Python: 
+# 4. DT from scratch in Python: 
 # https://medium.com/@penggongting/implementing-decision-tree-from-scratch-in-python-c732e7c69aea
 # https://towardsdatascience.com/decision-tree-from-scratch-in-python-46e99dfea775
-#
-# 4. older version of DT from scratch in Python: 
 # https://machinelearningmastery.com/implement-decision-tree-algorithm-scratch-python/
 #
+
+
+# References
+#
+# Ensemble methods:
+#
+# 1. Methods evolution and comparison
+# https://scikit-learn.org/stable/modules/ensemble.html#bagging-meta-estimator
+# https://towardsdatascience.com/decision-tree-ensembles-bagging-and-boosting-266a8ba60fd9
+

@@ -410,10 +410,6 @@ module: decision_tree
    :widths: 10, 20
 
    "decision_tree()", "decision tree classifier"
-   "random_forest()", "random forest classifier"
-   "bagging()", "bagging classifier"
-   "AdaBoost()", "Adaptive Boosting classifier"
-   "GBM()", "Gradient Boosting Machines classifier"
    "demo()", "provides a demo of selected functions in this module"
    "demo_DT_from_scratch()", "provides a demo of selected functions in this module"
 
@@ -509,5 +505,21 @@ module: gradient_descent
 
    "logistic_regression_BGD_classifier()", "logistic_regression_BGD_classifier class"
    "batch_gradient_descent()", "batch_gradient_descent class"
+   "demo()", "provides a demo of selected functions in this module"
+
+
+-----
+
+module: ensemble
+----------------
+
+.. csv-table::
+   :header: "class/function", "description"
+   :widths: 10, 20
+
+   "bagging()", "bagging classifier"
+   "random_forest()", "random forest classifier"
+   "boosting()", "Adaptive Boosting classifier"
+   "gradient_boosting()", "Gradient Boosting Machines classifier"
    "demo()", "provides a demo of selected functions in this module"
    
