@@ -91,19 +91,49 @@ class decision_tree_node(object):
         self.curr_entropy = curr_entropy
         self.curr_sample_size = curr_sample_size
         self.curr_y_distribution = curr_y_distribution
+
+        y_class0_n = curr_y_distribution.get(0)
+        y_class1_n = curr_y_distribution.get(1)
+        y_classes_count = len(curr_y_distribution)
+
+        if y_classes_count == 0:
+            self.y_dominant_class = None
+            self.y_class1_prob = None
+
+        if y_classes_count == 1:
+            self.y_dominant_class = list(curr_y_distribution.keys())[0]
+            if self.y_dominant_class == 0:
+                self.y_class1_prob = 0
+            elif self.y_dominant_class == 1:
+                self.y_class1_prob = 1
+            else:
+                raise ValueError('unexpected y_dominant_class (should be either 0 or 1)')
+
+        if y_classes_count == 2:
+            # must be {0: sample_size_associated_with_y=0, 1: sample_size_associated_with_y=1}
+            self.y_class1_prob = y_class1_n / (y_class1_n + y_class0_n)
+            if self.y_class1_prob >= 0.50:
+                self.y_dominant_class = 1
+            else:
+                self.y_dominant_class = 0
+
+        if y_classes_count > 2:
+            raise ValueError('more than 2 classes in y detected')
+
         self.best_split_feature_i = best_split_feature_i
         self.best_x_cutoff_value = best_x_cutoff_value
         self.left = None
         self.right = None
     
     def to_dict(self):
-        return {'curr_depth': self.curr_depth, 'curr_entropy': f"{self.curr_entropy:.3f}", 'curr_sample_size': self.curr_sample_size, 'curr_y_distribution': self.curr_y_distribution, 'best_split_feature_i': self.best_split_feature_i if self.best_x_cutoff_value is not None else None, 'best_x_cutoff_value': f"{self.best_x_cutoff_value:.3f}" if self.best_x_cutoff_value is not None else None}
+        return {'curr_depth': self.curr_depth, 'curr_entropy': f"{self.curr_entropy:.3f}", 'curr_sample_size': self.curr_sample_size, 'curr_y_distribution': self.curr_y_distribution, 'curr_dominant_y_class': self.y_dominant_class, 'curr_y_class1_prob': f"{self.y_class1_prob:.3f}" if self.y_class1_prob is not None else None, 'best_split_feature_i': self.best_split_feature_i if self.best_x_cutoff_value is not None else None, 'best_x_cutoff_value': f"{self.best_x_cutoff_value:.3f}" if self.best_x_cutoff_value is not None else None}
 
 class decision_tree_classifier_based_on_entropy(object):
 
     def __init__(self, max_depth = 10):
         self.max_depth = max_depth
         self.verbose = False
+        self.root_node = decision_tree_node()
 
     def find_best_split_in_one_specific_feature(self, x, y_true):
 
@@ -219,6 +249,7 @@ class decision_tree_classifier_based_on_entropy(object):
         curr_y_distribution = SortedDict(Counter(y_true))
 
         curr_entropy = Entropy(list(Counter(y_true).values()))
+
         if curr_entropy == 0 or depth == self.max_depth: # curr_entropy = 0 means already perfect, no need to split
             curr_node = decision_tree_node(curr_depth = depth, curr_entropy = curr_entropy, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = None, best_x_cutoff_value = None)
             return curr_node
@@ -234,29 +265,68 @@ class decision_tree_classifier_based_on_entropy(object):
         curr_node.right = self.fit( X_right, y_true_right, depth+1)
         #print(parent_node)
 
+        if depth == 0:
+            self.root_node = curr_node
+
         return curr_node
 
-    def order(self, curr_node, type="Inorder"):
+    def _order(self, curr_node, type="Inorder"):
         # Recursive travesal
         if curr_node:
             if type == "Inorder":
                 return_dict = {}
-                return_dict['left'] = self.order(curr_node.left, type=type)
+                return_dict['left'] = self._order(curr_node.left, type=type)
                 return_dict['curr'] = curr_node.to_dict()
-                return_dict['right'] = self.order(curr_node.right, type=type)
+                return_dict['right'] = self._order(curr_node.right, type=type)
                 return return_dict
             if type == "Preorder":
                 return_dict = {}
                 return_dict['curr'] = curr_node.to_dict()
-                return_dict['left'] = self.order(curr_node.left, type=type)
-                return_dict['right'] = self.order(curr_node.right, type=type)
+                return_dict['left'] = self._order(curr_node.left, type=type)
+                return_dict['right'] = self._order(curr_node.right, type=type)
                 return return_dict
             if type == "Postorder":
                 return_dict = {}
-                return_dict['left'] = self.order(curr_node.left, type=type)
-                return_dict['right'] = self.order(curr_node.right, type=type)
+                return_dict['left'] = self._order(curr_node.left, type=type)
+                return_dict['right'] = self._order(curr_node.right, type=type)
                 return_dict['curr'] = curr_node.to_dict()
                 return return_dict
+
+    def order(self, type="Inorder"):
+        return self._order(curr_node=self.root_node, type=type)
+
+
+    def predict(self, X, proba=False):
+        if type(X) == pd.DataFrame:
+            X = X.to_numpy()
+
+        n_rows = X.shape[0]
+        if proba:
+            prediction = np.array([-999.] * n_rows, dtype='float64')
+        else:
+            prediction = np.array([-999] * n_rows, dtype='int64')
+        for this_row_i in range(n_rows):
+            prediction[this_row_i] = self._predict(X[this_row_i,:], proba=proba)
+        return prediction
+
+        
+
+    def predict_proba(self, X):
+        return self.predict(X, proba=True)
+
+
+    def _predict(self, one_X_row, proba=False):
+        curr_node = self.root_node
+        while curr_node.best_x_cutoff_value: # not a leaf node yet
+            if one_X_row[ curr_node.best_split_feature_i ] <= curr_node.best_x_cutoff_value:
+                curr_node = curr_node.left
+            else:
+                curr_node = curr_node.right
+        # arriving at a leaf node now
+        if proba:
+            return curr_node.y_class1_prob
+        else:
+            return curr_node.y_dominant_class
 
 
 def decision_tree_classifier(*args, **kwargs):
@@ -528,16 +598,24 @@ def demo(dataset="Social_Network_Ads", classifier_func="decision_tree"):
         raise TypeError(f"either dataset [{dataset}] or classifier function [{classifier_func}] is not defined")
 
 
-def demo_DT_from_scratch(data="Social_Network_Ads"):
+def demo_DT_from_scratch(data="Social_Network_Ads", max_depth=2):
     from ..datasets import public_dataset
     data = public_dataset('Social_Network_Ads')
     X = data[['Age', 'EstimatedSalary']]
     y = data['Purchased']
+    y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
     from sklearn.model_selection import train_test_split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
-    tree = decision_tree_classifier_based_on_entropy(max_depth = 2)
+    DT_model = decision_tree_classifier_based_on_entropy(max_depth = max_depth)
     from sklearn.preprocessing import scale
-    print(tree.find_best_split_in_one_specific_feature(scale(X_train['Age']), y_train))
-    print(tree.find_best_split_across_all_features(scale(X_train), y_train))
-    root_node = tree.fit(X_train, y_train)
-    print(tree.order(root_node, type="Preorder"))
+    print(DT_model.find_best_split_in_one_specific_feature(scale(X_train['Age']), y_train))
+    print(DT_model.find_best_split_across_all_features(scale(X_train), y_train))
+    root_node = DT_model.fit(X_train, y_train)
+    print(DT_model.order(type="Preorder"))
+    #print(DT_model.predict(X_train))
+    #print(DT_model.predict_proba(X_train))
+    from ..model_evaluation import plot_confusion_matrix, plot_ROC_curve
+    plot_confusion_matrix(y_true=y_test, y_pred=DT_model.predict(X_test), y_classes=y_classes)
+    plot_ROC_curve(y_true=y_test, y_pred_score=DT_model.predict_proba(X_test))
+
+    

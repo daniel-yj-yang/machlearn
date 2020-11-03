@@ -108,7 +108,7 @@ def Matthew_Correlation_Coefficient(TP, TN, FP, FN):
 def plot_confusion_matrix(y_true,
                           y_pred,
                           y_classes='auto',
-                          figsize=(8, 8)):
+                          figsize=(9, 10)):
     """
 
     This function plots the confusion matrix, along with key statistics, and returns accuracy.
