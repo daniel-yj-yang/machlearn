@@ -346,7 +346,7 @@ Summary of output:
 
 .. code-block::
 
-   ensemble.demo("Social_Network_Ads) calls random_forest_classifier_from_scratch(), which implements all major functions of a random forest classifier from scratch.
+   ensemble.demo("Social_Network_Ads) calls random_forest_classifier_from_scratch(), which implements major functions of a random forest classifier from scratch.
 
 
 -----
