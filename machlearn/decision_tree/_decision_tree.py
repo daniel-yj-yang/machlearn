@@ -795,7 +795,9 @@ def demo(dataset="Social_Network_Ads", classifier_func="decision_tree"):
 
 
 def demo_from_scratch(question_type="classification"):
-
+    """
+    "classification" or "regression"
+    """
     if question_type not in ['classification', 'regression',]:
         raise ValueError('question_type should be either classification or regression')
 
