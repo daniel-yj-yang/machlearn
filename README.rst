@@ -409,7 +409,8 @@ module: decision_tree
    :header: "class/function", "description"
    :widths: 10, 20
 
-   "decision_tree()", "decision tree classifier"
+   "decision_tree_classifier_from_scratch()", "decision tree classifier developed from scratch"
+   "decision_tree_classifier()", "decision tree classifier"
    "demo()", "provides a demo of selected functions in this module"
    "demo_DT_from_scratch()", "provides a demo of selected functions in this module"
 
@@ -517,9 +518,12 @@ module: ensemble
    :header: "class/function", "description"
    :widths: 10, 20
 
-   "bagging()", "bagging classifier"
-   "random_forest()", "random forest classifier"
-   "boosting()", "Adaptive Boosting classifier"
-   "gradient_boosting()", "Gradient Boosting Machines classifier"
+   "bagging_classifier_from_scratch()", "bagging classifier developed from scratch"
+   "random_forest_classifier_from_scratch()", "random forest classifier developed from scratch"
+   "bagging_classifier()", "bagging classifier"
+   "random_forest_classifier()", "random forest classifier"
+   "boosting_classifier()", "Adaptive Boosting classifier"
+   "gradient_boosting_classifier()", "Gradient Boosting Machines classifier"
+   "voting_classifier()", "Voting classifier"
    "demo()", "provides a demo of selected functions in this module"
    

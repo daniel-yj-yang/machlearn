@@ -136,10 +136,20 @@ class decision_tree_node(object):
 
 
 class decision_tree_classifier_from_scratch(object):
+    """
+    Shortcoming of DT:
+    (1) biggest information gain locally, but globally; that is, there is always a better tree in the overall picture
+    (2) we may be asking too trivial questions at the greater depths (e.g., > 5 or 6-depth)
+    """
 
-    def __init__(self, max_depth = 10, impurity_measure='entropy'):
+    def __init__(self, max_depth = 10, impurity_measure='entropy', features_indices_actually_used='all', annotation=None, verbose=False):
+        """
+        "features_indices_actually_used": limits the analysis on only these feature indices if not 'all'
+            for example, if there are 30 features, then "features_indices_actually_used" = [2, 15] means that only the 3th and 16th features will be used for analysis
+        """
+        self.features_indices_actually_used = features_indices_actually_used  # limits the analysis on only these feature indices
         self.max_depth = max_depth
-        self.verbose = False
+        self.verbose=verbose
         self.root_node = decision_tree_node()
         if impurity_measure not in ['entropy', 'gini_impurity']:
             raise ValueError('invalid impurity_measure value')
@@ -148,13 +158,15 @@ class decision_tree_classifier_from_scratch(object):
             self.impurity_func = Entropy
         elif self.impurity_measure == 'gini_impurity':
             self.impurity_func = Gini_impurity
+        self.annotation = annotation
+
 
     def find_best_split_in_one_specific_feature(self, x, y_true):
 
-        if type(x) == pd.DataFrame:
+        if type(x) in [pd.DataFrame, pd.Series]:
             x = x.to_numpy()
 
-        if type(y_true) == pd.DataFrame:
+        if type(y_true) in [pd.DataFrame, pd.Series]:
             y_true = y_true.to_numpy()
 
         best_impurity = float('Inf')
@@ -217,10 +229,10 @@ class decision_tree_classifier_from_scratch(object):
 
     def find_best_split_across_all_features(self, X, y_true):
 
-        if type(X) == pd.DataFrame:
+        if type(X) in [pd.DataFrame, pd.Series]:
             X = X.to_numpy()
 
-        if type(y_true) == pd.DataFrame:
+        if type(y_true) in [pd.DataFrame, pd.Series]:
             y_true = y_true.to_numpy()
 
         best_impurity = float('Inf')
@@ -228,19 +240,25 @@ class decision_tree_classifier_from_scratch(object):
         n_samples = X.shape[0]        
         n_features = X.shape[1]
 
-        for feature_i in range(n_features):
-            x_cutoff_value, impurity, information_gain, y_true_split_array = self.find_best_split_in_one_specific_feature(X[:,feature_i], y_true)
+        if self.features_indices_actually_used == 'all':
+            features_indices_actually_used = range(n_features)
+        else:
+            features_indices_actually_used = self.features_indices_actually_used
+
+        for this_feature_i in features_indices_actually_used:
+            x_cutoff_value, impurity, information_gain, y_true_split_array = self.find_best_split_in_one_specific_feature(X[:,this_feature_i], y_true)
             if self.verbose:
-                print(f"feature # {feature_i: 2d}, x_cutoff_value = {x_cutoff_value: .3f}, impurity = {impurity:.3f}, information_gain = {information_gain:.3f}, y_true_split_array = {y_true_split_array}")
+                print(f"feature # {this_feature_i: 2d}, x_cutoff_value = {x_cutoff_value: .3f}, impurity = {impurity:.3f}, information_gain = {information_gain:.3f}, y_true_split_array = {y_true_split_array}")
             if impurity == 0:  # a perfect split was found
-                best_split_feature_i = feature_i
+                best_split_feature_i = this_feature_i
                 best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array = x_cutoff_value, impurity, information_gain, y_true_split_array
                 break
             elif impurity < best_impurity:
-                best_split_feature_i = feature_i
+                best_split_feature_i = this_feature_i
                 best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array = x_cutoff_value, impurity, information_gain, y_true_split_array
 
         return best_split_feature_i, best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array
+
 
     def fit(self, X, y_true, depth=0):
 
@@ -249,10 +267,10 @@ class decision_tree_classifier_from_scratch(object):
         if self.verbose:
             print(f"depth={depth}")
 
-        if type(X) == pd.DataFrame:
+        if type(X) in [pd.DataFrame, pd.Series]:
             X = X.to_numpy()
 
-        if type(y_true) == pd.DataFrame:
+        if type(y_true) in [pd.DataFrame, pd.Series]:
             y_true = y_true.to_numpy()
 
         curr_sample_size = len(y_true)
@@ -264,7 +282,7 @@ class decision_tree_classifier_from_scratch(object):
 
         curr_impurity = self.impurity_func(list(Counter(y_true).values()))
 
-        if curr_impurity == 0 or depth == self.max_depth: # curr_impurity = 0 means already perfect, no need to split
+        if curr_impurity == 0 or depth >= self.max_depth: # curr_impurity = 0 means already perfect, no need to split
             curr_node = decision_tree_node(curr_depth = depth, curr_impurity = curr_impurity, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = None, best_x_cutoff_value = None)
             return curr_node
 
@@ -275,15 +293,16 @@ class decision_tree_classifier_from_scratch(object):
         y_true_left, y_true_right = y_true[left_rows], y_true[right_rows]
         curr_node = decision_tree_node(curr_depth = depth, curr_impurity = curr_impurity, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = best_split_feature_i, best_x_cutoff_value = best_x_cutoff_value)
         # adding left and right children nodes into the node dict
-        curr_node.left  = self.fit( X_left,  y_true_left,  depth+1)
-        curr_node.right = self.fit( X_right, y_true_right, depth+1)
+        curr_node.left  = self.fit( X=X_left,  y_true=y_true_left,  depth=depth+1)
+        curr_node.right = self.fit( X=X_right, y_true=y_true_right, depth=depth+1)
         #print(parent_node)
 
         if depth == 0:
             self.root_node = curr_node
-            return self
+            # return self
         else:
             return curr_node
+
 
     def _order(self, curr_node, type="Inorder"):
         # Recursive travesal
@@ -307,12 +326,13 @@ class decision_tree_classifier_from_scratch(object):
                 return_dict['curr'] = curr_node.to_dict()
                 return return_dict
 
+
     def order(self, type="Inorder"):
         return self._order(curr_node=self.root_node, type=type)
 
 
     def predict(self, X, proba=False):
-        if type(X) == pd.DataFrame:
+        if type(X) in [pd.DataFrame, pd.Series]:
             X = X.to_numpy()
 
         n_rows = X.shape[0]
@@ -320,12 +340,12 @@ class decision_tree_classifier_from_scratch(object):
             prediction = np.zeros(shape=(n_rows, 2))
         else:
             prediction = np.zeros(shape=(n_rows, 1))
+
         for this_row_i in range(n_rows):
             prediction[this_row_i] = self._predict(X[this_row_i,:], proba=proba)
         return prediction
 
         
-
     def predict_proba(self, X):
         return self.predict(X, proba=True)
 
@@ -344,9 +364,19 @@ class decision_tree_classifier_from_scratch(object):
             return np.array([curr_node.y_dominant_class])
 
 
+    def score(self, X_test, y_test):
+        if type(X_test) in [pd.DataFrame, pd.Series]:
+            X_test = X_test.to_numpy()
+        if type(y_test) in [pd.DataFrame, pd.Series]:
+            y_test = y_test.to_numpy()
+        from sklearn.metrics import confusion_matrix
+        cm = confusion_matrix(y_test, self.predict(X_test))
+        accuracy = np.trace(cm) / np.sum(cm)
+        return accuracy
+
+
 def decision_tree_classifier(*args, **kwargs):
     """
-    base model
     """
     return DecisionTreeClassifier(*args, **kwargs)
 
@@ -591,10 +621,6 @@ def demo(dataset="Social_Network_Ads", classifier_func="decision_tree"):
 def demo_DT_from_scratch(data="Social_Network_Ads", impurity_measure='entropy', max_depth=2):
     """
     impurity_measure: 'entropy' or 'gini_impurity'
-
-    shortcoming of DT: 
-    (1) biggest information gain locally, but globally; that is, there is always a better tree in the overall picture
-    (2) we may be asking too trivial questions at the greater depths (e.g., > 5 or 6-depth)
     """
     
     from ..datasets import public_dataset
@@ -612,6 +638,8 @@ def demo_DT_from_scratch(data="Social_Network_Ads", impurity_measure='entropy', 
 
     DT_model.fit(X_train, y_train)
     print(DT_model.order(type="Preorder"))
+    print(f"\nAccuracy in predicting the target in the testing set: {DT_model.score(X_test, y_test)}")
+
     #print(DT_model.predict(X_train))
     #print(DT_model.predict_proba(X_train))
     from ..model_evaluation import plot_confusion_matrix, plot_ROC_curve, plot_ROC_and_PR_curves
