@@ -422,7 +422,7 @@ class gradient_boosting_regressor_from_scratch(object):
         import matplotlib.pyplot as plt
         # construct a figure that plots the loss over time
         plt.figure(figsize=(5, 5))
-        plt.plot(range(len(self.loss_history)), self.loss_history, label='BGD Training Loss')
+        plt.plot(range(len(self.loss_history)), self.loss_history, label='GBM Training Loss')
         plt.legend(loc=1)
         plt.xlabel("Training Epoch #")
         plt.ylabel("Loss, J(θ)")

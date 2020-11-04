@@ -354,7 +354,7 @@ Summary of output:
    - These demos call the following functions developed from scratch and reflect the inner workings of them:
    * random_forest_classifier_from_scratch();
    * boosting_classifier_from_scratch();
-   * gradient_boosting_regressor_from_scratch() (see loss vs training history below)
+   * gradient_boosting_regressor_from_scratch() (see training history plot below)
 
 
 
