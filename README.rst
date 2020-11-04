@@ -554,7 +554,7 @@ module: ensemble
    :header: "class/function", "description"
    :widths: 10, 20
 
-   "gradient_boosting_regressor_from_scratch", "gradient boosting regressor developed from scratch"
+   "gradient_boosting_regressor_from_scratch()", "gradient boosting regressor developed from scratch"
    "bagging_classifier_from_scratch()", "bagging classifier developed from scratch"
    "random_forest_classifier_from_scratch()", "random forest classifier developed from scratch"
    "boosting_classifier_from_scratch()", "boosting classifier developed from scratch"
