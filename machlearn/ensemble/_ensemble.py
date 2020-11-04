@@ -412,12 +412,12 @@ class gradient_boosting_regressor_from_scratch(object):
         self.loss_history.append(loss) # MSE/0.5
         for epoch_i in range(self.max_iter):
             residuals = self._gradient(y, y_hat) # y - y_hat
-            print(f"epoch #{epoch_i:3d}: before adding a new weak learner, y[100] = {y[100]:.3f}, y_hat[100] = {y_hat[100]:.3f}, residuals[100] = y - ŷ = {residuals[100]:.3f}")
+            print(f"epoch #{epoch_i:3d}: before adding a new weak learner, y[100] = {y[100]:.3f}, y_hat[100] = {y_hat[100]:.3f}, residuals[100] = y - ŷ = {residuals[100]:.3f}") # the index 100 is picked randomly
             this_weak_learner = decision_tree_regressor_from_scratch(max_depth=1)
             this_weak_learner.fit(X, residuals) # The goal of each new weak learner is to try to explain the remaining residuals; thus the residual should get smaller over time, as the remaing part that is still left to be explained becomes smaller over time.
             self.weak_learners.append(this_weak_learner)
             y_hat += self.learning_rate * this_weak_learner.predict(X)  # update ŷ to minimize y - ŷ
-            print("a new weak learner had been added to try to account for the remaining residuals, and that weak learner's contribution had been added to improve ŷ to get closer to y so that residuals get closer to 0")
+            print("a new weak learner had been added to try to account for the remaining residuals, and that weak learner's contribution had been added to improve ŷ to get closer to y so that residuals get closer to 0.")
             loss = self._cost_function(y, y_hat).mean()
             self.loss_history.append(loss)
         return
