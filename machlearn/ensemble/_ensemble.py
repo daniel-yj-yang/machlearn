@@ -368,23 +368,28 @@ def voting_classifier(*args, **kwargs):
 #######################################################################################################################################
 
 
-from ..decision_tree import decision_tree_regressor
+from ..decision_tree import decision_tree_regressor, decision_tree_regressor_from_scratch
 
 class gradient_boosting_regressor_from_scratch(object):
-    def __init__(self):
-        self.alpha = 1
+    def __init__(self, max_iter=300, learning_rate=0.1):
+        self.max_iter = max_iter
+        self.learning_rate = learning_rate
+        self.weak_learners = []
+        self.loss_history = []
 
     def _y_pred(self):
         """
         θ = _y_pred()
+        Use DecisionTreeRegressor()
         """
         pass
 
     def _cost_function(self, y, y_hat):
         """
         J(θ) = _cost_function()
+        this is 0.5 * MSE 
         """
-        return ((y - y_hat) ** 2) / 2
+        return 0.5 * ((y - y_hat) ** 2).mean()
 
     def _gradient(self, y, y_hat):
         """
@@ -393,12 +398,35 @@ class gradient_boosting_regressor_from_scratch(object):
         return -1 * (y - y_hat)
 
     def fit(self, X, y):
-        y_hat = self._y_pred()
-        loss = self._cost_function(y, y_hat)
-        self.alpha * self._gradient(y, y_hat)
+        y_hat = np.array([y.mean()]*len(y)) # average as the starting point prediction
+        self.y_hat0 = y_hat
+        self.loss_history.append(self._cost_function(y, y_hat))
+        for epoch_i in range(self.max_iter):
+            residuals = -1 * self._gradient(y, y_hat)
+            this_weak_learner = decision_tree_regressor_from_scratch(max_depth=1)
+            this_weak_learner.fit(X, residuals)
+            self.weak_learners.append(this_weak_learner)
+            y_pred = this_weak_learner.predict(X)
+            y_hat += self.learning_rate * y_pred
+            self.loss_history.append(self._cost_function(y, y_hat))
+            print(f"after epoch #{epoch_i:3d}: cost = {self._cost_function(y, y_hat):.3f}")
+        return
 
-        regressor = decision_tree_regressor(max_depth=1)
-        regressor.fit(X, residuals)
+    def predict(self, X_test):
+        y_hat = np.array([self.y_hat0[0]]*len(X_test))
+        for this_weak_learner in self.weak_learners:
+            y_hat += self.learning_rate * this_weak_learner.predict(X_test)
+        return y_hat
+
+    def plot_loss_history(self):
+        import matplotlib.pyplot as plt
+        # construct a figure that plots the loss over time
+        plt.figure(figsize=(5, 5))
+        plt.plot(range(len(self.loss_history)), self.loss_history, label='BGD Training Loss')
+        plt.legend(loc=1)
+        plt.xlabel("Training Epoch #")
+        plt.ylabel("Loss, J(θ)")
+        plt.show()
 
 
 def gradient_boosting_regressor(*args, **kwargs):
@@ -412,13 +440,16 @@ def _demo(dataset):
 
     if dataset == 'boston':
         # regressor example
-        from sklearn.datasets import load_boston
-        boston = load_boston()
-        X = pd.DataFrame(data=boston.data,columns=boston.feature_names)
-        y = pd.DataFrame(data=boston.target,columns=['MEDV'])
-        data = pd.concat([y, X], axis=1)
-        print(f"{data.head()}\n")
-        #formula = 'MEDV ~ CRIM + ZN + INDUS + CHAS + NOX + RM + AGE + DIS + RAD + TAX + PTRATIO + B + LSTAT - 1'
+        GBM = gradient_boosting_regressor_from_scratch(max_iter=100)
+        from ..datasets import public_dataset
+        [X, y, df] = public_dataset('boston')
+        from sklearn.model_selection import train_test_split
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
+        GBM.fit(X_train, y_train)
+        GBM.plot_loss_history()
+        from ..model_evaluation import evaluate_continuous_prediction
+        R_squared, RMSE = evaluate_continuous_prediction(y_test, GBM.predict(X_test))
+        print(f"R_squared = {R_squared:.3f}, RMSE = {RMSE:.3f}")
 
     if dataset == 'Social_Network_Ads':
         from ..datasets import public_dataset

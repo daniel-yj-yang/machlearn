@@ -28,6 +28,7 @@ def public_dataset(name=None):
         - marketing
         - Hitters
         - Gender
+        - boston
         - Fashion_MNIST
         - nltk_data_path
         - scikit_learn_data_path
@@ -98,7 +99,34 @@ def public_dataset(name=None):
         import pandas as pd
         df = pd.read_csv(io.BytesIO(pkgutil.get_data(__name__, "public/ML_for_Hackers/01_heights_weights_genders.csv")), header=0, encoding='utf8', sep=",")
         print(f"The dataset of Gender is a publicly available dataset, containing 10000 heights and weights from 5000 males and 5000 females.\n")
-        return df   
+        return df
+
+    if name == "boston":
+        import pandas as pd
+        from sklearn.datasets import load_boston
+        boston = load_boston()
+        X = pd.DataFrame(data=boston.data, columns=boston.feature_names)
+        y = pd.DataFrame(data=boston.target, columns=['MEDV'])
+        df = pd.concat([y, X], axis=1)
+        print("The dataset of boston is a publicly available dataset, including 506 cases of housing price in the area of Boston, Mass.")
+        print("Here are the 13 X features:")
+        print("1. CRIM - per capita crime rate by town")
+        print("2. ZN - proportion of residential land zoned for lots over 25,000 sq.ft.")
+        print("3. INDUS - proportion of non-retail business acres per town.")
+        print("4. CHAS - Charles River dummy variable(1 if tract bounds river; 0 otherwise)")
+        print("5. NOX - nitric oxides concentration (parts per 10 million)")
+        print("6. RM - average number of rooms per dwelling")
+        print("7. AGE - proportion of owner-occupied units built prior to 1940")
+        print("8. DIS - weighted distances to five Boston employment centres")
+        print("9. RAD - index of accessibility to radial highways")
+        print("10. TAX - full-value property-tax rate per $10,000")
+        print("11. PTRATIO - pupil-teacher ratio by town")
+        print("12. B - 1000(Bk - 0.63)^2 where Bk is the proportion of blacks by town")
+        print("13. LSTAT - % lower status of the population")
+        print("")
+        print("Here is the y target variable:")
+        print("14. MEDV - Median value of owner-occupied homes in $1000's\n")
+        return [boston.data, boston.target, df]
 
     if name == "Fashion_MNIST":
         # this part of the code is modeled after https://github.com/zalandoresearch/fashion-mnist/blob/master/utils/mnist_reader.py

@@ -8,3 +8,4 @@ from machlearn import ensemble
 
 ensemble.demo("randomly_generated")
 ensemble.demo("Social_Network_Ads")
+ensemble.demo("boston")
