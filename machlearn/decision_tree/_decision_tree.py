@@ -302,8 +302,10 @@ class decision_tree_classifier_from_scratch(object):
 
         return best_split_feature_i, best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array
 
-    def fit(self, X, y_true, depth=0, sample_weight=None):
+    def fit(self, X, y, depth=0, sample_weight=None):
 
+        y_true = y
+        
         # init
         if depth == 0:
             from sortedcontainers import SortedSet
@@ -350,8 +352,8 @@ class decision_tree_classifier_from_scratch(object):
         sample_weight_left, sample_weight_right = sample_weight[left_rows], sample_weight[right_rows]
         curr_node = decision_tree_node(curr_depth = depth, curr_impurity = curr_impurity, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = best_split_feature_i, best_x_cutoff_value = best_x_cutoff_value, y_class0_value=self.y_class0_value, y_class1_value=self.y_class1_value)
         # adding left and right children nodes into the node dict
-        curr_node.left  = self.fit( X=X_left,  y_true=y_true_left,  sample_weight=sample_weight_left,  depth=depth+1)
-        curr_node.right = self.fit( X=X_right, y_true=y_true_right, sample_weight=sample_weight_right, depth=depth+1)
+        curr_node.left  = self.fit( X=X_left,  y=y_true_left,  sample_weight=sample_weight_left,  depth=depth+1)
+        curr_node.right = self.fit( X=X_right, y=y_true_right, sample_weight=sample_weight_right, depth=depth+1)
         #print(parent_node)
 
         if depth == 0:

@@ -7,7 +7,7 @@
 from sklearn.linear_model import LogisticRegression
 
 def logistic_regression_classifier(*args, **kwargs):
-    return LogisticRegression(*args, **kwargs)
+    return LogisticRegression(C=1e9, *args, **kwargs)
 
 
 class logisticReg_statsmodels(object):

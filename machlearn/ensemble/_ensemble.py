@@ -69,22 +69,22 @@ class random_forest_classifier_from_scratch(object):
         self.max_depth = max_depth
         self.impurity_measure = impurity_measure
         self.verbose = verbose
-        self.X = None
-        self.y = None
+        self.X_train = None
+        self.y_train = None
         self.trees = []
         self.fitted = False
     
-    def fit(self, X_train, y_train):
+    def fit(self, X, y):
         ### init
-        self.X = X_train
-        self.y = y_train
-        if type(self.X) in [pd.DataFrame, pd.Series]:
-            self.X = self.X.to_numpy()
-        if type(self.y) in [pd.DataFrame, pd.Series]:
-            self.y = self.y.to_numpy()
+        self.X_train = X
+        self.y_train = y
+        if type(self.X_train) in [pd.DataFrame, pd.Series]:
+            self.X_train = self.X_train.to_numpy()
+        if type(self.y_train) in [pd.DataFrame, pd.Series]:
+            self.y_train = self.y_train.to_numpy()
 
         ### for X.col
-        total_features_n = self.X.shape[1]
+        total_features_n = self.X_train.shape[1]
 
         if self.n_features is None:
             self.n_features_to_sample = total_features_n
@@ -95,8 +95,8 @@ class random_forest_classifier_from_scratch(object):
         else:
             self.n_features_to_sample = self.n_features
         
-        ### for X.row
-        total_samples_n = self.X.shape[0]
+        ### for X_train.row
+        total_samples_n = self.X_train.shape[0]
         self.n_rows_to_sample = int(total_samples_n * self.sample_size_factor)
 
         ### train each tree
@@ -107,10 +107,10 @@ class random_forest_classifier_from_scratch(object):
         return self # return the fitted estimator
 
     def fit_a_single_decision_tree(self, tree_annotation=None):
-        rows_indices     = list(np.random.permutation(self.X.shape[0])[:self.n_rows_to_sample])
-        features_indices = list(np.random.permutation(self.X.shape[1])[:self.n_features_to_sample])
+        rows_indices     = list(np.random.permutation(self.X_train.shape[0])[:self.n_rows_to_sample])
+        features_indices = list(np.random.permutation(self.X_train.shape[1])[:self.n_features_to_sample])
         this_DT = decision_tree_classifier_from_scratch(max_depth = self.max_depth, impurity_measure = self.impurity_measure, features_indices_actually_used = features_indices, annotation = tree_annotation, verbose = self.verbose)
-        this_DT.fit( X = self.X[rows_indices,:], y_true = self.y[rows_indices] )
+        this_DT.fit( X = self.X_train[rows_indices,:], y = self.y_train[rows_indices] )
         return this_DT
 
     def predict(self, X_test):
@@ -179,6 +179,7 @@ def bagging_classifier(*args, **kwargs):
 
 #######################################################################################################################################
 
+from ..logistic_regression import logistic_regression_classifier
 
 class boosting_classifier_from_scratch(object):
     """
@@ -209,11 +210,11 @@ class boosting_classifier_from_scratch(object):
         self.y_class1_value = None
         self.y_classes_value_conversion_dict = {}
 
-    def fit(self, X_train, y_train):
+    def fit(self, X, y):
 
         ### init
-        self.X_train = X_train
-        self.y_train = y_train
+        self.X_train = X
+        self.y_train = y
         if type(self.X_train) in [pd.DataFrame, pd.Series]:
             self.X_train = self.X_train.to_numpy()
         if type(self.y_train) in [pd.DataFrame, pd.Series]:
@@ -232,33 +233,36 @@ class boosting_classifier_from_scratch(object):
             self.y_train = np.where(self.y_train == self.y_class0_value, -1, 1)
         
         ### initialize
-        self.sample_weights_all_iter = np.zeros(shape=(total_samples_n, self.max_iter)) # col_i = iteration(iter_i)
+        # self.sample_weights_all_iter is a just collection of same weight on each iteration, but not used directly in computation of boosting
+        self.all_iters_sample_weights = np.zeros(shape=(total_samples_n, self.max_iter)) # col_i = iteration(iter_i)
         self.weak_learners = np.zeros(shape=(self.max_iter,), dtype=object) # the minimum trees
         self.weak_learners_voting_weights = np.zeros(shape=(self.max_iter,))
         self.errors = np.zeros(shape=(self.max_iter,))
 
         # A. uniform weights for iteration(iter_i=0)
-        self.sample_weights_all_iter[:, 0] = np.ones(shape=(total_samples_n,)) / total_samples_n 
+        self.all_iters_sample_weights[:, 0] = np.ones(shape=(total_samples_n,)) / total_samples_n 
 
         ### B. learning iterations
         for iter_i in range(self.max_iter):
             # 1. find a weak learner, which minimizes curr_error via a base estimator
-            sample_weight_curr_iter = self.sample_weights_all_iter[:, iter_i]
-            this_weak_learner = decision_tree_classifier_from_scratch(max_depth=1, verbose=self.verbose) # base estimator
-            this_weak_learner.fit(X=self.X_train, y_true=self.y_train, sample_weight=sample_weight_curr_iter)
+            curr_iter_same_weight = self.all_iters_sample_weights[:, iter_i]
+            this_weak_learner = decision_tree_classifier_from_scratch(max_depth=1, verbose=self.verbose)
+            #this_weak_learner = logistic_regression_classifier()
+            this_weak_learner.fit(X=self.X_train, y=self.y_train, sample_weight=curr_iter_same_weight)
             y_pred = this_weak_learner.predict(self.X_train)  
-            curr_error = sample_weight_curr_iter[y_pred != self.y_train].sum() # calculate error and weak_learner weight from weak learner prediction
+            curr_error = curr_iter_same_weight[y_pred != self.y_train].sum() # calculate error and weak_learner weight from weak learner prediction
 
             # 2. set a weight for this weak learner based on its accuracy; stronger learner gets more of a say in the final
             this_weak_learner_voting_weight = 0.5 * np.log((1 - curr_error) / curr_error)
 
             # 3. increase weights of misclassified observations
-            sample_weight_next_iter = sample_weight_curr_iter * np.exp(-this_weak_learner_voting_weight * self.y_train * y_pred)
+            # this step is critical, as it will be used in the estimator in the next iteration
+            sample_weight_next_iter = curr_iter_same_weight * np.exp(-this_weak_learner_voting_weight * self.y_train * y_pred)
             
             # 4. re-normalize sample weight, and update sample weights for the next iteration, until final iteration
             sample_weight_next_iter /= sample_weight_next_iter.sum()
             if iter_i+1 != self.max_iter: # no need to update sample_weights if reaching final iteration
-                self.sample_weights_all_iter[:, iter_i+1] = sample_weight_next_iter
+                self.all_iters_sample_weights[:, iter_i+1] = sample_weight_next_iter
 
             # 5. save results of current iteration
             self.weak_learners[iter_i] = this_weak_learner
