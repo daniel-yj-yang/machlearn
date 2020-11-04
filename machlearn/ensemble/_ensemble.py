@@ -154,7 +154,7 @@ def _demo(dataset):
 
     if dataset == "randomly_generated":
 
-        print("Demo: Use an ensemble voting classifier (making predicitons by majority vote), hoping to increase accuracy.")
+        print("Demo: Use an ensemble voting classifier (making predicitons by majority vote or averaged predicted probabilities), hoping to increase accuracy by cancelling out weakness in component models.")
 
         from sklearn.datasets import make_classification
         X, y = make_classification(n_samples=10000, n_features=30, n_redundant=2, n_classes=2, weights=[.50, ], flip_y=0.02, random_state=1, class_sep=0.80)
@@ -182,9 +182,17 @@ def _demo(dataset):
         model_log_reg = logistic_regression_classifier()
         model_log_reg.fit(X_train, y_train)
 
-        # model_3: random forest
+        # model_3: decision tree
+        from ..decision_tree import decision_tree_classifier
+        model_decision_tree = decision_tree_classifier(random_state=1)
+        hyperparameters_decision_tree = {"max_depth": range(1, 10)}
+        grid_decision_tree = GridSearchCV(model_decision_tree, hyperparameters_decision_tree, cv=5)
+        grid_decision_tree.fit(X_train, y_train)
+        print(f"- best_params of decision tree: {grid_decision_tree.best_params_}")        
+
+        # model_4: random forest
         model_random_forest = random_forest(random_state=1)
-        hyperparameters_random_forest = {"n_estimators": [100, 200, 300, ]}
+        hyperparameters_random_forest = {"n_estimators": [100, 200, 300, ]} # The number of trees in the forest
         grid_random_forest = GridSearchCV(model_random_forest, hyperparameters_random_forest, cv=5)
         grid_random_forest.fit(X_train, y_train)
         print(f"- best_params of random forest: {grid_random_forest.best_params_}")
@@ -192,17 +200,18 @@ def _demo(dataset):
         print("\nAccuracy:")
         print(f"- kNN: {grid_kNN.best_estimator_.score(X_test, y_test)}")
         print(f"- logistic regression: {model_log_reg.score(X_test, y_test)}")
+        print(f"- decision tree: {grid_decision_tree.best_estimator_.score(X_test, y_test)}")
         print(f"- random forest: {grid_random_forest.best_estimator_.score(X_test, y_test)}")
 
         # ensemble
-        estimator_list = [("kNN", grid_kNN.best_estimator_), ("log_reg", model_log_reg), ("random_forest", grid_random_forest.best_estimator_)]
+        estimator_list = [("kNN", grid_kNN.best_estimator_), ("log_reg", model_log_reg), ("DT", grid_decision_tree.best_estimator_), ("random_forest", grid_random_forest.best_estimator_)]
         ensemble_classifier = voting(estimator_list, voting = "hard") # make predicitons by majority vote of the class
         ensemble_classifier.fit(X_train, y_train)
         print(f"- ensemble (hard voting, making predicitons by majority vote of the class label): {ensemble_classifier.score(X_test, y_test)}")
 
         ensemble_classifier = voting(estimator_list, voting = "soft") # make predicitons by majority vote of the class probabilites
         ensemble_classifier.fit(X_train, y_train)
-        print(f"- ensemble (soft voting, making predicitons by majority vote of the class probabilities): {ensemble_classifier.score(X_test, y_test)}")
+        print(f"- ensemble (soft voting, making predicitons by the averaged class probabilities): {ensemble_classifier.score(X_test, y_test)}")
 
         # Output:
         # 
@@ -210,17 +219,19 @@ def _demo(dataset):
         #
         # Hyperparameters:
         # - best_params of kNN: {'n_neighbors': 27}
+        # = best_params of decision tree: {'max_depth': 6}
         # - best_params of random forest: {'n_estimators': 200}
         #
         # Accuracy:
         # - kNN: 0.81
         # - logistic regression: 0.83
+        # - decision tree: 0.9252
         # - random forest: 0.9312
-        # - ensemble (hard voting, making predicitons by majority vote of the class label): 0.8664
-        # - ensemble (soft voting, making predicitons by majority vote of the class probabilities): 0.8984
+        # - ensemble (hard voting, making predicitons by majority vote of the class label): 0.8784
+        # - ensemble (soft voting, making predicitons by the averaged class probabilities): 0.9268
 
         print("\nThe results suggest that voting is NOT guaranteed to provide better accuracy, as it is based on the majority label or the average predicted probabilities.")
-        print("Rather, a voting classifier can be useful for a set of EQUALLY well performing model in order to balance out their individual weaknesses.")
+        print("Rather, a voting classifier is more useful for a set of EQUALLY well performing model as it can balance out their individual weaknesses.")
         
 
 def demo(dataset="randomly_generated"):
