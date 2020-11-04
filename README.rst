@@ -334,6 +334,23 @@ Summary of output:
 
 -----
 
+Example 8: Ensemble Methods
+---------------------------
+
+.. code-block:: python
+   
+   from machlearn import ensemble
+   ensemble.demo("Social_Network_Ads)
+
+Summary of output: 
+
+.. code-block::
+
+   ensemble.demo("Social_Network_Ads) called random_forest_classifier_from_scratch(), which implements all major functions of a random forest classifier from scratch.
+
+
+-----
+
 module: model_evaluation
 ------------------------
 
