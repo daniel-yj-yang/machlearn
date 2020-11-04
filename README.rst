@@ -346,7 +346,7 @@ Summary of output:
 
 .. code-block::
 
-   ensemble.demo("Social_Network_Ads) called random_forest_classifier_from_scratch(), which implements all major functions of a random forest classifier from scratch.
+   ensemble.demo("Social_Network_Ads) calls random_forest_classifier_from_scratch(), which implements all major functions of a random forest classifier from scratch.
 
 
 -----
@@ -441,6 +441,7 @@ module: neural_network
    :header: "function", "description"
    :widths: 10, 20
 
+   "multi_layer_perceptron_classifier()", "Multi-layer Perceptron (MLP) classifier"
    "rnn()", "Recurrent neural network"
    "demo()", "provides a demo of selected functions in this module"
 
