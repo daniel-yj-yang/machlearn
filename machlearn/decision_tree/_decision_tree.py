@@ -194,7 +194,6 @@ class decision_tree_classifier_from_scratch(object):
         self.y_class0_value = 0
         self.y_class1_value = 1
 
-
     def find_best_split_in_one_specific_feature(self, x, y_true, sample_weight=None):
 
         if type(x) in [pd.DataFrame, pd.Series]:
@@ -268,7 +267,6 @@ class decision_tree_classifier_from_scratch(object):
 
         return best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array
 
-
     def find_best_split_across_all_features(self, X, y_true, sample_weight=None):
 
         if type(X) in [pd.DataFrame, pd.Series]:
@@ -303,7 +301,6 @@ class decision_tree_classifier_from_scratch(object):
                 best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array = x_cutoff_value, impurity, information_gain, y_true_split_array
 
         return best_split_feature_i, best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array
-
 
     def fit(self, X, y_true, depth=0, sample_weight=None):
 
@@ -363,7 +360,6 @@ class decision_tree_classifier_from_scratch(object):
         else:
             return curr_node
 
-
     def _order(self, curr_node, type="Inorder"):
         # Recursive travesal
         if curr_node:
@@ -386,29 +382,8 @@ class decision_tree_classifier_from_scratch(object):
                 return_dict['curr'] = curr_node.to_dict()
                 return return_dict
 
-
     def order(self, type="Inorder"):
         return self._order(curr_node=self.root_node, type=type)
-
-
-    def predict(self, X, proba=False):
-        if type(X) in [pd.DataFrame, pd.Series]:
-            X = X.to_numpy()
-
-        n_rows = X.shape[0]
-        if proba:
-            prediction = np.zeros(shape=(n_rows, 2))
-        else:
-            prediction = np.zeros(shape=(n_rows,))
-
-        for this_row_i in range(n_rows):
-            prediction[this_row_i] = self._predict(X[this_row_i,:], proba=proba)
-        return prediction
-
-        
-    def predict_proba(self, X):
-        return self.predict(X, proba=True)
-
 
     def _predict(self, one_X_row, proba=False):
         curr_node = self.root_node
@@ -423,6 +398,22 @@ class decision_tree_classifier_from_scratch(object):
         else:
             return np.array([curr_node.y_dominant_class])
 
+    def predict(self, X, proba=False):
+        if type(X) in [pd.DataFrame, pd.Series]:
+            X = X.to_numpy()
+
+        n_rows = X.shape[0]
+        if proba:
+            prediction = np.zeros(shape=(n_rows, 2))
+        else:
+            prediction = np.zeros(shape=(n_rows,))
+
+        for this_row_i in range(n_rows):
+            prediction[this_row_i] = self._predict(X[this_row_i,:], proba=proba)
+        return prediction
+     
+    def predict_proba(self, X):
+        return self.predict(X, proba=True)
 
     def score(self, X_test, y_test):
         if type(X_test) in [pd.DataFrame, pd.Series]:

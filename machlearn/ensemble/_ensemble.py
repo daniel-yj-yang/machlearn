@@ -205,6 +205,9 @@ class boosting_classifier_from_scratch(object):
         self.y_train = None
         self.fitted = False
         self.verbose = verbose
+        self.y_class0_value = None
+        self.y_class1_value = None
+        self.y_classes_value_conversion_dict = {}
 
     def fit(self, X_train, y_train):
 
@@ -222,13 +225,16 @@ class boosting_classifier_from_scratch(object):
         y_train_unique_values_sorted_list = sorted(Counter(self.y_train).keys())
         if len(y_train_unique_values_sorted_list) != 2:
             raise ValueError('y train must be binary')
-        if set(self.y_train) != {-1, 1}: # Target values should be ±1
-            self.y_train = np.where(self.y_train == y_train_unique_values_sorted_list[0], -1, 1)
-
+        self.y_class0_value = y_train_unique_values_sorted_list[0]
+        self.y_class1_value = y_train_unique_values_sorted_list[1]
+        self.y_classes_value_conversion_dict = {self.y_class0_value: -1, self.y_class1_value: 1}
+        if [self.y_class0_value, self.y_class1_value] != [-1, 1]:  # Target values should be ±1
+            self.y_train = np.where(self.y_train == self.y_class0_value, -1, 1)
+        
         ### initialize
         self.sample_weights_all_iter = np.zeros(shape=(total_samples_n, self.max_iter)) # col_i = iteration(iter_i)
         self.weak_learners = np.zeros(shape=(self.max_iter,), dtype=object) # the minimum trees
-        self.weak_learner_voting_weights = np.zeros(shape=(self.max_iter,))
+        self.weak_learners_voting_weights = np.zeros(shape=(self.max_iter,))
         self.errors = np.zeros(shape=(self.max_iter,))
 
         # A. uniform weights for iteration(iter_i=0)
@@ -256,7 +262,7 @@ class boosting_classifier_from_scratch(object):
 
             # 5. save results of current iteration
             self.weak_learners[iter_i] = this_weak_learner
-            self.weak_learner_voting_weights[iter_i] = this_weak_learner_voting_weight
+            self.weak_learners_voting_weights[iter_i] = this_weak_learner_voting_weight
             self.errors[iter_i] = curr_error
 
         self.fitted = True
@@ -265,7 +271,7 @@ class boosting_classifier_from_scratch(object):
     def predict(self, X_test):
         # C. the final predictions as the weighted majority vote of the weak learner's predictions
         weak_learners_y_preds = np.array([this_weak_learner.predict(X_test) for this_weak_learner in self.weak_learners])
-        return np.sign(np.dot(self.weak_learner_voting_weights, weak_learners_y_preds)) ### Target values should be ±1
+        return np.sign(np.dot(self.weak_learners_voting_weights, weak_learners_y_preds)) ### Target values should be ±1
 
     def predict_proba(self, X_test):
         pass
@@ -276,28 +282,21 @@ class boosting_classifier_from_scratch(object):
         if type(y_test) in [pd.DataFrame, pd.Series]:
             y_test = y_test.to_numpy()
         from sklearn.metrics import confusion_matrix
-        ### Target values should be ±1
-        from collections import Counter
-        y_test_unique_values_sorted_list = sorted(Counter(y_test).keys())
-        y_test = np.where(y_test == y_test_unique_values_sorted_list[0], -1, 1)
-        # 
+        y_test = np.where(y_test == self.y_class0_value, -1, 1) ### Target values should be ±1
         cm = confusion_matrix(y_test, self.predict(X_test))
         accuracy = np.trace(cm) / np.sum(cm)
         return accuracy
 
     def score_of_individual_trees(self, X_test, y_test):
-        ### Target values should be ±1
-        from collections import Counter
-        y_test_unique_values_sorted_list = sorted(Counter(y_test).keys())
-        y_test = np.where(y_test == y_test_unique_values_sorted_list[0], -1, 1)
+        y_test = np.where(y_test == self.y_class0_value, -1, 1) ### Target values should be ±1
         return np.array([this_weak_learner.score(X_test, y_test) for this_weak_learner in self.weak_learners])
 
     def print_debugging_info(self):
         if self.fitted:
-            print(f"self.weak_learner_voting_weights = {self.weak_learner_voting_weights}")
+            print(f"self.weak_learners_voting_weights = {self.weak_learners_voting_weights}")
             print(f"self.errors = {self.errors}")
             weak_learners_y_preds = np.array([this_weak_learner.predict(self.X_train) for this_weak_learner in self.weak_learners])
-            print(f"To get at the prediction based on X_train, take the sign of the following: {np.dot(self.weak_learner_voting_weights, weak_learners_y_preds)}")
+            print(f"To get at the prediction based on X_train, take the sign of the following: {np.dot(self.weak_learners_voting_weights, weak_learners_y_preds)}")
 
 
 def boosting_classifier(*args, **kwargs):
@@ -371,7 +370,7 @@ def _demo(dataset):
         from sklearn.model_selection import train_test_split
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
 
-        for model in [boosting_classifier_from_scratch(), random_forest_classifier_from_scratch(max_depth=6)]:
+        for model_i, model in enumerate([boosting_classifier_from_scratch(), random_forest_classifier_from_scratch(max_depth=6)]):
             print(f"\n------------ model: {repr(model)} -------------\n")
             model.fit(X_train, y_train)
             model.print_debugging_info()
@@ -396,13 +395,25 @@ def _demo(dataset):
             from sklearn.model_selection import train_test_split
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, stratify=y, random_state=1) # Setting ‘stratify’ to y makes our training split represent the proportion of each value in the y variable. 
 
+        ###################################################
+        
         print("\ngenerate n_samples=1000")        
         generate_data(n_samples=1000)
         ### this will take a very long time to complete when n_samples is big
         from ..decision_tree import decision_tree_classifier_from_scratch
         DT = decision_tree_classifier_from_scratch(max_depth=2)
         DT.fit(X_train,y_train)
-        print(f"\nUse decision_tree_classifier_from_scratch(). Accuracy: {DT.score(X_test,y_test):.3f}")
+        print(f"\nUse decision_tree_classifier_from_scratch(max_depth=2). Accuracy: {DT.score(X_test,y_test):.3f}")
+
+        RF = random_forest_classifier_from_scratch(n_trees=10, max_depth=2)
+        RF.fit(X_train,y_train)
+        print(f"\nUse random_forest_classifier_from_scratch(n_trees=10, max_depth=2). Accuracy: {RF.score(X_test,y_test):.3f}")
+
+        Boosting = boosting_classifier_from_scratch(max_iter=10)
+        Boosting.fit(X_train, y_train)
+        print(f"\nUse boosting_classifier_from_scratch(max_iter=10). Accuracy: {Boosting.score(X_test,y_test):.3f}")
+
+        ###################################################
 
         print("\ngenerate n_samples=10000")
         generate_data(n_samples=10000)
@@ -493,9 +504,12 @@ def demo(dataset="randomly_generated"):
 #
 # References
 #
-# Random Forest: https://towardsdatascience.com/random-forests-and-decision-trees-from-scratch-in-python-3e4fa5ae4249
+# Random Forest: 
+# https://towardsdatascience.com/random-forests-and-decision-trees-from-scratch-in-python-3e4fa5ae4249
 #
-# AdaBoosting: https://geoffruddock.com/adaboost-from-scratch-in-python/
+# AdaBoosting: 
+# https://geoffruddock.com/adaboost-from-scratch-in-python/
+# https://www.cs.toronto.edu/~mbrubake/teaching/C11/Handouts/AdaBoost.pdf
 #
 # Gradient Boosting: 
 # https://towardsdatascience.com/gradient-boosting-in-python-from-scratch-4a3d9077367

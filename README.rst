@@ -347,7 +347,7 @@ Summary of output:
 
 .. code-block::
 
-   - ensemble.demo("Social_Network_Ads) calls boosting_classifier_from_scratch() and random_forest_classifier_from_scratch().
+   - These demos call boosting_classifier_from_scratch() and random_forest_classifier_from_scratch().
    - The output reflects some of the inner workings of these classifiers.
 
 
