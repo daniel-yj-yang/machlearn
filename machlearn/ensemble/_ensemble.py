@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 
 from sklearn.ensemble import BaggingClassifier, RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier, VotingClassifier
+from sklearn.ensemble import GradientBoostingRegressor
 
 # Reference:
 # https://scikit-learn.org/stable/modules/ensemble.html#
@@ -180,6 +181,8 @@ def bagging_classifier(*args, **kwargs):
 #######################################################################################################################################
 
 from ..logistic_regression import logistic_regression_classifier
+from ..kNN import kNN_classifier 
+from ..SVM import SVM_classifier
 
 class boosting_classifier_from_scratch(object):
     """
@@ -244,15 +247,17 @@ class boosting_classifier_from_scratch(object):
 
         ### B. learning iterations
         for iter_i in range(self.max_iter):
-            # 1. find a weak learner, which minimizes curr_error via a base estimator
+            # 1. find a weak learner via a base estimator, which will be used to minimize curr_error
             curr_iter_same_weight = self.all_iters_sample_weights[:, iter_i]
             this_weak_learner = decision_tree_classifier_from_scratch(max_depth=1, verbose=self.verbose)
             #this_weak_learner = logistic_regression_classifier(C=1e9)
-            this_weak_learner.fit(X=self.X_train, y=self.y_train, sample_weight=curr_iter_same_weight)
+            #this_weak_learner = kNN_classifier() # TypeError: fit() got an unexpected keyword argument 'sample_weight'
+            #this_weak_learner = SVM_classifier() # ValueError: ndarray is not C-contiguous
+            this_weak_learner.fit(X=self.X_train, y=self.y_train, sample_weight=curr_iter_same_weight) # sample_weight=curr_iter_same_weight is the key here
             y_pred = this_weak_learner.predict(self.X_train)  
             curr_error = curr_iter_same_weight[y_pred != self.y_train].sum() # calculate error and weak_learner weight from weak learner prediction
 
-            # 2. set a weight for this weak learner based on its accuracy; stronger learner gets more of a say in the final
+            # 2. set a voting weight for this weak learner based on its accuracy; stronger learner can contribute more in the final voting
             this_weak_learner_voting_weight = 0.5 * np.log((1 - curr_error) / curr_error)
 
             # 3. increase weights of misclassified observations
@@ -363,7 +368,57 @@ def voting_classifier(*args, **kwargs):
 #######################################################################################################################################
 
 
+from ..decision_tree import decision_tree_regressor
+
+class gradient_boosting_regressor_from_scratch(object):
+    def __init__(self):
+        self.alpha = 1
+
+    def _y_pred(self):
+        """
+        θ = _y_pred()
+        """
+        pass
+
+    def _cost_function(self, y, y_hat):
+        """
+        J(θ) = _cost_function()
+        """
+        return ((y - y_hat) ** 2) / 2
+
+    def _gradient(self, y, y_hat):
+        """
+        ∂J(θ)/∂θ = _gradient()
+        """
+        return -1 * (y - y_hat)
+
+    def fit(self, X, y):
+        y_hat = self._y_pred()
+        loss = self._cost_function(y, y_hat)
+        self.alpha * self._gradient(y, y_hat)
+
+        regressor = decision_tree_regressor(max_depth=1)
+        regressor.fit(X, residuals)
+
+
+def gradient_boosting_regressor(*args, **kwargs):
+    return GradientBoostingRegressor(*args, **kwargs)
+
+
+#######################################################################################################################################
+
+
 def _demo(dataset):
+
+    if dataset == 'boston':
+        # regressor example
+        from sklearn.datasets import load_boston
+        boston = load_boston()
+        X = pd.DataFrame(data=boston.data,columns=boston.feature_names)
+        y = pd.DataFrame(data=boston.target,columns=['MEDV'])
+        data = pd.concat([y, X], axis=1)
+        print(f"{data.head()}\n")
+        #formula = 'MEDV ~ CRIM + ZN + INDUS + CHAS + NOX + RM + AGE + DIS + RAD + TAX + PTRATIO + B + LSTAT - 1'
 
     if dataset == 'Social_Network_Ads':
         from ..datasets import public_dataset
@@ -495,10 +550,10 @@ def demo(dataset="randomly_generated"):
     This function provides a demo of selected functions in this module.
 
     Required argument:
-        - dataset:         A string. Possible values: "randomly_generated", "Social_Network_Ads"
+        - dataset:         A string. Possible values: "randomly_generated", "Social_Network_Ads", "boston"
     """
 
-    available_datasets = ("randomly_generated", "Social_Network_Ads",)
+    available_datasets = ("randomly_generated", "Social_Network_Ads", "boston", )
 
     if dataset in available_datasets:
         return _demo(dataset = dataset)
@@ -516,8 +571,9 @@ def demo(dataset="randomly_generated"):
 # https://www.cs.toronto.edu/~mbrubake/teaching/C11/Handouts/AdaBoost.pdf
 #
 # Gradient Boosting: 
-# https://towardsdatascience.com/gradient-boosting-in-python-from-scratch-4a3d9077367
+# https://towardsdatascience.com/gradient-boosting-in-python-from-scratch-4a3d9077367 (regressor)
 # https://machinelearningmastery.com/gradient-boosting-machine-ensemble-in-python/
+# https://stackabuse.com/gradient-boosting-classifiers-in-python-with-scikit-learn/ (classifier)
 #
 # Logistic regression in ensemble:
 # https://www.quora.com/Can-we-use-ensemble-methods-for-logistic-regression

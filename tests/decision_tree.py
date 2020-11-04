@@ -6,7 +6,8 @@
 
 from machlearn import decision_tree as DT
 
-DT.demo_DT_from_scratch()
+DT.demo_from_scratch(question_type="classification")
+DT.demo_from_scratch(question_type="regression")
 
 DT.demo_metrics()
 

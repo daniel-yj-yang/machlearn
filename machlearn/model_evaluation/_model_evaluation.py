@@ -7,6 +7,7 @@
 
 __font_size__ = 18
 
+import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -19,7 +20,6 @@ def test_for_multicollinearity(X):
     """
     X: pd_DataFrame
     """
-    import pandas as pd
     from statsmodels.stats.outliers_influence import variance_inflation_factor as VIF
     vif_data = pd.DataFrame()
     vif_data["feature"] = X.columns
@@ -48,12 +48,18 @@ def demo_CV():
 
 
 def evaluate_continuous_prediction(y_true, y_pred):
-    from statistics import mean
-    SSE = sum((y_true - y_pred) ** 2)
-    RMSE = ( SSE / len(y_true) ) ** 0.5
-    SST = sum((y_true - mean(y_true)) ** 2)
-    R_squared = 1 - (SSE/SST)
-    return RMSE, R_squared
+    if type(y_true) in [pd.DataFrame, pd.Series]:
+        y_true = y_true.to_numpy()
+    if type(y_pred) in [pd.DataFrame, pd.Series]:
+        y_pred = y_pred.to_numpy()
+    from sklearn.metrics import r2_score, mean_squared_error
+    return r2_score(y_true, y_pred), mean_squared_error(y_true, y_pred)**0.5
+    #from statistics import mean
+    #SSE = sum((y_true - y_pred) ** 2)
+    #RMSE = ( SSE / len(y_true) ) ** 0.5
+    #SST = sum((y_true - mean(y_true)) ** 2)
+    #R_squared = 1 - (SSE/SST)
+    #return RMSE, R_squared
 
 
 

@@ -5,6 +5,7 @@
 # License: BSD 3 clause
 
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeRegressor
 
 import numpy as np
 import pandas as pd
@@ -122,7 +123,7 @@ def demo_metrics():
     Impurity_plot()
 
 
-class decision_tree_node(object):
+class classification_decision_tree_node(object):
     def __init__(self, curr_depth=None, curr_impurity=None, curr_sample_size=None, curr_y_distribution={}, best_split_feature_i=None, best_x_cutoff_value=None, y_class0_value=0, y_class1_value=1):
         self.curr_depth = curr_depth
         self.curr_impurity = curr_impurity
@@ -181,7 +182,7 @@ class decision_tree_classifier_from_scratch(object):
         self.features_indices_actually_used = features_indices_actually_used  # limits the analysis on only these feature indices
         self.max_depth = max_depth
         self.verbose=verbose
-        self.root_node = decision_tree_node()
+        self.root_node = classification_decision_tree_node()
         if impurity_measure not in ['entropy', 'gini_impurity']:
             raise ValueError('invalid impurity_measure value')
         self.impurity_measure = impurity_measure
@@ -341,7 +342,7 @@ class decision_tree_classifier_from_scratch(object):
         curr_impurity = impurity_measure_with_sample_weight(y_class0_value=self.y_class0_value, y_class1_value=self.y_class1_value, y=y_true, sample_weight=sample_weight, impurity_func=self.impurity_func)
 
         if curr_impurity == 0 or depth >= self.max_depth: # curr_impurity = 0 means already perfect, no need to split
-            curr_node = decision_tree_node(curr_depth = depth, curr_impurity = curr_impurity, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = None, best_x_cutoff_value = None, y_class0_value=self.y_class0_value, y_class1_value=self.y_class1_value)
+            curr_node = classification_decision_tree_node(curr_depth = depth, curr_impurity = curr_impurity, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = None, best_x_cutoff_value = None, y_class0_value=self.y_class0_value, y_class1_value=self.y_class1_value)
             return curr_node
 
         best_split_feature_i, best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array = self.find_best_split_across_all_features(X=X, y_true=y_true, sample_weight=sample_weight)
@@ -350,7 +351,7 @@ class decision_tree_classifier_from_scratch(object):
         X_left, X_right = X[left_rows], X[right_rows]
         y_true_left, y_true_right = y_true[left_rows], y_true[right_rows]
         sample_weight_left, sample_weight_right = sample_weight[left_rows], sample_weight[right_rows]
-        curr_node = decision_tree_node(curr_depth = depth, curr_impurity = curr_impurity, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = best_split_feature_i, best_x_cutoff_value = best_x_cutoff_value, y_class0_value=self.y_class0_value, y_class1_value=self.y_class1_value)
+        curr_node = classification_decision_tree_node(curr_depth = depth, curr_impurity = curr_impurity, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = best_split_feature_i, best_x_cutoff_value = best_x_cutoff_value, y_class0_value=self.y_class0_value, y_class1_value=self.y_class1_value)
         # adding left and right children nodes into the node dict
         curr_node.left  = self.fit( X=X_left,  y=y_true_left,  sample_weight=sample_weight_left,  depth=depth+1)
         curr_node.right = self.fit( X=X_right, y=y_true_right, sample_weight=sample_weight_right, depth=depth+1)
@@ -432,6 +433,127 @@ def decision_tree_classifier(*args, **kwargs):
     """
     """
     return DecisionTreeClassifier(*args, **kwargs)
+
+
+#######################################################################################################################################
+
+class regression_decision_tree_node(object):
+    def __init__(self, X, y, subset_sample_indices, min_samples_leaf=5):
+        """
+        min_samples_leaf: The minimum number of samples required to be at a leaf node.
+        """
+        self.X = X 
+        self.y = y
+        self.subset_sample_indices = subset_sample_indices
+        self.min_samples_leaf = min_samples_leaf
+        self.n_samples = len(subset_sample_indices)
+        self.n_features = X.shape[1]
+        self.predicted_value = np.mean(y[subset_sample_indices]) # the decision (prediction) is based on the value the node holds.
+        # best_after_split_purity_score, the lower the better, meaning more homogeneous elements within left and right nodes
+        self.best_after_split_purity_score = float('inf') # the score indicates how effect the split was. It will be the weighted sum of the variance in the left and right nodes. leaf nodes do not have a score, thus set to infinity.
+        self.find_best_feature_to_split()
+        
+    def find_best_feature_to_split(self):
+        for feature_index in range(self.n_features):
+            self.find_best_split_value_on_this_feature(feature_index)
+        if self.is_leaf_node:
+            return
+        best_split_feature_x_series = self.best_split_feature_x_series
+        best_split_left_node_series_indices  = np.nonzero(best_split_feature_x_series <= self.best_split_feature_value)[0]
+        best_split_right_node_series_indices = np.nonzero(best_split_feature_x_series >  self.best_split_feature_value)[0]
+        # recursively find all the child nodes
+        self.left  = regression_decision_tree_node(X=self.X, y=self.y, subset_sample_indices=self.subset_sample_indices[best_split_left_node_series_indices],  min_samples_leaf=self.min_samples_leaf)
+        self.right = regression_decision_tree_node(X=self.X, y=self.y, subset_sample_indices=self.subset_sample_indices[best_split_right_node_series_indices], min_samples_leaf=self.min_samples_leaf)
+        
+    def find_best_split_value_on_this_feature(self, feature_index):
+        """
+        try to see if there is a lower "weighted averages of the standard deviations", which is equivalent to minimizing RMSE.
+        """      
+        specific_x_series = self.X[self.subset_sample_indices, feature_index]
+
+        for this_row in range(self.n_samples):
+            specific_x_value_in_this_row = specific_x_series[this_row]
+            left_node_series_indices  = specific_x_series <= specific_x_value_in_this_row # left_node  holds those in specific_x_series smaller than (or equal to) specific_x_value_in_this_row
+            right_node_series_indices = specific_x_series >  specific_x_value_in_this_row # right_node holds those in specific_x_series larger than                specific_x_value_in_this_row
+            n_samples_in_left_node  = left_node_series_indices.sum() # a shorthand way to count
+            n_samples_in_right_node = right_node_series_indices.sum()
+            # the leaf nodes must have at least n = "min_samples_left" samples
+            if (n_samples_in_right_node < self.min_samples_leaf) or (n_samples_in_left_node < self.min_samples_leaf):
+                continue
+
+            # this_row is now a candidate as it satisfies the condition that the leaf nodes must have at least n = "min_samples_left" samples
+            curr_after_split_purity_score = self.find_after_split_purity_score(left_node_series_indices, right_node_series_indices)
+            if curr_after_split_purity_score < self.best_after_split_purity_score: 
+                # a better split is found
+                self.best_split_feature_index = feature_index
+                self.best_after_split_purity_score = curr_after_split_purity_score
+                self.best_split_feature_value = specific_x_value_in_this_row
+    
+    def find_after_split_purity_score(self, left_node_indices, right_node_indices):
+        """
+        the weighted sum of the variance of y within left and right nodes
+        """
+        y_subset = self.y[self.subset_sample_indices]
+        left_node_variance  = y_subset[left_node_indices].var()
+        right_node_variance = y_subset[right_node_indices].var()
+        n_samples_in_left_node  = left_node_indices.sum()
+        n_samples_in_right_node = right_node_indices.sum()
+        return (left_node_variance * n_samples_in_left_node) + (right_node_variance * n_samples_in_right_node)
+                
+    @property
+    def best_split_feature_x_series(self):
+        return self.X[self.subset_sample_indices, self.best_split_feature_index]
+                
+    @property
+    def is_leaf_node(self):
+        return self.best_after_split_purity_score == float('inf')                
+
+    def predict(self, X_test):
+        return np.array([self.predict_row(X_test_specific_row) for X_test_specific_row in X_test])
+
+    def predict_row(self, X_test_specific_row):
+        if self.is_leaf_node:
+            return self.predicted_value
+        child_node = self.left if X_test_specific_row[self.best_split_feature_index] <= self.best_split_feature_value else self.right
+        return child_node.predict_row(X_test_specific_row)
+
+
+class decision_tree_regressor_from_scratch(object):
+
+    def __init__(self, min_samples_leaf=5):
+        """
+        min_samples_leaf: The minimum number of samples required to be at a leaf node.
+        """
+        self.X_train = None
+        self.y_train = None
+        self.DT_root_node = None
+        self.min_samples_leaf = min_samples_leaf
+
+    def fit(self, X, y):
+        self.X_train = X
+        self.y_train = y
+        if type(self.X_train) in [pd.DataFrame, pd.Series]:
+            self.X_train = self.X_train.to_numpy()
+        if type(self.y_train) in [pd.DataFrame, pd.Series]:
+            self.y_train = self.y_train.to_numpy()
+        n_samples = len(self.y_train)
+        self.DT_root_node = regression_decision_tree_node(X=self.X_train, y=self.y_train, subset_sample_indices=np.arange(n_samples), min_samples_leaf=self.min_samples_leaf)
+        return self
+  
+    def predict(self, X):
+        X_test = X
+        if type(X_test) in [pd.DataFrame, pd.Series]:
+            X_test = X_test.to_numpy()
+        return self.DT_root_node.predict(X_test)
+        
+
+def decision_tree_regressor(*args, **kwargs):
+    """
+    """
+    return DecisionTreeRegressor(*args, **kwargs)
+
+
+#######################################################################################################################################
 
 
 def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: decision_tree
@@ -671,34 +793,54 @@ def demo(dataset="Social_Network_Ads", classifier_func="decision_tree"):
         raise TypeError(f"either dataset [{dataset}] or classifier function [{classifier_func}] is not defined")
 
 
-def demo_DT_from_scratch(data="Social_Network_Ads", impurity_measure='entropy', max_depth=2):
-    """
-    impurity_measure: 'entropy' or 'gini_impurity'
-    """
+def demo_from_scratch(question_type="classification"):
+
+    if question_type not in ['classification', 'regression',]:
+        raise ValueError('question_type should be either classification or regression')
+
+    if question_type == "regression":
+        from sklearn.datasets import load_boston
+        boston = load_boston()
+        X = pd.DataFrame(data=boston.data,columns=boston.feature_names)
+        y = pd.DataFrame(data=boston.target,columns=['MEDV'])
+        data = pd.concat([y, X], axis=1)
+        print(f"{data.head()}\n")
+
+        for model in [decision_tree_regressor_from_scratch(min_samples_leaf=5), decision_tree_regressor(min_samples_leaf=5)]:
+            print(f"------ model: {repr(model)} ------")
+            model.fit(X, y)
+            y_pred = model.predict(X)
+            from ..model_evaluation import evaluate_continuous_prediction
+            R_squared, RMSE = evaluate_continuous_prediction(y, y_pred)
+            print(f"R_squared = {R_squared:.3f}, RMSE = {RMSE:.3f}")
     
-    from ..datasets import public_dataset
-    data = public_dataset('Social_Network_Ads')
-    X = data[['Age', 'EstimatedSalary']]
-    y = data['Purchased']
-    y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
-    from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
+    if question_type == "classification":
+        impurity_measure = 'entropy'  # impurity_measure: 'entropy' or 'gini_impurity'
+        max_depth = 2
 
-    DT_model = decision_tree_classifier_from_scratch(impurity_measure=impurity_measure, max_depth = max_depth)
-    from sklearn.preprocessing import scale
-    print(DT_model.find_best_split_in_one_specific_feature(x=scale(X_train['Age']), y_true=y_train))
-    print(DT_model.find_best_split_across_all_features(X=scale(X_train), y_true=y_train))
+        from ..datasets import public_dataset
+        data = public_dataset('Social_Network_Ads')
+        X = data[['Age', 'EstimatedSalary']]
+        y = data['Purchased']
+        y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
+        from sklearn.model_selection import train_test_split
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
 
-    DT_model.fit(X_train, y_train)
-    print(DT_model.order(type="Preorder"))
-    print(f"\nAccuracy in predicting the target in the testing set: {DT_model.score(X_test, y_test)}")
+        DT_model = decision_tree_classifier_from_scratch(impurity_measure=impurity_measure, max_depth = max_depth)
+        from sklearn.preprocessing import scale
+        print(DT_model.find_best_split_in_one_specific_feature(x=scale(X_train['Age']), y_true=y_train))
+        print(DT_model.find_best_split_across_all_features(X=scale(X_train), y_true=y_train))
 
-    #print(DT_model.predict(X_train))
-    #print(DT_model.predict_proba(X_train))
-    from ..model_evaluation import plot_confusion_matrix, plot_ROC_curve, plot_ROC_and_PR_curves
-    y_pred_score = DT_model.predict_proba(X_test)
-    plot_confusion_matrix(y_true=y_test, y_pred=DT_model.predict(X_test), y_classes=y_classes)
-    plot_ROC_curve(y_true=y_test, y_pred_score=y_pred_score[:,1])
+        DT_model.fit(X_train, y_train)
+        print(DT_model.order(type="Preorder"))
+        print(f"\nAccuracy in predicting the target in the testing set: {DT_model.score(X_test, y_test)}")
+
+        #print(DT_model.predict(X_train))
+        #print(DT_model.predict_proba(X_train))
+        from ..model_evaluation import plot_confusion_matrix, plot_ROC_curve, plot_ROC_and_PR_curves
+        y_pred_score = DT_model.predict_proba(X_test)
+        plot_confusion_matrix(y_true=y_test, y_pred=DT_model.predict(X_test), y_classes=y_classes)
+        plot_ROC_curve(y_true=y_test, y_pred_score=y_pred_score[:,1])
 
 #
 # References
@@ -722,7 +864,9 @@ def demo_DT_from_scratch(data="Social_Network_Ads", impurity_measure='entropy', 
 # https://towardsdatascience.com/decision-tree-from-scratch-in-python-46e99dfea775
 # https://machinelearningmastery.com/implement-decision-tree-algorithm-scratch-python/
 #
-
+# 5. Decision Tree Regressor in Python
+# https://levelup.gitconnected.com/building-a-decision-tree-from-scratch-in-python-machine-learning-from-scratch-part-ii-6e2e56265b19
+#
 
 # References
 #

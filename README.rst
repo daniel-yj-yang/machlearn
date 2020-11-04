@@ -316,13 +316,16 @@ Example 7: Decision Tree
    
    from machlearn import decision_tree as DT
    DT.demo()
-   DT.demo_DT_from_scratch() # not scaled, criterion=entropy, max_depth=2
+   DT.demo_from_scratch(question_type="regression") # dataset='Boston'
+   DT.demo_from_scratch(question_type="classification") # dataset='Social_Network_Ads', X=not scaled, criterion=entropy, max_depth=2
+
 
 Summary of output:
 
 .. code-block::
 
-   Results from DT.demo_DT_from_scratch() provides results in essence identical to the tree graph below.
+   - DT.demo_from_scratch(question_type="regression") uses decision_tree_regressor_from_scratch()
+   - DT.demo_from_scratch(question_type="classification") provides results essentially identical to the tree graph below.
 
 
 |image_Social_Networks_Ad_DT_notscaled_entropy_maxdepth=2|
@@ -428,10 +431,12 @@ module: decision_tree
    :header: "class/function", "description"
    :widths: 10, 20
 
+   "decision_tree_regressor_from_scratch()", "decision tree regressor developed from scratch"
+   "decision_tree_regressor", "decision tree regressor"
    "decision_tree_classifier_from_scratch()", "decision tree classifier developed from scratch"
    "decision_tree_classifier()", "decision tree classifier"
    "demo()", "provides a demo of selected functions in this module"
-   "demo_DT_from_scratch()", "provides a demo of selected functions in this module"
+   "demo_from_scratch()", "provides a demo of selected functions in this module"
 
 
 -----
