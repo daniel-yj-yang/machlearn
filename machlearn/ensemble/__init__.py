@@ -6,7 +6,7 @@
 
 from ._ensemble import demo
 from ._ensemble import bagging_classifier, random_forest_classifier, boosting_classifier, gradient_boosting_classifier, voting_classifier
-from ._ensemble import bagging_classifier_from_scratch, random_forest_classifier_from_scratch
+from ._ensemble import bagging_classifier_from_scratch, random_forest_classifier_from_scratch, boosting_classifier
 
 # this is for "from <package_name>.ensemble import *"
 __all__ = ["demo", 
@@ -16,4 +16,5 @@ __all__ = ["demo",
            "gradient_boosting_classifier",
            "voting_classifier",
            "random_forest_classifier_from_scratch", 
-           "bagging_classifier_from_scratch",]
+           "bagging_classifier_from_scratch",
+           "boosting_classifier_from_scratch",]

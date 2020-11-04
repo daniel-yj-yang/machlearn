@@ -73,7 +73,6 @@ class random_forest_classifier_from_scratch(object):
         self.y = None
         self.trees = []
     
-
     def fit(self, X_train, y_train):
         ### init
         self.X = X_train
@@ -109,6 +108,7 @@ class random_forest_classifier_from_scratch(object):
         np.random.seed(1)
         self.trees = [self.fit_a_single_decision_tree(tree_annotation=f"{i}") for i in range(self.n_trees)]
 
+        return self # return the fitted estimator
 
     def fit_a_single_decision_tree(self, tree_annotation=None):
         rows_indices     = list(np.random.permutation(self.X.shape[0])[:self.n_rows_to_sample])
@@ -117,15 +117,12 @@ class random_forest_classifier_from_scratch(object):
         this_DT.fit( X = self.X[rows_indices,:], y_true = self.y[rows_indices] )
         return this_DT
 
-    
     def predict(self, X_test):
         from scipy.stats import mode
-        return mode([this_DT.predict(X_test) for this_DT in self.trees], axis=0).mode[0,:,0]
-
+        return mode([this_DT.predict(X_test) for this_DT in self.trees], axis=0).mode[0]
 
     def predict_proba(self, X_test):
         return np.mean([this_DT.predict_proba(X_test) for this_DT in self.trees], axis=0)
-
 
     def score(self, X_test, y_test):
         if type(X_test) in [pd.DataFrame, pd.Series]:
@@ -137,9 +134,8 @@ class random_forest_classifier_from_scratch(object):
         accuracy = np.trace(cm) / np.sum(cm)
         return accuracy
 
-
     def score_of_individual_trees(self, X_test, y_test):
-        return [this_DT.score(X_test, y_test) for this_DT in self.trees]
+        return np.array([this_DT.score(X_test, y_test) for this_DT in self.trees])
 
 
 def random_forest_classifier(*args, **kwargs):
@@ -193,28 +189,101 @@ class boosting_classifier_from_scratch(object):
     Combining the whole set of trees at the end converts weak learners into better performing model.
 
     AdaBoost, Adaptive Boosting: at every step the sample distribution was adapted to put more weight on misclassified samples and less weight on correctly classified samples.
+
+    --------------------
+
+    Boosting vs. Random Forest:
+        - Component Tree depth: Boosting is max_depth=1, RF is max_depth=full
+        - Trees grown: Boosting is sequentially, RF is independently
+        - Final votes: Boosting is weighted, RF is equal
     """
     def __init__(self, max_iter=50):
         self.max_iter = max_iter
-        self.X = None
-        self.y = None
+        self.X_train = None
+        self.y_train = None
 
     def fit(self, X_train, y_train):
-        ### init
-        self.X = X_train
-        self.y = y_train
-        if type(self.X) in [pd.DataFrame, pd.Series]:
-            self.X = self.X.to_numpy()
-        if type(self.y) in [pd.DataFrame, pd.Series]:
-            self.y = self.y.to_numpy()
-        total_samples_n = self.X.shape[0]
-        ### init
-        self.sample_weights = np.zeros(shape=(self.max_iter, total_samples_n))
-        self.weak_learner_trees = np.zeros(shape=self.max_iter, dtype=object)
-        self.weak_learner_weights = np.zeros(shape=self.max_iter)
-        self.errors = np.zeros(shape=self.max_iter)
 
+        ### init
+        self.X_train = X_train
+        self.y_train = y_train
+        if type(self.X_train) in [pd.DataFrame, pd.Series]:
+            self.X_train = self.X_train.to_numpy()
+        if type(self.y_train) in [pd.DataFrame, pd.Series]:
+            self.y_train = self.y_train.to_numpy()
+        total_samples_n = self.X_train.shape[0]
 
+        ### check
+        from collections import Counter
+        y_train_unique_values_sorted_list = sorted(Counter(self.y_train).keys())
+        if len(y_train_unique_values_sorted_list) != 2:
+            raise ValueError('y train must be binary')
+        if set(self.y_train) != {-1, 1}: # Target values should be ±1
+            self.y_train = np.where(self.y_train == y_train_unique_values_sorted_list[0], -1, 1)
+
+        ### initialize
+        self.sample_weights_all_iter = np.zeros(shape=(total_samples_n, self.max_iter)) # col_i = iteration(iter_i)
+        self.weak_learners = np.zeros(shape=(self.max_iter,), dtype=object) # the minimum trees
+        self.weak_learner_voting_weights = np.zeros(shape=(self.max_iter,))
+        self.errors = np.zeros(shape=(self.max_iter,))
+        self.sample_weights_all_iter[:, 0] = np.ones(shape=(total_samples_n,)) / total_samples_n # A. uniform weights for iteration(iter_i=0)
+
+        ### B. learning iterations
+        for iter_i in range(self.max_iter):
+            # 1. find a weak learner, which minimizes curr_error via a base estimator
+            sample_weight_curr_iter = self.sample_weights_all_iter[:, iter_i]
+            this_weak_learner = decision_tree_classifier_from_scratch(max_depth=1) # base estimator
+            this_weak_learner.fit(X=self.X_train, y_true=self.y_train, sample_weight=sample_weight_curr_iter)
+            y_pred = this_weak_learner.predict(self.X_train)  
+            curr_error = sample_weight_curr_iter[y_pred != self.y_train].sum() # calculate error and weak_learner weight from weak learner prediction
+
+            # 2. set a weight for this weak learner based on its accuracy; stronger learner gets more of a say in the final
+            this_weak_learner_voting_weight = 0.5 * np.log((1 - curr_error) / curr_error)
+
+            # 3. increase weights of misclassified observations
+            sample_weight_next_iter = sample_weight_curr_iter * np.exp(-this_weak_learner_voting_weight * self.y_train * y_pred)
+            
+            # 4. re-normalize sample weight, and update sample weights for the next iteration, until final iteration
+            sample_weight_next_iter /= sample_weight_next_iter.sum()
+            if iter_i+1 != self.max_iter: # no need to update sample_weights if reaching final iteration
+                self.sample_weights_all_iter[:, iter_i+1] = sample_weight_next_iter
+
+            # 5. save results of current iteration
+            self.weak_learners[iter_i] = this_weak_learner
+            self.weak_learner_voting_weights[iter_i] = this_weak_learner_voting_weight
+            self.errors[iter_i] = curr_error
+
+        return self
+    
+    def predict(self, X_test):
+        # C. the final predictions as the weighted majority vote of the weak learner's predictions
+        self.weak_learn_y_preds = np.array([this_weak_learner.predict(X_test) for this_weak_learner in self.weak_learners])
+        return np.sign(np.dot(self.weak_learner_voting_weights, self.weak_learn_y_preds)) ### Target values should be ±1
+
+    def predict_proba(self, X_test):
+        pass
+
+    def score(self, X_test, y_test):
+        if type(X_test) in [pd.DataFrame, pd.Series]:
+            X_test = X_test.to_numpy()
+        if type(y_test) in [pd.DataFrame, pd.Series]:
+            y_test = y_test.to_numpy()
+        from sklearn.metrics import confusion_matrix
+        ### Target values should be ±1
+        from collections import Counter
+        y_test_unique_values_sorted_list = sorted(Counter(y_test).keys())
+        y_test = np.where(y_test == y_test_unique_values_sorted_list[0], -1, 1)
+        # 
+        cm = confusion_matrix(y_test, self.predict(X_test))
+        accuracy = np.trace(cm) / np.sum(cm)
+        return accuracy
+
+    def score_of_individual_trees(self, X_test, y_test):
+        ### Target values should be ±1
+        from collections import Counter
+        y_test_unique_values_sorted_list = sorted(Counter(y_test).keys())
+        y_test = np.where(y_test == y_test_unique_values_sorted_list[0], -1, 1)
+        return np.array([this_weak_learner.score(X_test, y_test) for this_weak_learner in self.weak_learners])
 
 
 def boosting_classifier(*args, **kwargs):
@@ -288,11 +357,13 @@ def _demo(dataset):
         from sklearn.model_selection import train_test_split
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
 
-        RF_model = random_forest_classifier_from_scratch(max_depth=6)
-        RF_model.fit(X_train, y_train)
-        print(f"Predicted probabilities: {RF_model.predict_proba(X_test)}")
-        print(f"Accuracy: {RF_model.score(X_test,y_test)}")
-        print(f"Accuracy of individual trees: {RF_model.score_of_individual_trees(X_test,y_test)}")
+        for model in [boosting_classifier_from_scratch(), random_forest_classifier_from_scratch(max_depth=6)]:
+            print(f"\n------------ model: {repr(model)} -------------\n")
+            model.fit(X_train, y_train)
+            print(f"Predicted probabilities: {model.predict_proba(X_test)}")
+            print(f"Predicted label: {model.predict(X_test)}")
+            print(f"Accuracy: {model.score(X_test,y_test)}")
+            print(f"Accuracy of individual trees: {model.score_of_individual_trees(X_test,y_test)}\n")
 
 
     if dataset == "randomly_generated":

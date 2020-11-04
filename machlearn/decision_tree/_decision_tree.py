@@ -18,6 +18,7 @@ import pandas as pd
 #from numpy import ma # masked array
 
 # A good read: https://towardsdatascience.com/entropy-how-decision-trees-make-decisions-2946b9c18c8#:~:text=Entropy%20is%20a%20measure%20of,general%20is%20to%20reduce%20uncertainty.&text=This%20is%20called%20Information%20Gain,gained%20about%20Y%20from%20X.
+
 def Entropy(splitted_sample=[]):
     """
     For example: [194, 106]
@@ -53,6 +54,36 @@ def Gini_impurity(splitted_sample=[]):
         # p_j * (1 - p_j) is the likelihood of misclassifying a new instance
         Gini_index += p_i * (1 - p_i)
     return Gini_index
+
+
+def impurity_measure_with_sample_weight(y_class0_value=0, y_class1_value=1, y=[], sample_weight=None, impurity_func=Entropy):
+    """
+    For example: y=[0,1,1,0,0,1], sample_weight=[0.1, 0.1, 0.2, 0.1, 0.1, 0.1]
+    """
+
+    y_class0_sample_weighted_sum = 0
+    y_class1_sample_weighted_sum = 0
+
+    length_y = len(y)
+    if length_y == 0:
+        return 0
+
+    if sample_weight is None:
+        sample_weight = np.ones(shape=(length_y,))
+
+    #print(f"{sample_weight}")
+
+    if length_y != len(sample_weight):
+        raise ValueError("unequal inputs of y[] and sample_weight[]")
+
+    y_class0_sample_weighted_sum = np.sum(sample_weight[y == y_class0_value])
+    y_class1_sample_weighted_sum = np.sum(sample_weight[y == y_class1_value])
+
+    for i in range(length_y):
+        if y[i] not in [y_class0_value, y_class1_value]:
+            raise ValueError(f"y[{i}]=[{y[i]}] must be either y_class0_value=[{y_class0_value}] or y_class1_value=[{y_class1_value}]")
+
+    return impurity_func(splitted_sample=[y_class0_sample_weighted_sum, y_class1_sample_weighted_sum])
 
 
 def Impurity_plot():
@@ -92,14 +123,14 @@ def demo_metrics():
 
 
 class decision_tree_node(object):
-    def __init__(self, curr_depth=None, curr_impurity=None, curr_sample_size=None, curr_y_distribution={}, best_split_feature_i=None, best_x_cutoff_value=None):
+    def __init__(self, curr_depth=None, curr_impurity=None, curr_sample_size=None, curr_y_distribution={}, best_split_feature_i=None, best_x_cutoff_value=None, y_class0_value=0, y_class1_value=1):
         self.curr_depth = curr_depth
         self.curr_impurity = curr_impurity
         self.curr_sample_size = curr_sample_size
         self.curr_y_distribution = curr_y_distribution
 
-        y_class0_n = curr_y_distribution.get(0)
-        y_class1_n = curr_y_distribution.get(1)
+        y_class0_n = curr_y_distribution.get(y_class0_value)
+        y_class1_n = curr_y_distribution.get(y_class1_value)
         y_classes_count = len(curr_y_distribution)
 
         if y_classes_count == 0:
@@ -108,20 +139,20 @@ class decision_tree_node(object):
 
         if y_classes_count == 1:
             self.y_dominant_class = list(curr_y_distribution.keys())[0]
-            if self.y_dominant_class == 0:
+            if self.y_dominant_class == y_class0_value:
                 self.y_class1_prob = 0
-            elif self.y_dominant_class == 1:
+            elif self.y_dominant_class == y_class1_value:
                 self.y_class1_prob = 1
             else:
-                raise ValueError('unexpected y_dominant_class (should be either 0 or 1)')
+                raise ValueError(f"unexpected y_dominant_class (should be either {y_class0_value} or {y_class1_value})")
 
         if y_classes_count == 2:
-            # must be {0: sample_size_associated_with_y=0, 1: sample_size_associated_with_y=1}
+            # must be {y_class0_value: sample_size_associated_with_y=y_class0_value, y_class1_value: sample_size_associated_with_y=y_class1_value}
             self.y_class1_prob = y_class1_n / (y_class1_n + y_class0_n)
             if self.y_class1_prob >= 0.50:
-                self.y_dominant_class = 1
+                self.y_dominant_class = y_class1_value
             else:
-                self.y_dominant_class = 0
+                self.y_dominant_class = y_class0_value
 
         if y_classes_count > 2:
             raise ValueError('more than 2 classes in y detected')
@@ -132,7 +163,7 @@ class decision_tree_node(object):
         self.right = None
     
     def to_dict(self):
-        return {'curr_depth': self.curr_depth, 'curr_impurity': f"{self.curr_impurity:.3f}", 'curr_sample_size': self.curr_sample_size, 'curr_y_distribution': self.curr_y_distribution, 'curr_dominant_y_class': self.y_dominant_class, 'curr_y_class1_prob': f"{self.y_class1_prob:.3f}" if self.y_class1_prob is not None else None, 'best_split_feature_i': self.best_split_feature_i if self.best_x_cutoff_value is not None else None, 'best_x_cutoff_value': f"{self.best_x_cutoff_value:.3f}" if self.best_x_cutoff_value is not None else None}
+        return {'curr_depth': self.curr_depth, 'curr_impurity': f"{self.curr_impurity:.3f}" if self.curr_impurity is not None else None, 'curr_sample_size': self.curr_sample_size, 'curr_y_distribution': self.curr_y_distribution, 'curr_dominant_y_class': self.y_dominant_class, 'curr_y_class1_prob': f"{self.y_class1_prob:.3f}" if self.y_class1_prob is not None else None, 'best_split_feature_i': self.best_split_feature_i if self.best_x_cutoff_value is not None else None, 'best_x_cutoff_value': f"{self.best_x_cutoff_value:.3f}" if self.best_x_cutoff_value is not None else None}
 
 
 class decision_tree_classifier_from_scratch(object):
@@ -159,15 +190,21 @@ class decision_tree_classifier_from_scratch(object):
         elif self.impurity_measure == 'gini_impurity':
             self.impurity_func = Gini_impurity
         self.annotation = annotation
+        # default values
+        self.y_class0_value = 0
+        self.y_class1_value = 1
 
 
-    def find_best_split_in_one_specific_feature(self, x, y_true):
+    def find_best_split_in_one_specific_feature(self, x, y_true, sample_weight=None):
 
         if type(x) in [pd.DataFrame, pd.Series]:
             x = x.to_numpy()
 
         if type(y_true) in [pd.DataFrame, pd.Series]:
             y_true = y_true.to_numpy()
+
+        if sample_weight is None:
+            sample_weight = np.ones(shape=(len(y_true),))
 
         best_impurity = float('Inf')
 
@@ -179,8 +216,9 @@ class decision_tree_classifier_from_scratch(object):
 
         from collections import Counter
 
-        y_counts = Counter(y_true)
-        before_split_impurity = self.impurity_func([ y_counts[y_classes_values[0]], y_counts[y_classes_values[1]] ])
+        #y_counts = Counter(y_true)
+        #before_split_impurity = self.impurity_func([ y_counts[y_classes_values[0]], y_counts[y_classes_values[1]] ])
+        before_split_impurity = impurity_measure_with_sample_weight(y_class0_value=self.y_class0_value, y_class1_value=self.y_class1_value, y=y_true, sample_weight=sample_weight, impurity_func=self.impurity_func)
 
         x_values_array = list(SortedSet(x))
         x_values_array_length = len(x_values_array)
@@ -193,14 +231,18 @@ class decision_tree_classifier_from_scratch(object):
                 this_x_cutoff_value = this_x_value
 
             # let's say we split y on this value of x
-            y_pred_left_node_counts  = Counter(y_true[x <= this_x_cutoff_value])
+            y_pred_left_node_list = y_true[x <= this_x_cutoff_value]
+            y_pred_left_node_counts = Counter(y_pred_left_node_list)
             left_node_y_true_array  = [ y_pred_left_node_counts[y_classes_values[0]],  y_pred_left_node_counts[ y_classes_values[1]] ]
-            left_node_impurity  = self.impurity_func(left_node_y_true_array)
+            #left_node_impurity  = self.impurity_func(left_node_y_true_array)
+            left_node_impurity = impurity_measure_with_sample_weight(y_class0_value=self.y_class0_value, y_class1_value=self.y_class1_value, y=y_pred_left_node_list, sample_weight=sample_weight[x <= this_x_cutoff_value], impurity_func=self.impurity_func)
             left_node_n = sum(y_pred_left_node_counts.values())
             
-            y_pred_right_node_counts = Counter(y_true[x >  this_x_cutoff_value])
+            y_pred_right_node_list = y_true[x > this_x_cutoff_value]
+            y_pred_right_node_counts = Counter(y_pred_right_node_list)
             right_node_y_true_array = [ y_pred_right_node_counts[y_classes_values[0]], y_pred_right_node_counts[y_classes_values[1]] ]
-            right_node_impurity = self.impurity_func(right_node_y_true_array)
+            #right_node_impurity = self.impurity_func(right_node_y_true_array)
+            right_node_impurity = impurity_measure_with_sample_weight(y_class0_value=y_classes_values[0], y_class1_value=y_classes_values[1], y=y_pred_right_node_list, sample_weight=sample_weight[x > this_x_cutoff_value], impurity_func=self.impurity_func)
             right_node_n = sum(y_pred_right_node_counts.values())
 
             this_y_true_split_array = [left_node_y_true_array, right_node_y_true_array]
@@ -227,13 +269,16 @@ class decision_tree_classifier_from_scratch(object):
         return best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array
 
 
-    def find_best_split_across_all_features(self, X, y_true):
+    def find_best_split_across_all_features(self, X, y_true, sample_weight=None):
 
         if type(X) in [pd.DataFrame, pd.Series]:
             X = X.to_numpy()
 
         if type(y_true) in [pd.DataFrame, pd.Series]:
             y_true = y_true.to_numpy()
+
+        if sample_weight is None:
+            sample_weight = np.ones(shape=(len(y_true),))
 
         best_impurity = float('Inf')
 
@@ -246,7 +291,7 @@ class decision_tree_classifier_from_scratch(object):
             features_indices_actually_used = self.features_indices_actually_used
 
         for this_feature_i in features_indices_actually_used:
-            x_cutoff_value, impurity, information_gain, y_true_split_array = self.find_best_split_in_one_specific_feature(X[:,this_feature_i], y_true)
+            x_cutoff_value, impurity, information_gain, y_true_split_array = self.find_best_split_in_one_specific_feature(x=X[:,this_feature_i], y_true=y_true, sample_weight=sample_weight)
             if self.verbose:
                 print(f"feature # {this_feature_i: 2d}, x_cutoff_value = {x_cutoff_value: .3f}, impurity = {impurity:.3f}, information_gain = {information_gain:.3f}, y_true_split_array = {y_true_split_array}")
             if impurity == 0:  # a perfect split was found
@@ -260,7 +305,20 @@ class decision_tree_classifier_from_scratch(object):
         return best_split_feature_i, best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array
 
 
-    def fit(self, X, y_true, depth=0):
+    def fit(self, X, y_true, depth=0, sample_weight=None):
+
+        # init
+        if depth == 0:
+            from sortedcontainers import SortedSet
+            y_classes_values = list(SortedSet(y_true))
+            if len(y_classes_values) != 2:
+                raise ValueError("y must be binary")
+            else:
+                self.y_class0_value = y_classes_values[0]
+                self.y_class1_value = y_classes_values[1]
+
+        if sample_weight is None:
+            sample_weight = np.ones(shape=(len(y_true),))
 
         from collections import Counter
         
@@ -280,26 +338,28 @@ class decision_tree_classifier_from_scratch(object):
         from sortedcontainers import SortedDict
         curr_y_distribution = SortedDict(Counter(y_true))
 
-        curr_impurity = self.impurity_func(list(Counter(y_true).values()))
+        #curr_impurity = self.impurity_func(list(Counter(y_true).values()))
+        curr_impurity = impurity_measure_with_sample_weight(y_class0_value=self.y_class0_value, y_class1_value=self.y_class1_value, y=y_true, sample_weight=sample_weight, impurity_func=self.impurity_func)
 
         if curr_impurity == 0 or depth >= self.max_depth: # curr_impurity = 0 means already perfect, no need to split
-            curr_node = decision_tree_node(curr_depth = depth, curr_impurity = curr_impurity, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = None, best_x_cutoff_value = None)
+            curr_node = decision_tree_node(curr_depth = depth, curr_impurity = curr_impurity, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = None, best_x_cutoff_value = None, y_class0_value=self.y_class0_value, y_class1_value=self.y_class1_value)
             return curr_node
 
-        best_split_feature_i, best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array = self.find_best_split_across_all_features(X, y_true)
+        best_split_feature_i, best_x_cutoff_value, best_impurity, best_information_gain, best_y_true_split_array = self.find_best_split_across_all_features(X=X, y_true=y_true, sample_weight=sample_weight)
         left_rows = X[:, best_split_feature_i] <= best_x_cutoff_value
         right_rows = X[:, best_split_feature_i] > best_x_cutoff_value
         X_left, X_right = X[left_rows], X[right_rows]
         y_true_left, y_true_right = y_true[left_rows], y_true[right_rows]
-        curr_node = decision_tree_node(curr_depth = depth, curr_impurity = curr_impurity, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = best_split_feature_i, best_x_cutoff_value = best_x_cutoff_value)
+        sample_weight_left, sample_weight_right = sample_weight[left_rows], sample_weight[right_rows]
+        curr_node = decision_tree_node(curr_depth = depth, curr_impurity = curr_impurity, curr_sample_size = curr_sample_size, curr_y_distribution = curr_y_distribution, best_split_feature_i = best_split_feature_i, best_x_cutoff_value = best_x_cutoff_value, y_class0_value=self.y_class0_value, y_class1_value=self.y_class1_value)
         # adding left and right children nodes into the node dict
-        curr_node.left  = self.fit( X=X_left,  y_true=y_true_left,  depth=depth+1)
-        curr_node.right = self.fit( X=X_right, y_true=y_true_right, depth=depth+1)
+        curr_node.left  = self.fit( X=X_left,  y_true=y_true_left,  sample_weight=sample_weight_left,  depth=depth+1)
+        curr_node.right = self.fit( X=X_right, y_true=y_true_right, sample_weight=sample_weight_right, depth=depth+1)
         #print(parent_node)
 
         if depth == 0:
             self.root_node = curr_node
-            # return self
+            return self # return the fitted estimator
         else:
             return curr_node
 
@@ -339,7 +399,7 @@ class decision_tree_classifier_from_scratch(object):
         if proba:
             prediction = np.zeros(shape=(n_rows, 2))
         else:
-            prediction = np.zeros(shape=(n_rows, 1))
+            prediction = np.zeros(shape=(n_rows,))
 
         for this_row_i in range(n_rows):
             prediction[this_row_i] = self._predict(X[this_row_i,:], proba=proba)
@@ -633,8 +693,8 @@ def demo_DT_from_scratch(data="Social_Network_Ads", impurity_measure='entropy', 
 
     DT_model = decision_tree_classifier_from_scratch(impurity_measure=impurity_measure, max_depth = max_depth)
     from sklearn.preprocessing import scale
-    print(DT_model.find_best_split_in_one_specific_feature(scale(X_train['Age']), y_train))
-    print(DT_model.find_best_split_across_all_features(scale(X_train), y_train))
+    print(DT_model.find_best_split_in_one_specific_feature(x=scale(X_train['Age']), y_true=y_train))
+    print(DT_model.find_best_split_across_all_features(X=scale(X_train), y_true=y_train))
 
     DT_model.fit(X_train, y_train)
     print(DT_model.order(type="Preorder"))
