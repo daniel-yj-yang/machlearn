@@ -345,13 +345,24 @@ Example 8: Ensemble Methods
    from machlearn import ensemble
    ensemble.demo()
    ensemble.demo("Social_Network_Ads)
+   ensemble.demo("boston")
 
 Summary of output: 
 
 .. code-block::
 
-   - These demos call boosting_classifier_from_scratch() and random_forest_classifier_from_scratch().
-   - The output reflects some of the inner workings of these classifiers.
+   - These demos call the following functions developed from scratch and reflect the inner workings of them:
+   * random_forest_classifier_from_scratch();
+   * boosting_classifier_from_scratch();
+   * gradient_boosting_regressor_from_scratch() (see loss vs training history below)
+
+
+
+|image_boston_GBM_loss_history_plot|
+
+
+.. |image_boston_GBM_loss_history_plot| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/ensemble/images/boston_gradient_boosting_regressor_from_scratch_loss_vs_epoch_history_plot.png
+   :width: 400px
 
 
 -----
@@ -543,6 +554,7 @@ module: ensemble
    :header: "class/function", "description"
    :widths: 10, 20
 
+   "gradient_boosting_regressor_from_scratch", "gradient boosting regressor developed from scratch"
    "bagging_classifier_from_scratch()", "bagging classifier developed from scratch"
    "random_forest_classifier_from_scratch()", "random forest classifier developed from scratch"
    "boosting_classifier_from_scratch()", "boosting classifier developed from scratch"
