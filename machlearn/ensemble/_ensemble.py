@@ -280,24 +280,30 @@ def _demo(dataset):
 
     if dataset == "randomly_generated":
 
-        print("Demo: Use an ensemble voting classifier (making predicitons by majority vote or averaged predicted probabilities), hoping to increase accuracy by cancelling out weakness in component models.")
+        print("Demo: Use an ensemble voting classifier (making predicitons by the majority vote or the averaged predicted probabilities), hoping to increase accuracy by cancelling out weakness in component models.")
 
-        from sklearn.datasets import make_classification
-        X, y = make_classification(n_samples=10000, n_features=30, n_redundant=2, n_classes=2, weights=[.50, ], flip_y=0.02, random_state=1, class_sep=0.80)
-        from collections import Counter
-        y_counts = Counter(y)
-        print(y_counts)
+        def generate_data(n_samples=1000):
+            nonlocal X_train, X_test, y_train, y_test
+            from sklearn.datasets import make_classification
+            X, y = make_classification(n_samples=n_samples, n_features=30, n_redundant=2, n_classes=2, weights=[.50, ], flip_y=0.02, random_state=1, class_sep=0.80)
+            from collections import Counter
+            y_counts = Counter(y)
+            print(y_counts)
 
-        from sklearn.model_selection import train_test_split
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, stratify=y, random_state=1) # Setting ‘stratify’ to y makes our training split represent the proportion of each value in the y variable. 
-        
-        ### this takes a very long time to complete
-        #from ..decision_tree import decision_tree_classifier_from_scratch
-        #DT = decision_tree_classifier_from_scratch(max_depth=2, verbose=True)
-        #DT.fit(X_train,y_train)
-        #print(f"Accuracy: {DT.score(X_test,y_test)}")
+            from sklearn.model_selection import train_test_split
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, stratify=y, random_state=1) # Setting ‘stratify’ to y makes our training split represent the proportion of each value in the y variable. 
 
-        print("\nHyperparameters:")
+        print("\ngenerate n_samples=1000")        
+        generate_data(n_samples=1000)
+        ### this will take a very long time to complete when n_samples is big
+        from ..decision_tree import decision_tree_classifier_from_scratch
+        DT = decision_tree_classifier_from_scratch(max_depth=2)
+        DT.fit(X_train,y_train)
+        print(f"\nUse decision_tree_classifier_from_scratch(). Accuracy: {DT.score(X_test,y_test):.3f}")
+
+        print("\ngenerate n_samples=10000")
+        generate_data(n_samples=10000)
+        print("\ntune hyperparameters:")
 
         # model_1: kNN
         from sklearn.model_selection import GridSearchCV
@@ -337,9 +343,9 @@ def _demo(dataset):
 
         # ensemble
         estimator_list = [("kNN", grid_kNN.best_estimator_), ("log_reg", model_log_reg), ("DT", grid_decision_tree.best_estimator_), ("random_forest", grid_random_forest.best_estimator_)]
-        ensemble_classifier = voting(estimator_list, voting = "hard") # make predicitons by majority vote of the class
+        ensemble_classifier = voting_classifier(estimator_list, voting = "hard") # make predicitons by majority vote of the class
         ensemble_classifier.fit(X_train, y_train)
-        print(f"- ensemble (hard voting, making predicitons by majority vote of the class label): {ensemble_classifier.score(X_test, y_test)}")
+        print(f"- ensemble (hard voting, making predicitons by the majority vote of the class label): {ensemble_classifier.score(X_test, y_test)}")
 
         ensemble_classifier = voting_classifier(estimator_list, voting = "soft") # make predicitons by majority vote of the class probabilites
         ensemble_classifier.fit(X_train, y_train)
@@ -359,7 +365,7 @@ def _demo(dataset):
         # - logistic regression: 0.83
         # - decision tree: 0.9252
         # - random forest: 0.9312
-        # - ensemble (hard voting, making predicitons by majority vote of the class label): 0.8784
+        # - ensemble (hard voting, making predicitons by the majority vote of the class label): 0.8784
         # - ensemble (soft voting, making predicitons by the averaged class probabilities): 0.9268
 
         print("\nThe results suggest that voting is NOT guaranteed to provide better accuracy, as it is based on the majority label or the average predicted probabilities.")
