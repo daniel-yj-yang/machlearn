@@ -371,6 +371,14 @@ def voting_classifier(*args, **kwargs):
 from ..decision_tree import decision_tree_regressor, decision_tree_regressor_from_scratch
 
 class gradient_boosting_regressor_from_scratch(object):
+    """
+    Gradident descent (GD) vs. Gradient Boosting (GBM):
+
+    In GD, theta θ parameters are optimized iteratively;
+    In GBM, no theta tweaking at all;
+
+    Instead, in GBM, the algo adds new models to descend the gradient only.
+    """
     def __init__(self, max_iter=300, learning_rate=0.1):
         self.max_iter = max_iter
         self.learning_rate = learning_rate
@@ -379,37 +387,39 @@ class gradient_boosting_regressor_from_scratch(object):
 
     def _y_pred(self):
         """
-        θ = _y_pred()
+        y_hat
         Use DecisionTreeRegressor()
         """
         pass
 
     def _cost_function(self, y, y_hat):
         """
-        J(θ) = _cost_function()
-        this is 0.5 * MSE 
+        the loss, J(ŷ)
+        this is 0.5 * SE (squared error)
         """
-        return 0.5 * ((y - y_hat) ** 2).mean()
+        return 0.5 * ((y - y_hat) ** 2)
 
     def _gradient(self, y, y_hat):
         """
-        ∂J(θ)/∂θ = _gradient()
+        gradient of the loss function with respect to ŷ
         """
-        return -1 * (y - y_hat)
+        return (y - y_hat)
 
     def fit(self, X, y):
-        y_hat = np.array([y.mean()]*len(y)) # average as the starting point prediction
+        y_hat = np.array([y.mean()]*len(y)) # use average as the starting point for y_prediction
         self.y_hat0 = y_hat
-        self.loss_history.append(self._cost_function(y, y_hat))
+        loss = self._cost_function(y, y_hat).mean()
+        self.loss_history.append(loss) # MSE/0.5
         for epoch_i in range(self.max_iter):
-            residuals = -1 * self._gradient(y, y_hat)
+            residuals = self._gradient(y, y_hat)
+            print(f"epoch #{epoch_i:3d}: before adding a new weak learner, loss = {loss:.3f}, y[100] = {y[100]:.3f}, y_hat[100] = {y_hat[100]:.3f}, residuals[100] = y - y_hat = {residuals[100]:.3f}")
             this_weak_learner = decision_tree_regressor_from_scratch(max_depth=1)
             this_weak_learner.fit(X, residuals)
             self.weak_learners.append(this_weak_learner)
             y_pred = this_weak_learner.predict(X)
-            y_hat += self.learning_rate * y_pred
-            self.loss_history.append(self._cost_function(y, y_hat))
-            print(f"after epoch #{epoch_i:3d}: cost = {self._cost_function(y, y_hat):.3f}")
+            y_hat += self.learning_rate * y_pred  # update ŷ
+            loss = self._cost_function(y, y_hat).mean()
+            self.loss_history.append(loss)
         return
 
     def predict(self, X_test):
@@ -425,7 +435,7 @@ class gradient_boosting_regressor_from_scratch(object):
         plt.plot(range(len(self.loss_history)), self.loss_history, label='GBM Training Loss')
         plt.legend(loc=1)
         plt.xlabel("Training Epoch #")
-        plt.ylabel("Loss, J(θ)")
+        plt.ylabel("Loss, J(ŷ)")
         plt.show()
 
 
@@ -445,6 +455,7 @@ def _demo(dataset):
         [X, y, df] = public_dataset('boston')
         from sklearn.model_selection import train_test_split
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
+        print("In GBM, the model updates ŷ to minimize the loss, which is MSE/0.5 between y and ŷ.")
         GBM.fit(X_train, y_train)
         GBM.plot_loss_history()
         from ..model_evaluation import evaluate_continuous_prediction

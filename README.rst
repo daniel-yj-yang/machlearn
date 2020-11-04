@@ -316,7 +316,7 @@ Example 7: Decision Tree
    
    from machlearn import decision_tree as DT
    DT.demo()
-   DT.demo_from_scratch(question_type="regression") # dataset='Boston'
+   DT.demo_from_scratch(question_type="regression") # dataset='boston'
    DT.demo_from_scratch(question_type="classification") # dataset='Social_Network_Ads', X=not scaled, criterion=entropy, max_depth=2
 
 
