@@ -46,7 +46,7 @@ class random_forest_classifier_from_scratch(object):
         In the case of classification, we can take the majority (mode) of the class voted by each tree.
     """
 
-    def __init__(self, n_trees = 100, n_features='sqrt', sample_size_factor=1.0, max_depth=10, impurity_measure='entropy', verbose=True):
+    def __init__(self, n_trees = 100, n_features='sqrt', sample_size_factor=1.0, max_depth=10, impurity_measure='entropy', verbose=False):
         """
         n_features: this is where feature (X.col) bagging happens; the number of features sampled and passed onto to each tree. It can be:
             - 'sqrt': square root of total features #
@@ -72,6 +72,7 @@ class random_forest_classifier_from_scratch(object):
         self.X = None
         self.y = None
         self.trees = []
+        self.fitted = False
     
     def fit(self, X_train, y_train):
         ### init
@@ -94,26 +95,21 @@ class random_forest_classifier_from_scratch(object):
         else:
             self.n_features_to_sample = self.n_features
         
-        if self.verbose:
-            print(f"Number of features to sample (with replacement) from X to train each tree: {self.n_features_to_sample}")
-
         ### for X.row
         total_samples_n = self.X.shape[0]
         self.n_rows_to_sample = int(total_samples_n * self.sample_size_factor)
-
-        if self.verbose:
-            print(f"Number of rows to sample (with replacement) from X to train each tree: {self.n_rows_to_sample}")
 
         ### train each tree
         np.random.seed(1)
         self.trees = [self.fit_a_single_decision_tree(tree_annotation=f"{i}") for i in range(self.n_trees)]
 
+        self.fitted = True
         return self # return the fitted estimator
 
     def fit_a_single_decision_tree(self, tree_annotation=None):
         rows_indices     = list(np.random.permutation(self.X.shape[0])[:self.n_rows_to_sample])
         features_indices = list(np.random.permutation(self.X.shape[1])[:self.n_features_to_sample])
-        this_DT = decision_tree_classifier_from_scratch(max_depth = self.max_depth, impurity_measure = self.impurity_measure, features_indices_actually_used = features_indices, annotation = tree_annotation)
+        this_DT = decision_tree_classifier_from_scratch(max_depth = self.max_depth, impurity_measure = self.impurity_measure, features_indices_actually_used = features_indices, annotation = tree_annotation, verbose = self.verbose)
         this_DT.fit( X = self.X[rows_indices,:], y_true = self.y[rows_indices] )
         return this_DT
 
@@ -137,6 +133,12 @@ class random_forest_classifier_from_scratch(object):
     def score_of_individual_trees(self, X_test, y_test):
         return np.array([this_DT.score(X_test, y_test) for this_DT in self.trees])
 
+    def print_debugging_info(self):
+        if self.fitted:
+            print(f"Number of features to sample (with replacement) from X to train each tree: {self.n_features_to_sample}")
+            print(f"Number of rows to sample (with replacement) from X to train each tree: {self.n_rows_to_sample}")
+
+
 
 def random_forest_classifier(*args, **kwargs):
     """
@@ -159,7 +161,7 @@ class bagging_classifier_from_scratch(random_forest_classifier_from_scratch):
     The idea is to create subsets of data, chosen randomly with replacement, from the training sample, and then to average all the predictions from different trees.
     Because of reduced variance, the averaged prediction is usually more robust than a single decision tree.
    """
-    def __init__(self, n_trees = 100, sample_size_factor=1.0, max_depth=10, impurity_measure='entropy', verbose=True):
+    def __init__(self, n_trees = 100, sample_size_factor=1.0, max_depth=10, impurity_measure='entropy', verbose=False):
         """
             bagging is basically random_forest with "n_features=None"
 
@@ -197,10 +199,12 @@ class boosting_classifier_from_scratch(object):
         - Trees grown: Boosting is sequentially, RF is independently
         - Final votes: Boosting is weighted, RF is equal
     """
-    def __init__(self, max_iter=50):
+    def __init__(self, max_iter=50, verbose=False):
         self.max_iter = max_iter
         self.X_train = None
         self.y_train = None
+        self.fitted = False
+        self.verbose = verbose
 
     def fit(self, X_train, y_train):
 
@@ -226,13 +230,15 @@ class boosting_classifier_from_scratch(object):
         self.weak_learners = np.zeros(shape=(self.max_iter,), dtype=object) # the minimum trees
         self.weak_learner_voting_weights = np.zeros(shape=(self.max_iter,))
         self.errors = np.zeros(shape=(self.max_iter,))
-        self.sample_weights_all_iter[:, 0] = np.ones(shape=(total_samples_n,)) / total_samples_n # A. uniform weights for iteration(iter_i=0)
+
+        # A. uniform weights for iteration(iter_i=0)
+        self.sample_weights_all_iter[:, 0] = np.ones(shape=(total_samples_n,)) / total_samples_n 
 
         ### B. learning iterations
         for iter_i in range(self.max_iter):
             # 1. find a weak learner, which minimizes curr_error via a base estimator
             sample_weight_curr_iter = self.sample_weights_all_iter[:, iter_i]
-            this_weak_learner = decision_tree_classifier_from_scratch(max_depth=1) # base estimator
+            this_weak_learner = decision_tree_classifier_from_scratch(max_depth=1, verbose=self.verbose) # base estimator
             this_weak_learner.fit(X=self.X_train, y_true=self.y_train, sample_weight=sample_weight_curr_iter)
             y_pred = this_weak_learner.predict(self.X_train)  
             curr_error = sample_weight_curr_iter[y_pred != self.y_train].sum() # calculate error and weak_learner weight from weak learner prediction
@@ -253,12 +259,13 @@ class boosting_classifier_from_scratch(object):
             self.weak_learner_voting_weights[iter_i] = this_weak_learner_voting_weight
             self.errors[iter_i] = curr_error
 
+        self.fitted = True
         return self
     
     def predict(self, X_test):
         # C. the final predictions as the weighted majority vote of the weak learner's predictions
-        self.weak_learn_y_preds = np.array([this_weak_learner.predict(X_test) for this_weak_learner in self.weak_learners])
-        return np.sign(np.dot(self.weak_learner_voting_weights, self.weak_learn_y_preds)) ### Target values should be ±1
+        weak_learners_y_preds = np.array([this_weak_learner.predict(X_test) for this_weak_learner in self.weak_learners])
+        return np.sign(np.dot(self.weak_learner_voting_weights, weak_learners_y_preds)) ### Target values should be ±1
 
     def predict_proba(self, X_test):
         pass
@@ -284,6 +291,13 @@ class boosting_classifier_from_scratch(object):
         y_test_unique_values_sorted_list = sorted(Counter(y_test).keys())
         y_test = np.where(y_test == y_test_unique_values_sorted_list[0], -1, 1)
         return np.array([this_weak_learner.score(X_test, y_test) for this_weak_learner in self.weak_learners])
+
+    def print_debugging_info(self):
+        if self.fitted:
+            print(f"self.weak_learner_voting_weights = {self.weak_learner_voting_weights}")
+            print(f"self.errors = {self.errors}")
+            weak_learners_y_preds = np.array([this_weak_learner.predict(self.X_train) for this_weak_learner in self.weak_learners])
+            print(f"To get at the prediction based on X_train, take the sign of the following: {np.dot(self.weak_learner_voting_weights, weak_learners_y_preds)}")
 
 
 def boosting_classifier(*args, **kwargs):
@@ -360,6 +374,7 @@ def _demo(dataset):
         for model in [boosting_classifier_from_scratch(), random_forest_classifier_from_scratch(max_depth=6)]:
             print(f"\n------------ model: {repr(model)} -------------\n")
             model.fit(X_train, y_train)
+            model.print_debugging_info()
             print(f"Predicted probabilities: {model.predict_proba(X_test)}")
             print(f"Predicted label: {model.predict(X_test)}")
             print(f"Accuracy: {model.score(X_test,y_test)}")

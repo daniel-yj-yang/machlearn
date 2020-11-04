@@ -340,14 +340,15 @@ Example 8: Ensemble Methods
 .. code-block:: python
    
    from machlearn import ensemble
+   ensemble.demo()
    ensemble.demo("Social_Network_Ads)
 
 Summary of output: 
 
 .. code-block::
 
-   ensemble.demo("Social_Network_Ads) calls boosting_classifier_from_scratch() and random_forest_classifier_from_scratch().
-   The outputs reflect some of the inner workings of these classifiers.
+   - ensemble.demo("Social_Network_Ads) calls boosting_classifier_from_scratch() and random_forest_classifier_from_scratch().
+   - The output reflects some of the inner workings of these classifiers.
 
 
 -----
@@ -539,6 +540,7 @@ module: ensemble
 
    "bagging_classifier_from_scratch()", "bagging classifier developed from scratch"
    "random_forest_classifier_from_scratch()", "random forest classifier developed from scratch"
+   "boosting_classifier_from_scratch()", "boosting classifier developed from scratch"
    "bagging_classifier()", "bagging classifier"
    "random_forest_classifier()", "random forest classifier"
    "boosting_classifier()", "Adaptive Boosting classifier"
