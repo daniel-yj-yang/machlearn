@@ -247,7 +247,7 @@ class boosting_classifier_from_scratch(object):
             # 1. find a weak learner, which minimizes curr_error via a base estimator
             curr_iter_same_weight = self.all_iters_sample_weights[:, iter_i]
             this_weak_learner = decision_tree_classifier_from_scratch(max_depth=1, verbose=self.verbose)
-            #this_weak_learner = logistic_regression_classifier()
+            #this_weak_learner = logistic_regression_classifier(C=1e9)
             this_weak_learner.fit(X=self.X_train, y=self.y_train, sample_weight=curr_iter_same_weight)
             y_pred = this_weak_learner.predict(self.X_train)  
             curr_error = curr_iter_same_weight[y_pred != self.y_train].sum() # calculate error and weak_learner weight from weak learner prediction
