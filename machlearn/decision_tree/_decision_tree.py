@@ -453,7 +453,9 @@ class decision_tree_regressor_node(object):
         self.predicted_value = np.mean(y[subset_sample_indices]) # the decision (prediction) is based on the value the node holds.
         # best_after_split_purity_score, the lower the better, meaning more homogeneous elements within left and right nodes
         self.best_after_split_purity_score = float('inf') # the score indicates how effect the split was. It will be the weighted sum of the variance in the left and right nodes. leaf nodes do not have a score, thus set to infinity.
-        if self.curr_depth < self.max_depth:
+        if self.max_depth is None:
+            self.find_best_feature_to_split()
+        elif self.curr_depth < self.max_depth:
             self.find_best_feature_to_split()
         
     def find_best_feature_to_split(self):
