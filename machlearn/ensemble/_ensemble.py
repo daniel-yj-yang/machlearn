@@ -377,7 +377,7 @@ class gradient_boosting_regressor_from_scratch(object):
     In GD, theta θ parameters are optimized iteratively;
     In GBM, no theta tweaking at all;
 
-    Instead, in GBM, the algo adds new models to descend the gradient only.
+    Instead, in GBM, the algo adds new models to descend the gradient (residuals) only.
     """
     def __init__(self, max_iter=300, learning_rate=0.1):
         self.max_iter = max_iter
@@ -406,24 +406,24 @@ class gradient_boosting_regressor_from_scratch(object):
         return (y - y_hat)
 
     def fit(self, X, y):
-        y_hat = np.array([y.mean()]*len(y)) # use average as the starting point for y_prediction
-        self.y_hat0 = y_hat
+        y_hat = np.array([y.mean()]*len(y)) # use average as the starting point for y_pred
+        self.y_hat0_scalar = y.mean()
         loss = self._cost_function(y, y_hat).mean()
         self.loss_history.append(loss) # MSE/0.5
         for epoch_i in range(self.max_iter):
-            residuals = self._gradient(y, y_hat)
-            print(f"epoch #{epoch_i:3d}: before adding a new weak learner, loss = {loss:.3f}, y[100] = {y[100]:.3f}, y_hat[100] = {y_hat[100]:.3f}, residuals[100] = y - y_hat = {residuals[100]:.3f}")
+            residuals = self._gradient(y, y_hat) # y - y_hat
+            print(f"epoch #{epoch_i:3d}: before adding a new weak learner, y[100] = {y[100]:.3f}, y_hat[100] = {y_hat[100]:.3f}, residuals[100] = y - ŷ = {residuals[100]:.3f}")
             this_weak_learner = decision_tree_regressor_from_scratch(max_depth=1)
-            this_weak_learner.fit(X, residuals)
+            this_weak_learner.fit(X, residuals) # The goal of each new weak learner is to try to explain the remaining residuals; thus the residual should get smaller over time, as the remaing part that is still left to be explained becomes smaller over time.
             self.weak_learners.append(this_weak_learner)
-            y_pred = this_weak_learner.predict(X)
-            y_hat += self.learning_rate * y_pred  # update ŷ
+            y_hat += self.learning_rate * this_weak_learner.predict(X)  # update ŷ to minimize y - ŷ
+            print("a new weak learner had been added to try to account for the remaining residuals, and that weak learner's contribution had been added to improve ŷ to get closer to y so that residuals get closer to 0")
             loss = self._cost_function(y, y_hat).mean()
             self.loss_history.append(loss)
         return
 
     def predict(self, X_test):
-        y_hat = np.array([self.y_hat0[0]]*len(X_test))
+        y_hat = np.array([self.y_hat0_scalar]*len(X_test)) # again, use the previous average as the starting point for y_pred
         for this_weak_learner in self.weak_learners:
             y_hat += self.learning_rate * this_weak_learner.predict(X_test)
         return y_hat
@@ -453,6 +453,7 @@ def _demo(dataset):
         GBM = gradient_boosting_regressor_from_scratch(max_iter=100)
         from ..datasets import public_dataset
         [X, y, df] = public_dataset('boston')
+        print(f"{df.head()}\n")
         from sklearn.model_selection import train_test_split
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
         print("In GBM, the model updates ŷ to minimize the loss, which is MSE/0.5 between y and ŷ.")
