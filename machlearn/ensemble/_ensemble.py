@@ -130,11 +130,18 @@ def gradient_boosting(*args, **kwargs):
 
 
 class voting_from_scratch(object):
+    """
+    To combine conceptually different machine learning classifiers and use a majority vote (hard vote) or the average predicted probabilities (soft vote) to predict the class labels. 
+    Such a classifier can be useful for a set of equally well performing model in order to balance out their individual weaknesses.
+    """
     def __init__(self):
         pass
 
 
 def voting(*args, **kwargs):
+    """
+    same as in gradient_boosting_from_scratch()
+    """
     return VotingClassifier(*args, **kwargs)
     
 
@@ -147,7 +154,7 @@ def _demo(dataset):
 
     if dataset == "randomly_generated":
 
-        print("Demo: Use an ensemble voting classifier (make predicitons by majority vote), hoping to increase accuracy.")
+        print("Demo: Use an ensemble voting classifier (making predicitons by majority vote), hoping to increase accuracy.")
 
         from sklearn.datasets import make_classification
         X, y = make_classification(n_samples=10000, n_features=30, n_redundant=2, n_classes=2, weights=[.50, ], flip_y=0.02, random_state=1, class_sep=0.80)
@@ -177,7 +184,7 @@ def _demo(dataset):
 
         # model_3: random forest
         model_random_forest = random_forest(random_state=1)
-        hyperparameters_random_forest = {"n_estimators": [200, 300, 400, ]}
+        hyperparameters_random_forest = {"n_estimators": [100, 200, 300, ]}
         grid_random_forest = GridSearchCV(model_random_forest, hyperparameters_random_forest, cv=5)
         grid_random_forest.fit(X_train, y_train)
         print(f"- best_params of random forest: {grid_random_forest.best_params_}")
@@ -189,24 +196,31 @@ def _demo(dataset):
 
         # ensemble
         estimator_list = [("kNN", grid_kNN.best_estimator_), ("log_reg", model_log_reg), ("random_forest", grid_random_forest.best_estimator_)]
-        ensemble_classifier = voting(estimator_list) # make predicitons by majority vote
+        ensemble_classifier = voting(estimator_list, voting = "hard") # make predicitons by majority vote of the class
         ensemble_classifier.fit(X_train, y_train)
-        print(f"- ensemble (voting, make predicitons by majority vote): {ensemble_classifier.score(X_test, y_test)}")
+        print(f"- ensemble (hard voting, making predicitons by majority vote of the class label): {ensemble_classifier.score(X_test, y_test)}")
+
+        ensemble_classifier = voting(estimator_list, voting = "soft") # make predicitons by majority vote of the class probabilites
+        ensemble_classifier.fit(X_train, y_train)
+        print(f"- ensemble (soft voting, making predicitons by majority vote of the class probabilities): {ensemble_classifier.score(X_test, y_test)}")
 
         # Output:
+        # 
+        # Counter({0: 5013, 1: 4987})
         #
         # Hyperparameters:
         # - best_params of kNN: {'n_neighbors': 27}
-        # - best_params of random forest: {'n_estimators': 300}
+        # - best_params of random forest: {'n_estimators': 200}
         #
         # Accuracy:
         # - kNN: 0.81
         # - logistic regression: 0.83
-        # - random forest: 0.9304
-        # - ensemble (voting, make predicitons by majority vote): 0.8668
-        #
+        # - random forest: 0.9312
+        # - ensemble (hard voting, making predicitons by majority vote of the class label): 0.8664
+        # - ensemble (soft voting, making predicitons by majority vote of the class probabilities): 0.8984
 
-        print("The results suggest that voting is NOT guaranteed to provide better accuracy, as it is based on the majority")
+        print("\nThe results suggest that voting is NOT guaranteed to provide better accuracy, as it is based on the majority label or the average predicted probabilities.")
+        print("Rather, a voting classifier can be useful for a set of EQUALLY well performing model in order to balance out their individual weaknesses.")
         
 
 def demo(dataset="randomly_generated"):
