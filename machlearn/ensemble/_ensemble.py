@@ -38,12 +38,12 @@ class random_forest_classifier_from_scratch(object):
     1. The average predictions from subset trees does not give precise values for the regression model.
 
     Two major components:
-    1. Uncorrelated trees and randomly set of rows
-        - Feature bagging: Because average error of a bunch of perfectly random errors is zero, we need "uncorrelated decision trees" in the sense of feature selection.
+    1. Uncorrelated trees via random set of rows in X, y and random set of cols in X
+        - Feature bagging: As average error of perfectly random errors is zero, we need "uncorrelated decision trees" via random subsets of features.
         - Bagging trees: a random set of rows
     2. Aggregation of the crappy trees
-        In the case of regression, we can average out the prediction of each tree (mean).
-        In the case of classification, we can take the majority of the class voted by each tree (mode).
+        In the case of regression, we can take the average (mean) of the prediction made by each tree.
+        In the case of classification, we can take the majority (mode) of the class voted by each tree.
     """
 
     # some reference: https://towardsdatascience.com/random-forests-and-decision-trees-from-scratch-in-python-3e4fa5ae4249
