@@ -46,8 +46,6 @@ class random_forest_classifier_from_scratch(object):
         In the case of classification, we can take the majority (mode) of the class voted by each tree.
     """
 
-    # some reference: https://towardsdatascience.com/random-forests-and-decision-trees-from-scratch-in-python-3e4fa5ae4249
-
     def __init__(self, n_trees = 100, n_features='sqrt', sample_size_factor=1.0, max_depth=10, impurity_measure='entropy', verbose=True):
         """
         n_features: this is where feature (X.col) bagging happens; the number of features sampled and passed onto to each tree. It can be:
@@ -196,8 +194,27 @@ class boosting_classifier_from_scratch(object):
 
     AdaBoost, Adaptive Boosting: at every step the sample distribution was adapted to put more weight on misclassified samples and less weight on correctly classified samples.
     """
-    def __init__(self):
-        pass
+    def __init__(self, max_iter=50):
+        self.max_iter = max_iter
+        self.X = None
+        self.y = None
+
+    def fit(self, X_train, y_train):
+        ### init
+        self.X = X_train
+        self.y = y_train
+        if type(self.X) in [pd.DataFrame, pd.Series]:
+            self.X = self.X.to_numpy()
+        if type(self.y) in [pd.DataFrame, pd.Series]:
+            self.y = self.y.to_numpy()
+        total_samples_n = self.X.shape[0]
+        ### init
+        self.sample_weights = np.zeros(shape=(self.max_iter, total_samples_n))
+        self.weak_learner_trees = np.zeros(shape=self.max_iter, dtype=object)
+        self.weak_learner_weights = np.zeros(shape=self.max_iter)
+        self.errors = np.zeros(shape=self.max_iter)
+
+
 
 
 def boosting_classifier(*args, **kwargs):
@@ -386,3 +403,21 @@ def demo(dataset="randomly_generated"):
         return _demo(dataset = dataset)
     else:
         raise ValueError(f"dataset [{dataset}] is not defined")
+
+#
+# References
+#
+# Random Forest: https://towardsdatascience.com/random-forests-and-decision-trees-from-scratch-in-python-3e4fa5ae4249
+#
+# AdaBoosting: https://geoffruddock.com/adaboost-from-scratch-in-python/
+#
+# Gradient Boosting: 
+# https://towardsdatascience.com/gradient-boosting-in-python-from-scratch-4a3d9077367
+# https://machinelearningmastery.com/gradient-boosting-machine-ensemble-in-python/
+#
+# Logistic regression in ensemble:
+# https://www.quora.com/Can-we-use-ensemble-methods-for-logistic-regression
+# 
+# Histogram-Based Gradient Boosting:
+# https://scikit-learn.org/stable/modules/ensemble.html#histogram-based-gradient-boosting
+#

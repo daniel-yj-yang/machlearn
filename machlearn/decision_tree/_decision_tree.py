@@ -386,7 +386,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
     classifier_func: "decision_tree" or "DT", "GBM", "AdaBoost", "bagging"
     """
     from ..datasets import public_dataset
-    from ..ensemble import bagging, random_forest, boosting, gradient_boosting
+    from ..ensemble import bagging_classifier, random_forest_classifier, boosting_classifier, gradient_boosting_classifier
 
     if dataset == "iris":
         data = public_dataset(name="iris")
@@ -450,7 +450,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
     ########################################################################################################################
     if classifier_func == "bagging":
         pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
-                                   ('classifier', bagging(random_state=123)),
+                                   ('classifier', bagging_classifier(random_state=123)),
                                    ])
 
         # pipeline parameters to tune
@@ -464,7 +464,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
     ########################################################################################################################
     if classifier_func in ["random_forest"]:
         pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
-                                   ('classifier', random_forest(max_depth=1, random_state=123)),  # default criterion = 'gini'
+                                   ('classifier', random_forest_classifier(max_depth=1, random_state=123)),  # default criterion = 'gini'
                                    ])
 
         # pipeline parameters to tune
@@ -480,7 +480,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
     ########################################################################################################################
     if classifier_func == "AdaBoost":
         pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
-                                   ('classifier', boosting(random_state=123)),
+                                   ('classifier', boosting_classifier(random_state=123)),
                                    ])
 
         # pipeline parameters to tune
@@ -494,7 +494,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
     ########################################################################################################################
     if classifier_func == "GBM":
         pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
-                                   ('classifier', gradient_boosting(max_depth=1, random_state=123)),
+                                   ('classifier', gradient_boosting_classifier(max_depth=1, random_state=123)),
                                    ])
 
         # pipeline parameters to tune
