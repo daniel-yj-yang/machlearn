@@ -455,19 +455,20 @@ class regression_decision_tree_node(object):
         
     def find_best_feature_to_split(self):
         for feature_index in range(self.n_features):
-            self.find_best_split_value_on_this_feature(feature_index)
+            self.check_if_better_split_feature_and_its_value(feature_index)
         if self.is_leaf_node:
             return
         best_split_feature_x_series = self.best_split_feature_x_series
         best_split_left_node_series_indices  = np.nonzero(best_split_feature_x_series <= self.best_split_feature_value)[0]
         best_split_right_node_series_indices = np.nonzero(best_split_feature_x_series >  self.best_split_feature_value)[0]
-        # recursively find all the child nodes
+        # recursively find all the left and right children nodes
         self.left  = regression_decision_tree_node(X=self.X, y=self.y, subset_sample_indices=self.subset_sample_indices[best_split_left_node_series_indices],  min_samples_leaf=self.min_samples_leaf)
         self.right = regression_decision_tree_node(X=self.X, y=self.y, subset_sample_indices=self.subset_sample_indices[best_split_right_node_series_indices], min_samples_leaf=self.min_samples_leaf)
         
-    def find_best_split_value_on_this_feature(self, feature_index):
+    def check_if_better_split_feature_and_its_value(self, feature_index):
         """
-        try to see if there is a lower "weighted averages of the standard deviations", which is equivalent to minimizing RMSE.
+        try to see if this feature and a certain value of the feature is a better split;
+        criterion: a lower "weighted averages of the standard deviations", which is equivalent to minimizing RMSE.
         """      
         specific_x_series = self.X[self.subset_sample_indices, feature_index]
 
@@ -484,7 +485,7 @@ class regression_decision_tree_node(object):
             # this_row is now a candidate as it satisfies the condition that the leaf nodes must have at least n = "min_samples_left" samples
             curr_after_split_purity_score = self.find_after_split_purity_score(left_node_series_indices, right_node_series_indices)
             if curr_after_split_purity_score < self.best_after_split_purity_score: 
-                # a better split is found
+                # a better split has been found
                 self.best_split_feature_index = feature_index
                 self.best_after_split_purity_score = curr_after_split_purity_score
                 self.best_split_feature_value = specific_x_value_in_this_row
