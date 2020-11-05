@@ -355,7 +355,7 @@ Example 8: Ensemble Methods
    
    from machlearn import ensemble
    ensemble.demo()
-   ensemble.demo("Social_Network_Ads)
+   ensemble.demo("Social_Network_Ads")
    ensemble.demo("boston")
 
 Summary of output: 
