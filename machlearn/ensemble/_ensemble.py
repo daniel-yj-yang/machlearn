@@ -654,6 +654,7 @@ def demo(dataset="randomly_generated"):
 # Adaptive Boosting: 
 # https://geoffruddock.com/adaboost-from-scratch-in-python/
 # https://www.cs.toronto.edu/~mbrubake/teaching/C11/Handouts/AdaBoost.pdf
+# https://stats.stackexchange.com/questions/329066/boosting-a-logistic-regression-model
 #
 # Gradient Boosting: 
 # https://towardsdatascience.com/gradient-boosting-in-python-from-scratch-4a3d9077367 (regressor)

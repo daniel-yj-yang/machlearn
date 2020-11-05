@@ -568,7 +568,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
     classifier_func: "decision_tree" or "DT", "GBM", "AdaBoost", "bagging"
     """
     from ..datasets import public_dataset
-    from ..ensemble import bagging_classifier, random_forest_classifier, boosting_classifier, gradient_boosting_classifier
+    from ..ensemble import bagging_classifier, random_forest_classifier, adaptive_boosting_classifier, gradient_boosting_classifier
 
     if dataset == "iris":
         data = public_dataset(name="iris")
@@ -662,7 +662,7 @@ def _demo(dataset="Social_Network_Ads", classifier_func="decision_tree"): # DT: 
     ########################################################################################################################
     if classifier_func == "AdaBoost":
         pipeline = Pipeline(steps=[('scaler', StandardScaler(with_mean=True, with_std=True)),
-                                   ('classifier', boosting_classifier(random_state=123)),
+                                   ('classifier', adaptive_boosting_classifier(random_state=123)),
                                    ])
 
         # pipeline parameters to tune
