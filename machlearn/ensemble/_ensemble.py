@@ -203,7 +203,10 @@ class boosting_classifier_from_scratch(object):
         - Trees grown: Boosting is sequentially, RF is independently
         - Final votes: Boosting is weighted, RF is equal
     """
-    def __init__(self, max_iter=50, verbose=False):
+    def __init__(self, max_iter=50, verbose=False, weak_learner = "DT"):
+        """
+        weak_learner = "DT", "log_reg"
+        """
         self.max_iter = max_iter
         self.X_train = None
         self.y_train = None
@@ -212,6 +215,9 @@ class boosting_classifier_from_scratch(object):
         self.y_class0_value = None
         self.y_class1_value = None
         self.y_classes_value_conversion_dict = {}
+        if weak_learner not in ["DT", "log_reg",]:
+            raise ValueError('must be either DT or log_reg')
+        self.weak_learner = weak_learner
 
     def fit(self, X, y):
 
@@ -249,8 +255,10 @@ class boosting_classifier_from_scratch(object):
         for iter_i in range(self.max_iter):
             # 1. find a weak learner via a base estimator, which will be used to minimize curr_error
             curr_iter_same_weight = self.all_iters_sample_weights[:, iter_i]
-            this_weak_learner = decision_tree_classifier_from_scratch(max_depth=1, verbose=self.verbose)
-            #this_weak_learner = logistic_regression_classifier(C=1e9)
+            if self.weak_learner == "DT":
+                this_weak_learner = decision_tree_classifier_from_scratch(max_depth=1, verbose=self.verbose)
+            if self.weak_learner == "log_reg":
+                this_weak_learner = logistic_regression_classifier(C=1e9, solver='liblinear')
             #this_weak_learner = kNN_classifier() # TypeError: fit() got an unexpected keyword argument 'sample_weight'
             #this_weak_learner = SVM_classifier() # ValueError: ndarray is not C-contiguous
             this_weak_learner.fit(X=self.X_train, y=self.y_train, sample_weight=curr_iter_same_weight) # sample_weight=curr_iter_same_weight is the key here
@@ -466,20 +474,32 @@ def _demo(dataset):
     if dataset == 'Social_Network_Ads':
         from ..datasets import public_dataset
         data = public_dataset('Social_Network_Ads')
-        X = data[['Age', 'EstimatedSalary']]
-        y = data['Purchased']
+        X = data[['Age', 'EstimatedSalary']].to_numpy()
+        y = data['Purchased'].to_numpy()
         y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
+
+        from sklearn.preprocessing import scale
+        #X = scale(X)
+        #y = np.where(y == 0, -1, y)
+        #y_classes = ['not_purchased (y=-1)', 'purchased (y=1)'] # to be consistent with boosting_classifier_from_scratch
+
         from sklearn.model_selection import train_test_split
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
 
-        for model_i, model in enumerate([boosting_classifier_from_scratch(), random_forest_classifier_from_scratch(max_depth=6)]):
+        from ..model_evaluation import visualize_classifier_decision_boundary_with_two_features
+
+        from ..logistic_regression import logistic_regression_classifier
+
+        #for model_i, model in enumerate([logistic_regression_classifier(C=1e9, solver='liblinear'), boosting_classifier_from_scratch(weak_learner="DT"), boosting_classifier_from_scratch(weak_learner="log_reg"), random_forest_classifier_from_scratch(max_depth=6)]):
+        for model_i, model in enumerate([random_forest_classifier(max_depth=6, random_state=1),]):
             print(f"\n------------ model: {repr(model)} -------------\n")
             model.fit(X_train, y_train)
-            model.print_debugging_info()
+            #model.print_debugging_info()
             print(f"Predicted probabilities: {model.predict_proba(X_test)}")
             print(f"Predicted label: {model.predict(X_test)}")
             print(f"Accuracy: {model.score(X_test,y_test)}")
-            print(f"Accuracy of individual trees: {model.score_of_individual_trees(X_test,y_test)}\n")
+            #print(f"Accuracy of individual trees: {model.score_of_individual_trees(X_test,y_test)}\n")
+            visualize_classifier_decision_boundary_with_two_features(model, X_test, y_test, y_classes, title=f"{repr(model)}",  X1_lab='Age', X2_lab='Estimated Salary')
 
 
     if dataset == "randomly_generated":

@@ -69,6 +69,10 @@ def visualize_classifier_decision_boundary_with_two_features(classifier, X, y, y
     """
     # reference: https://scikit-learn.org/stable/auto_examples/neighbors/plot_classification.html
     """
+    if type(X) in [pd.DataFrame, pd.Series]:
+        X = X.to_numpy()
+    if type(y) in [pd.DataFrame, pd.Series]:
+        y = y.to_numpy()
     fig = plt.figure(figsize=figsize)
     X1_range = X[:, 0].max() - X[:, 0].min()
     X2_range = X[:, 1].max() - X[:, 1].min()

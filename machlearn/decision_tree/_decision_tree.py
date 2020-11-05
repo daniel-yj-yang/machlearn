@@ -390,11 +390,13 @@ class decision_tree_classifier_from_scratch(object):
 
     def _predict(self, one_X_row, proba=False):
         curr_node = self.root_node
-        while curr_node.best_x_cutoff_value: # not a leaf node yet
+        while curr_node and curr_node.best_x_cutoff_value: # not a leaf node yet
             if one_X_row[ curr_node.best_split_feature_i ] <= curr_node.best_x_cutoff_value:
                 curr_node = curr_node.left
             else:
                 curr_node = curr_node.right
+        if curr_node is None:
+            return
         # arriving at a leaf node now
         if proba:
             return np.array([1-curr_node.y_class1_prob, curr_node.y_class1_prob])
