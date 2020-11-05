@@ -385,12 +385,12 @@ module: model_evaluation
    :header: "function", "description"
    :widths: 10, 20
 
-   "plot_confusion_matrix()", "plots the confusion matrix, along with key statistics, and returns accuracy"
+   "plot_ROC_and_PR_curves()", "plots both the ROC and the precision-recall curves, along with statistics"
    "plot_ROC_curve()", "plots the ROC (Receiver Operating Characteristic) curve, along with statistics"
    "plot_PR_curve()", "plots the precision-recall curve, along with statistics"
-   "plot_ROC_and_PR_curves()", "plots both the ROC and the precision-recall curves, along with statistics"
-   "demo()", "provides a demo of the major functions in this module"
+   "plot_confusion_matrix()", "plots the confusion matrix, along with key statistics, and returns accuracy"
    "demo_CV()", "provides a demo of cross validation in this module"
+   "demo()", "provides a demo of the major functions in this module"
 
 
 -----
@@ -426,9 +426,9 @@ module: naive_bayes
    :header: "class/function", "description"
    :widths: 10, 20
 
-   "naive_bayes_Bernoulli()", "when X are independent binary variables (e.g., whether a word occurs in a document or not)"
-   "naive_bayes_multinomial()", "when X are independent discrete variables with 3+ levels (e.g., term frequency in the document)"
    "naive_bayes_Gaussian()", "when X are continuous variables"
+   "naive_bayes_multinomial()", "when X are independent discrete variables with 3+ levels (e.g., term frequency in the document)"
+   "naive_bayes_Bernoulli()", "when X are independent binary variables (e.g., whether a word occurs in a document or not)"
    "demo()", "provides a demo of selected functions in this module"
 
 
@@ -454,10 +454,10 @@ module: decision_tree
    :widths: 10, 20
 
    "decision_tree_regressor_from_scratch()", "decision tree regressor developed from scratch"
-   "decision_tree_regressor()", "decision tree regressor"
    "decision_tree_classifier_from_scratch()", "decision tree classifier developed from scratch"
-   "decision_tree_classifier()", "decision tree classifier"
    "demo_from_scratch()", "provides a demo of selected functions in this module"
+   "decision_tree_regressor()", "decision tree regressor"
+   "decision_tree_classifier()", "decision tree classifier"
    "demo()", "provides a demo of selected functions in this module"
 
 
@@ -498,12 +498,12 @@ module: linear_regression
    :header: "function", "description"
    :widths: 10, 20
 
-   "Linear_regression()", "Linear_regression"
-   "Linear_regression_normal_equation()", "Linear_regression_normal_equation"
-   "Ridge_regression()", "Ridge_regression"
    "Lasso_regression()", "Lasso_regression"
-   "demo()", "provides a demo of selected functions in this module"
+   "Ridge_regression()", "Ridge_regression"
    "demo_regularization()", "provides a demo of selected functions in this module"
+   "Linear_regression_normal_equation()", "Linear_regression_normal_equation"
+   "Linear_regression()", "Linear_regression"
+   "demo()", "provides a demo of selected functions in this module"
 
 
 -----
@@ -566,13 +566,13 @@ module: ensemble
    :widths: 10, 20
 
    "gradient_boosting_regressor_from_scratch()", "gradient boosting regressor developed from scratch"
-   "bagging_classifier_from_scratch()", "bagging classifier developed from scratch"
-   "random_forest_classifier_from_scratch()", "random forest classifier developed from scratch"
    "adaptive_boosting_classifier_from_scratch()", "adaptive boosting classifier developed from scratch"
-   "bagging_classifier()", "bagging classifier"
-   "random_forest_classifier()", "random forest classifier"
-   "adaptive_boosting_classifier()", "Adaptive Boosting classifier"
+   "random_forest_classifier_from_scratch()", "random forest classifier developed from scratch"
+   "bagging_classifier_from_scratch()", "bagging classifier developed from scratch"
    "gradient_boosting_classifier()", "Gradient Boosting Machines classifier"
+   "adaptive_boosting_classifier()", "Adaptive Boosting classifier"
+   "random_forest_classifier()", "random forest classifier"
+   "bagging_classifier()", "bagging classifier"
    "voting_classifier()", "Voting classifier"
    "demo()", "provides a demo of selected functions in this module"
    
