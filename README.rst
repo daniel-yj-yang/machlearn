@@ -470,8 +470,8 @@ module: neural_network
    :header: "function", "description"
    :widths: 10, 20
 
-   "multi_layer_perceptron_classifier()", "Multi-layer Perceptron (MLP) classifier"
-   "rnn()", "Recurrent neural network"
+   "multi_layer_perceptron_classifier()", "multi-layer perceptron (MLP) classifier"
+   "rnn()", "recurrent neural network"
    "demo()", "provides a demo of selected functions in this module"
 
 
@@ -498,11 +498,11 @@ module: linear_regression
    :header: "function", "description"
    :widths: 10, 20
 
-   "Lasso_regression()", "Lasso_regression"
-   "Ridge_regression()", "Ridge_regression"
+   "Lasso_regression()", "lasso_regression"
+   "Ridge_regression()", "ridge_regression"
    "demo_regularization()", "provides a demo of selected functions in this module"
-   "Linear_regression_normal_equation()", "Linear_regression_normal_equation"
-   "Linear_regression()", "Linear_regression"
+   "Linear_regression_normal_equation()", "linear_regression_normal_equation"
+   "Linear_regression()", "linear_regression"
    "demo()", "provides a demo of selected functions in this module"
 
 
@@ -569,10 +569,10 @@ module: ensemble
    "adaptive_boosting_classifier_from_scratch()", "adaptive boosting classifier developed from scratch"
    "random_forest_classifier_from_scratch()", "random forest classifier developed from scratch"
    "bagging_classifier_from_scratch()", "bagging classifier developed from scratch"
-   "gradient_boosting_classifier()", "Gradient Boosting Machines classifier"
-   "adaptive_boosting_classifier()", "Adaptive Boosting classifier"
+   "gradient_boosting_classifier()", "gradient boosting classifier"
+   "adaptive_boosting_classifier()", "adaptive boosting classifier"
    "random_forest_classifier()", "random forest classifier"
    "bagging_classifier()", "bagging classifier"
-   "voting_classifier()", "Voting classifier"
+   "voting_classifier()", "voting classifier"
    "demo()", "provides a demo of selected functions in this module"
    
