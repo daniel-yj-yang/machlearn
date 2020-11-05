@@ -364,7 +364,7 @@ Summary of output:
 
    - These demos call the following functions developed from scratch and reflect the inner workings of them:
    * random_forest_classifier_from_scratch();
-   * boosting_classifier_from_scratch();
+   * adaptive_boosting_classifier_from_scratch();
    * gradient_boosting_regressor_from_scratch() (see training history plot below): R_squared = 0.753, RMSE = 4.419
 
 
@@ -568,10 +568,10 @@ module: ensemble
    "gradient_boosting_regressor_from_scratch()", "gradient boosting regressor developed from scratch"
    "bagging_classifier_from_scratch()", "bagging classifier developed from scratch"
    "random_forest_classifier_from_scratch()", "random forest classifier developed from scratch"
-   "boosting_classifier_from_scratch()", "boosting classifier developed from scratch"
+   "adaptive_boosting_classifier_from_scratch()", "adaptive boosting classifier developed from scratch"
    "bagging_classifier()", "bagging classifier"
    "random_forest_classifier()", "random forest classifier"
-   "boosting_classifier()", "Adaptive Boosting classifier"
+   "adaptive_boosting_classifier()", "Adaptive Boosting classifier"
    "gradient_boosting_classifier()", "Gradient Boosting Machines classifier"
    "voting_classifier()", "Voting classifier"
    "demo()", "provides a demo of selected functions in this module"

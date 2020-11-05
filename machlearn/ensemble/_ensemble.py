@@ -184,7 +184,7 @@ from ..logistic_regression import logistic_regression_classifier
 from ..kNN import kNN_classifier 
 from ..SVM import SVM_classifier
 
-class boosting_classifier_from_scratch(object):
+class adaptive_boosting_classifier_from_scratch(object):
     """
     The idea of boosting: one is weak, together is strong, iterative training leads to the best model.
     Strategy: To improve the predictive power by training a sequence of weak models. Each additional weak model is to compensate the weaknesses of its predecessors.
@@ -316,9 +316,9 @@ class boosting_classifier_from_scratch(object):
             print(f"To get at the prediction based on X_train, take the sign of the following: {np.dot(self.weak_learners_voting_weights, weak_learners_y_preds)}")
 
 
-def boosting_classifier(*args, **kwargs):
+def adaptive_boosting_classifier(*args, **kwargs):
     """
-    same as in boosting_from_scratch()
+    same as in adaptive_boosting_from_scratch()
     """
     return AdaBoostClassifier(*args, **kwargs)
 
@@ -484,7 +484,7 @@ def _demo(dataset):
         from ..model_evaluation import visualize_classifier_decision_boundary_with_two_features
         from ..logistic_regression import logistic_regression_classifier
 
-        for model_i, model in enumerate([random_forest_classifier(max_depth=6, random_state=1), boosting_classifier(random_state=1), boosting_classifier(base_estimator=logistic_regression_classifier(C=1e9, solver='liblinear'), random_state=1), gradient_boosting_classifier(random_state=1)]):
+        for model_i, model in enumerate([random_forest_classifier(max_depth=6, random_state=1), adaptive_boosting_classifier(random_state=1), adaptive_boosting_classifier(base_estimator=logistic_regression_classifier(C=1e9, solver='liblinear'), random_state=1), gradient_boosting_classifier(random_state=1)]):
             print(f"\n------------ model: {repr(model)} -------------\n")
             model.fit(X_train, y_train)
             #model.print_debugging_info()
@@ -499,9 +499,9 @@ def _demo(dataset):
         from sklearn.preprocessing import scale
         X = scale(X)
         y = np.where(y == 0, -1, y)
-        y_classes = ['not_purchased (y=-1)', 'purchased (y=1)'] # to be consistent with boosting_classifier_from_scratch
+        y_classes = ['not_purchased (y=-1)', 'purchased (y=1)'] # to be consistent with adaptive_boosting_classifier_from_scratch
 
-        for model_i, model in enumerate([boosting_classifier_from_scratch(weak_learner="DT"), boosting_classifier_from_scratch(weak_learner="log_reg"), random_forest_classifier_from_scratch(max_depth=6)]):
+        for model_i, model in enumerate([adaptive_boosting_classifier_from_scratch(weak_learner="DT"), adaptive_boosting_classifier_from_scratch(weak_learner="log_reg"), random_forest_classifier_from_scratch(max_depth=6)]):
             print(f"\n------------ model: {repr(model)} -------------\n")
             model.fit(X_train, y_train)
             model.print_debugging_info()
@@ -541,9 +541,9 @@ def _demo(dataset):
         RF.fit(X_train,y_train)
         print(f"\nUse random_forest_classifier_from_scratch(n_trees=10, max_depth=2). Accuracy: {RF.score(X_test,y_test):.3f}")
 
-        Boosting = boosting_classifier_from_scratch(max_iter=10)
-        Boosting.fit(X_train, y_train)
-        print(f"\nUse boosting_classifier_from_scratch(max_iter=10). Accuracy: {Boosting.score(X_test,y_test):.3f}")
+        AB = adaptive_boosting_classifier_from_scratch(max_iter=10)
+        AB.fit(X_train, y_train)
+        print(f"\nUse adaptive_boosting_classifier_from_scratch(max_iter=10). Accuracy: {AB.score(X_test,y_test):.3f}")
 
         ###################################################
 
@@ -639,7 +639,7 @@ def demo(dataset="randomly_generated"):
 # Random Forest: 
 # https://towardsdatascience.com/random-forests-and-decision-trees-from-scratch-in-python-3e4fa5ae4249
 #
-# AdaBoosting: 
+# Adaptive Boosting: 
 # https://geoffruddock.com/adaboost-from-scratch-in-python/
 # https://www.cs.toronto.edu/~mbrubake/teaching/C11/Handouts/AdaBoost.pdf
 #
