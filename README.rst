@@ -159,7 +159,7 @@ Example 3: Decision Boundary Comparison (Classification with Two Features)
    * - |image_logistic_regression_decision_boundary_testing_set|
      - |image_NN_MLP_decision_boundary_testing_set|
    * - |image_RFC_decision_boundary_testing_set|
-     -
+     - |image_GBM_decision_boundary_testing_set|
 
 
 .. |image_kNN_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/kNN/images/Social_Network_Ads_decision_boundary_testing_set.png
@@ -181,6 +181,9 @@ Example 3: Decision Boundary Comparison (Classification with Two Features)
    :width: 400px
 
 .. |image_RFC_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/ensemble/images/Social_Network_Ads_RFC_decision_boundary_testing_set.png
+   :width: 400px
+
+.. |image_GBM_decision_boundary_testing_set| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/ensemble/images/Social_Network_Ads_GBM_decision_boundary_testing_set.png
    :width: 400px
 
 
