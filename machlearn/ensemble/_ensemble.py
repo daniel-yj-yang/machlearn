@@ -484,7 +484,6 @@ def _demo(dataset):
         from ..model_evaluation import visualize_classifier_decision_boundary_with_two_features
         from ..logistic_regression import logistic_regression_classifier
 
-        #for model_i, model in enumerate([logistic_regression_classifier(C=1e9, solver='liblinear'), boosting_classifier_from_scratch(weak_learner="DT"), boosting_classifier_from_scratch(weak_learner="log_reg"), random_forest_classifier_from_scratch(max_depth=6)]):
         for model_i, model in enumerate([random_forest_classifier(max_depth=6, random_state=1), boosting_classifier(random_state=1), boosting_classifier(base_estimator=logistic_regression_classifier(C=1e9, solver='liblinear'), random_state=1), gradient_boosting_classifier(random_state=1)]):
             print(f"\n------------ model: {repr(model)} -------------\n")
             model.fit(X_train, y_train)
@@ -495,13 +494,22 @@ def _demo(dataset):
             #print(f"Accuracy of individual trees: {model.score_of_individual_trees(X_test,y_test)}\n")
             visualize_classifier_decision_boundary_with_two_features(model, X_test, y_test, y_classes, title=f"{repr(model)}",  X1_lab='Age', X2_lab='Estimated Salary')
 
-        #from sklearn.preprocessing import scale
-        #X = scale(X)
-        #y = np.where(y == 0, -1, y)
-        #y_classes = ['not_purchased (y=-1)', 'purchased (y=1)'] # to be consistent with boosting_classifier_from_scratch
+        ##############
 
-        
+        from sklearn.preprocessing import scale
+        X = scale(X)
+        y = np.where(y == 0, -1, y)
+        y_classes = ['not_purchased (y=-1)', 'purchased (y=1)'] # to be consistent with boosting_classifier_from_scratch
 
+        for model_i, model in enumerate([boosting_classifier_from_scratch(weak_learner="DT"), boosting_classifier_from_scratch(weak_learner="log_reg"), random_forest_classifier_from_scratch(max_depth=6)]):
+            print(f"\n------------ model: {repr(model)} -------------\n")
+            model.fit(X_train, y_train)
+            model.print_debugging_info()
+            print(f"Predicted probabilities: {model.predict_proba(X_test)}")
+            print(f"Predicted label: {model.predict(X_test)}")
+            print(f"Accuracy: {model.score(X_test,y_test)}")
+            print(f"Accuracy of individual trees: {model.score_of_individual_trees(X_test,y_test)}\n")
+            #visualize_classifier_decision_boundary_with_two_features(model, X_test, y_test, y_classes, title=f"{repr(model)}",  X1_lab='Age', X2_lab='Estimated Salary')
 
 
     if dataset == "randomly_generated":

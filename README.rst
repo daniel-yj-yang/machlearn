@@ -147,6 +147,9 @@ Example 3: Decision Boundary Comparison (Classification with Two Features)
    from machlearn import neural_network as NN
    NN.demo("Social_Network_Ads")
 
+   from machlearn import ensemble
+   ensemble.demo("Social_Network_Ads")
+
 
 .. list-table::
    :widths: 25 25
