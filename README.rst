@@ -454,11 +454,11 @@ module: decision_tree
    :widths: 10, 20
 
    "decision_tree_regressor_from_scratch()", "decision tree regressor developed from scratch"
-   "decision_tree_regressor", "decision tree regressor"
+   "decision_tree_regressor()", "decision tree regressor"
    "decision_tree_classifier_from_scratch()", "decision tree classifier developed from scratch"
    "decision_tree_classifier()", "decision tree classifier"
-   "demo()", "provides a demo of selected functions in this module"
    "demo_from_scratch()", "provides a demo of selected functions in this module"
+   "demo()", "provides a demo of selected functions in this module"
 
 
 -----
