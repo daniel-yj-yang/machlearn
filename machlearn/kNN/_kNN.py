@@ -7,6 +7,11 @@
 from sklearn.neighbors import KNeighborsClassifier
 
 
+class kNN_classifier_from_scratch(object):
+    def __init__(self):
+        pass
+
+
 def kNN_classifier(*args, **kwargs):
     """
     """
@@ -39,8 +44,8 @@ def _kNN_demo_Social_Network_Ads():
 
     # pipeline parameters to tune
     hyperparameters = {
-        'scaler__with_mean': [True],
-        'scaler__with_std': [True],
+        'scaler__with_mean': [True, False],
+        'scaler__with_std': [True, False],
         'classifier__n_neighbors': range(1, 20),
         'classifier__weights': ['uniform', 'distance'],
         'classifier__p': [2**0, 2**0.25, 2**0.5, 2**0.75, 2**1, 2**1.25, 2**1.5, 2**1.75, 2**2, 2**2.25, 2**2.5, 2**2.75, 2**3],
@@ -105,8 +110,8 @@ def _kNN_demo_iris():
 
     # pipeline parameters to tune
     hyperparameters = {
-        'scaler__with_mean': [True],
-        'scaler__with_std': [True],
+        'scaler__with_mean': [True, False],
+        'scaler__with_std': [True, False],
         'classifier__n_neighbors': range(1, 20),
         'classifier__weights': ['uniform', 'distance'],
         'classifier__p': [2**0, 2**0.25, 2**0.5, 2**0.75, 2**1, 2**1.25, 2**1.5, 2**1.75, 2**2, 2**2.25, 2**2.5, 2**2.75, 2**3],
@@ -131,7 +136,7 @@ def _kNN_demo_iris():
     y_pred_score = classifier_grid.predict_proba(X_test)
 
     from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves, visualize_classifier_decision_boundary_with_two_features
-    plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=y_classes)
+    plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=y_classes, figsize=(7,7))
 
 
 def demo(dataset="Social_Network_Ads"):

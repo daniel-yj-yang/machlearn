@@ -62,9 +62,6 @@ def evaluate_continuous_prediction(y_true, y_pred):
     #return RMSE, R_squared
 
 
-
-
-
 def visualize_classifier_decision_boundary_with_two_features(classifier, X, y, y_classes, title='Classifier', X1_lab='X1', X2_lab='X2', figsize=(8, 7)):
     """
     # reference: https://scikit-learn.org/stable/auto_examples/neighbors/plot_classification.html
@@ -116,6 +113,7 @@ def Matthew_Correlation_Coefficient(TP, TN, FP, FN):
     else:
         MCC = None
     return MCC
+
 
 def plot_confusion_matrix(y_true,
                           y_pred,

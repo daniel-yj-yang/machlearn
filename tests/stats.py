@@ -4,8 +4,6 @@
 #
 # License: BSD 3 clause
 
-from machlearn import kNN
+from machlearn import stats
 
-kNN.demo("Social_Network_Ads")
-kNN.demo("iris")
-
+stats.demo()

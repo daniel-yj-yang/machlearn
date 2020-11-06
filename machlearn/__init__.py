@@ -23,6 +23,7 @@ __all__ = ["model_evaluation",
            "imbalanced_data",
            "decomposition",
            "ensemble",
+           "stats",
            ]
 
 # this was originally for _naive_bayes.py and is more widely applicable to other modules
