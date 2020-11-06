@@ -118,7 +118,8 @@ def Matthew_Correlation_Coefficient(TP, TN, FP, FN):
 def plot_confusion_matrix(y_true,
                           y_pred,
                           y_classes='auto',
-                          figsize=(9, 10)):
+                          figsize=(9, 10),
+                          model_name=None):
     """
 
     This function plots the confusion matrix, along with key statistics, and returns accuracy.
@@ -204,7 +205,10 @@ def plot_confusion_matrix(y_true,
 
     plt.ylabel('$y_{true}$')
     plt.xlabel('$y_{pred}$' + stats_text)
-    plt.title('Confusion Matrix')
+    if model_name:
+        plt.title(f"Confusion Matrix: {model_name}")
+    else:
+        plt.title(f"Confusion Matrix")
 
     fig.tight_layout()
     plt.show()

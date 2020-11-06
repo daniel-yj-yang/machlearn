@@ -70,14 +70,11 @@ def _kNN_demo_Social_Network_Ads():
     y_pred_score = classifier_grid.predict_proba(X_test)
 
     from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves, visualize_classifier_decision_boundary_with_two_features
-    plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=y_classes)
-    plot_ROC_and_PR_curves(fitted_model=classifier_grid, X=X_test,
-                           y_true=y_test, y_pred_score=y_pred_score[:, 1], y_pos_label=1, model_name=f"kNN k={k}")
+    plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=y_classes, model_name=f"kNN (k={k})")
+    plot_ROC_and_PR_curves(fitted_model=classifier_grid, X=X_test, y_true=y_test, y_pred_score=y_pred_score[:, 1], y_pos_label=1, model_name=f"kNN (k={k})")
 
-    visualize_classifier_decision_boundary_with_two_features(
-        classifier_grid, X_train, y_train, y_classes, title=f"k-Nearest Neighbors (k={k}) / training set", X1_lab='Age', X2_lab='Estimated Salary')
-    visualize_classifier_decision_boundary_with_two_features(
-        classifier_grid, X_test,  y_test,  y_classes, title=f"k-Nearest Neighbors (k={k}) / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
+    visualize_classifier_decision_boundary_with_two_features(classifier_grid, X_train, y_train, y_classes, title=f"k-Nearest Neighbors (k={k}) / training set", X1_lab='Age', X2_lab='Estimated Salary')
+    visualize_classifier_decision_boundary_with_two_features(classifier_grid, X_test,  y_test,  y_classes, title=f"k-Nearest Neighbors (k={k}) / testing set",  X1_lab='Age', X2_lab='Estimated Salary')
 
 
 def _kNN_demo_iris():
@@ -136,7 +133,7 @@ def _kNN_demo_iris():
     y_pred_score = classifier_grid.predict_proba(X_test)
 
     from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves, visualize_classifier_decision_boundary_with_two_features
-    plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=y_classes, figsize=(7,7))
+    plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=y_classes, figsize=(7,7), model_name=f"kNN (k={k})")
 
 
 def demo(dataset="Social_Network_Ads"):
