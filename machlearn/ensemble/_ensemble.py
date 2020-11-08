@@ -378,6 +378,8 @@ def voting_classifier(*args, **kwargs):
 
 from ..decision_tree import decision_tree_regressor, decision_tree_regressor_from_scratch
 
+from ..model_evaluation import SE
+
 class gradient_boosting_regressor_from_scratch(object):
     """
     Gradident descent (GD) vs. Gradient Boosting (GBM):
@@ -405,7 +407,7 @@ class gradient_boosting_regressor_from_scratch(object):
         the loss, J(ŷ)
         this is 0.5 * SE (squared error)
         """
-        return 0.5 * ((y - y_hat) ** 2)
+        return 0.5 * SE(y, y_hat)
 
     def _loss_gradient(self, y, y_hat):
         """
