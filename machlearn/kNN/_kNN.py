@@ -11,7 +11,7 @@ from ..stats import distance
 import numpy as np
 import pandas as pd
 
-from collections import Counter
+from ..DSA import the_most_frequent_item_in_a_list
 
 class kNN_classifier_from_scratch(object):
     def __init__(self, n_neighbors=5, distance_func=distance(p=2).Minkowski):
@@ -30,17 +30,19 @@ class kNN_classifier_from_scratch(object):
         return self
 
     def predict(self, X_test):
+        if type(X_test) in [pd.DataFrame, pd.Series]:
+            X_test = X_test.to_numpy()
         y_pred = []
         for this_x_test_sample in X_test:
-            train_list = [[self.distance_func(self.X_train[train_index,:], this_x_test_sample), self.y_train[train_index]] for train_index in range(self.X_train.shape[0])].sort() # sorted by the first element
-            train_list.sort() 
+            train_list = [[self.distance_func(self.X_train[train_index], this_x_test_sample), self.y_train[train_index]] for train_index in range(self.X_train.shape[0])] 
+            train_list.sort()  # sorted by the first element
             y_pred_candidates = [data[1] for data in train_list[:self.n_neighbors]]
-            y_pred_mode = Counter(y_pred_candidates).most_common(1)
-            y_pred.append(y_pred_mode[0][0])
+            y_pred_mode = the_most_frequent_item_in_a_list(y_pred_candidates).pythonic_naive_appraoch()
+            y_pred.append(y_pred_mode)
         return y_pred
 
 
-def kNN_classifier(*args, **kwargs):
+def kNN_classifier_from_sklearn(*args, **kwargs):
     """
     """
     return KNeighborsClassifier(*args, **kwargs)
@@ -66,7 +68,7 @@ def _kNN_demo_Social_Network_Ads():
     pipeline = Pipeline(steps=[('scaler',
                                 StandardScaler(with_mean=True, with_std=True)),
                                ('classifier',
-                                kNN_classifier(n_neighbors=5, weights='uniform', p=2, metric='minkowski')),
+                                kNN_classifier_from_sklearn(n_neighbors=5, weights='uniform', p=2, metric='minkowski')),
                                ])
 
     # pipeline parameters to tune
@@ -91,7 +93,7 @@ def _kNN_demo_Social_Network_Ads():
     print(
         f"Using a grid search and a kNN classifier, the best hyperparameters were found as following:\n"
         f"Step1: scaler: StandardScaler(with_mean={repr(classifier_grid.best_params_['scaler__with_mean'])}, with_std={repr(classifier_grid.best_params_['scaler__with_std'])});\n"
-        f"Step2: classifier: kNN_classifier(n_neighbors={repr(k)}, weights={repr(classifier_grid.best_params_['classifier__weights'])}, p={classifier_grid.best_params_['classifier__p']:.2f}, metric={repr(classifier_grid.best_params_['classifier__metric'])}).\n")
+        f"Step2: classifier: kNN_classifier_from_sklearn(n_neighbors={repr(k)}, weights={repr(classifier_grid.best_params_['classifier__weights'])}, p={classifier_grid.best_params_['classifier__p']:.2f}, metric={repr(classifier_grid.best_params_['classifier__metric'])}).\n")
 
     y_pred = classifier_grid.predict(X_test)
     y_pred_score = classifier_grid.predict_proba(X_test)
@@ -129,7 +131,7 @@ def _kNN_demo_iris():
     pipeline = Pipeline(steps=[('scaler',
                                 StandardScaler(with_mean=True, with_std=True)),
                                ('classifier',
-                                kNN_classifier(n_neighbors=5, weights='uniform', p=2, metric='minkowski')),
+                                kNN_classifier_from_sklearn(n_neighbors=5, weights='uniform', p=2, metric='minkowski')),
                                ])
 
     # pipeline parameters to tune
@@ -154,7 +156,7 @@ def _kNN_demo_iris():
     print(
         f"Using a grid search and a kNN classifier, the best hyperparameters were found as following:\n"
         f"Step1: scaler: StandardScaler(with_mean={repr(classifier_grid.best_params_['scaler__with_mean'])}, with_std={repr(classifier_grid.best_params_['scaler__with_std'])});\n"
-        f"Step2: classifier: kNN_classifier(n_neighbors={repr(k)}, weights={repr(classifier_grid.best_params_['classifier__weights'])}, p={classifier_grid.best_params_['classifier__p']:.2f}, metric={repr(classifier_grid.best_params_['classifier__metric'])}).\n")
+        f"Step2: classifier: kNN_classifier_from_sklearn(n_neighbors={repr(k)}, weights={repr(classifier_grid.best_params_['classifier__weights'])}, p={classifier_grid.best_params_['classifier__p']:.2f}, metric={repr(classifier_grid.best_params_['classifier__metric'])}).\n")
 
     y_pred = classifier_grid.predict(X_test)
     y_pred_score = classifier_grid.predict_proba(X_test)
@@ -181,11 +183,24 @@ def _kNN_demo_iris_from_scratch():
 
     from sklearn.preprocessing import StandardScaler
     scaler = StandardScaler()
-    model = kNN_classifier_from_scratch(n_neighbors=n_neighbors)
-    model.fit(scaler.fit_transform(X_train), y_train)
-    y_pred = model.predict(scaler.transform(X_test))
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+
+    model_from_scratch = kNN_classifier_from_scratch(n_neighbors=n_neighbors)
+    model_from_sklearn = kNN_classifier_from_sklearn(n_neighbors=n_neighbors)
+
+    model_from_scratch.fit(X_train, y_train)
+    model_from_sklearn.fit(X_train, y_train)
+
+    y_pred_from_scratch = model_from_scratch.predict(X_test)
+    y_pred_from_sklearn = model_from_sklearn.predict(X_test)
+
+    for i in range(len(y_pred_from_scratch)):
+        if y_pred_from_scratch[i] != y_pred_from_sklearn[i]:
+            print(f"difference between from_scratch and from_sklearn: {i}-th item")
+
     from ..model_evaluation import plot_confusion_matrix
-    plot_confusion_matrix(y_true=y_test, y_pred=y_pred, y_classes=y_classes, figsize=(7,7), model_name=f"kNN (k={n_neighbors})")
+    plot_confusion_matrix(y_true=y_test, y_pred=y_pred_from_scratch, y_classes=y_classes, figsize=(7,7), model_name=f"kNN (k={n_neighbors})")
 
 
 def demo(dataset="Social_Network_Ads"):

@@ -11,6 +11,16 @@ import numpy as np
 
 from ..stats import distance
 
+
+class the_most_frequent_item_in_a_list(object):
+    def __init__(self, array):
+        self.array = array
+    
+    def pythonic_naive_appraoch(self):
+        # https://www.geeksforgeeks.org/python-find-most-frequent-element-in-a-list/
+        return max(set(self.array), key=self.array.count)
+
+
 class k_closet_points_to_a_reference_point(object):
     def __init__(self, points_ndarray, reference_point, k, distance_func=distance().Euclidean):
         """
@@ -308,6 +318,10 @@ def sort_profiling():
 
 
 def sort_demo():
+
+    array = random.choices(range(0,100), k=1000)
+    item = the_most_frequent_item_in_a_list(array).pythonic_naive_appraoch()
+    print(f"the most frequent item is {item}")
 
     from sklearn.datasets import make_classification
     X, y = make_classification(n_samples = 10000, n_features = 20, random_state=1)

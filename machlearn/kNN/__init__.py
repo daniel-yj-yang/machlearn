@@ -4,10 +4,10 @@
 #
 # License: BSD 3 clause
 
-from ._kNN import kNN_classifier_from_scratch, kNN_classifier, demo_from_scratch, demo
+from ._kNN import kNN_classifier_from_scratch, kNN_classifier_from_sklearn, demo_from_scratch, demo
 
 # this is for "from <package_name>.kNN import *"
 __all__ = ["kNN_classifier_from_scratch",
-           "kNN_classifier",
+           "kNN_classifier_from_sklearn",
            "demo_from_scratch",
            "demo",]

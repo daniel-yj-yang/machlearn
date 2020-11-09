@@ -415,6 +415,7 @@ module: kNN
    :header: "function", "description"
    :widths: 10, 20
 
+   "kNN_classifier_from_scratch()", "kNN classifier developed from scratch"
    "demo()", "provides a demo of selected functions in this module"
 
 
