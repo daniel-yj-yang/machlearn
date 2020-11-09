@@ -4,8 +4,41 @@
 #
 # License: BSD 3 clause
 
+import pandas as pd
 import statsmodels.api as sm
 from sklearn import linear_model
+import torch.nn as nn
+import numpy as np
+
+class linear_regression_torch(nn.Module):
+    def __init__(self, in_size, out_size):
+        super().__init__()
+        self.model = nn.Linear(in_size, out_size)
+    def forward(self, x):
+        return self.model(x)
+
+
+def test_linear_regression_assumptions(model, X, y):
+    """
+    1. linearity in the relationship between X and y
+    2. I.I.D. in residuals: residuals are Independently, Identically Distributed as normal
+    3. for multiple linear regression, little or no multicollinearity
+    """
+    y_pred = model.predict(X)
+    data = pd.DataFrame({'y_true': y, 'y_pred': y_pred})
+    data['residuals'] = y - y_pred
+
+    print("assumption 1: linearity in the relationship between X and y")
+    print("to test this, make a scatter plot of y_pred vs. y_true, and check for linear relationship")
+    import seaborn as sns
+    sns.lmplot(x='y_true', y='y_pred', data=data, fit_reg=False, height=7)
+    import matplotlib.pyplot as plt
+    diagnoal_line_coords = np.arange(data[['y_true','y_pred']].min().min(), data[['y_true','y_pred']].max().max())
+    plt.plot(diagnoal_line_coords, diagnoal_line_coords, color='darkorange', linestyle='--')
+    plt.title('y_pred vs. y_true -- test for linearity between X and y')
+    plt.suptitle('the dots should be scattered around the diagonal')
+    plt.show()
+
 
 class OLS(object):
     def __init__(self, print_summary=True, use_statsmodels=False, alpha = 1000):
@@ -74,7 +107,11 @@ class OLS(object):
         return estimates
 
 
-class Linear_regression(OLS):
+def linear_regression_sklearn(*args, **kwargs):
+    return linear_model.LinearRegression(*args, **kwargs)
+
+
+class linear_regression(OLS):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -82,10 +119,10 @@ class Linear_regression(OLS):
         if self.use_statsmodels:
             return sm.OLS(y, X).fit()
         else:
-            return linear_model.LinearRegression(fit_intercept=False).fit(X, y)
+            return linear_regression_sklearn(fit_intercept=False).fit(X, y)
 
 
-class Linear_regression_normal_equation(OLS):
+class linear_regression_normal_equation(OLS):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.use_statsmodels = False
@@ -108,7 +145,7 @@ class normal_equation(object):
         return X.dot(self.coef_)
 
 
-class Ridge_regression(OLS):
+class ridge_regression(OLS):
     def __init__(self, alpha=1000, *args, **kwargs):
         super().__init__(alpha=alpha, *args, **kwargs)
         self.alpha = alpha
@@ -121,7 +158,7 @@ class Ridge_regression(OLS):
             return linear_model.Ridge(alpha=self.alpha, fit_intercept=False).fit(X, y)
 
 
-class Lasso_regression(OLS):
+class lasso_regression(OLS):
     def __init__(self, alpha = 1000, *args, **kwargs):
         super().__init__(alpha = alpha, *args, **kwargs)
         self.alpha = alpha
@@ -134,17 +171,17 @@ class Lasso_regression(OLS):
             return linear_model.Lasso(alpha=self.alpha, max_iter=self.max_iter, fit_intercept=False).fit(X, y)
 
 
-def identify_best_alpha_for_Ridge_regression(y, X, alphas = [0.1, 1.0, 10.0]):
+def identify_best_alpha_for_ridge_regression(y, X, alphas = [0.1, 1.0, 10.0]):
     from sklearn.linear_model import RidgeCV
-    Ridge_regression_CV = RidgeCV(alphas=alphas, fit_intercept=False)
-    model_cv = Ridge_regression_CV.fit(X, y)
+    ridge_regression_cv = RidgeCV(alphas=alphas, fit_intercept=False)
+    model_cv = ridge_regression_cv.fit(X, y)
     return model_cv.alpha_
 
 
-def identify_best_alpha_for_Lasso_regression(y, X, alphas=[0.1, 1.0, 10.0]):
+def identify_best_alpha_for_lasso_regression(y, X, alphas=[0.1, 1.0, 10.0]):
     from sklearn.linear_model import LassoCV
-    Lasso_regression_CV = LassoCV(alphas=alphas, fit_intercept=False, max_iter=200000)
-    model_cv = Lasso_regression_CV.fit(X, y)
+    lasso_regression_cv = LassoCV(alphas=alphas, fit_intercept=False, max_iter=200000)
+    model_cv = lasso_regression_cv.fit(X, y)
     return model_cv.alpha_
 
 
@@ -165,11 +202,8 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
     import patsy
 
     if dataset == "boston":
-        from sklearn.datasets import load_boston
-        boston = load_boston()
-        X = pd.DataFrame(data=boston.data,columns=boston.feature_names)
-        y = pd.DataFrame(data=boston.target,columns=['MEDV'])
-        data = pd.concat([y, X], axis=1)
+        from ..datasets import public_dataset
+        [boston_features, boston_target, data] = public_dataset(name="boston")
         print(f"{data.head()}\n")
         formula = 'MEDV ~ CRIM + ZN + INDUS + CHAS + NOX + RM + AGE + DIS + RAD + TAX + PTRATIO + B + LSTAT - 1'
 
@@ -196,11 +230,11 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
     X = pd.DataFrame(X, columns = X.design_info.column_names )
 
     import numpy as np
-    best_Ridge_regression_alpha = identify_best_alpha_for_Ridge_regression(y.ravel(), sm.add_constant(X), alphas=np.exp(np.linspace(-5,15,100000)))
-    print(f"best alpha for Ridge regression: {best_Ridge_regression_alpha}")
+    best_ridge_regression_alpha = identify_best_alpha_for_ridge_regression(y.ravel(), sm.add_constant(X), alphas=np.exp(np.linspace(-7,15,100000)))
+    print(f"best alpha for ridge regression: {best_ridge_regression_alpha}")
 
-    best_Lasso_regression_alpha = identify_best_alpha_for_Lasso_regression(y.ravel(), sm.add_constant(X), alphas=np.exp(np.linspace(-5,15, 10000)))
-    print(f"best alpha for Lasso regression: {best_Lasso_regression_alpha}")
+    best_lasso_regression_alpha = identify_best_alpha_for_lasso_regression(y.ravel(), sm.add_constant(X), alphas=np.exp(np.linspace(-7,15, 10000)))
+    print(f"best alpha for lasso regression: {best_lasso_regression_alpha}")
 
     from ..model_evaluation import test_for_multicollinearity
     test_for_multicollinearity(X)
@@ -218,7 +252,7 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
     X_test = pd.DataFrame(X_test, columns = X_test.design_info.column_names )
     y_test = pd.DataFrame(y_test, columns = y_test.design_info.column_names )
 
-    for i, model in enumerate([Linear_regression, Ridge_regression, Lasso_regression]):
+    for i, model in enumerate([linear_regression, ridge_regression, lasso_regression]):
         print(f"------------------------------------------------------------------------------")
         print(f"{repr(model)}\n")
         #fitted_model = model.run(y, X)
@@ -226,9 +260,9 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
         if i == 0:
             alpha = None
         elif i == 1:
-            alpha = best_Ridge_regression_alpha
+            alpha = best_ridge_regression_alpha
         elif i == 2:
-            alpha = best_Lasso_regression_alpha
+            alpha = best_lasso_regression_alpha
 
         fitted_model = model(print_summary = False, use_statsmodels = use_statsmodels, alpha = alpha).run(y_train, X_train)
         y_test_pred = fitted_model.predict(sm.add_constant(X_test))
@@ -265,10 +299,10 @@ def _demo(dataset="marketing", use_statsmodels = False):
     test_for_multicollinearity(X)
     
     print("----------------------------------\n\n*** Solutions using python package ***\n")
-    Linear_regression(print_summary = True, use_statsmodels=use_statsmodels).run(y, X, standardized_estimate=True)
+    linear_regression(print_summary = True, use_statsmodels=use_statsmodels).run(y, X, standardized_estimate=True)
 
     print("---------------------------------------\n\n*** Solutions using normal equation ***\n")
-    Linear_regression_normal_equation(print_summary = True).run(y, X, standardized_estimate=True)
+    linear_regression_normal_equation(print_summary = True).run(y, X, standardized_estimate=True)
 
 
 def demo_regularization(dataset="Hitters", use_statsmodels = False):
@@ -301,3 +335,18 @@ def demo(dataset="marketing", use_statsmodels=False):
         _demo(dataset=dataset, use_statsmodels=use_statsmodels)
     else:
         raise TypeError(f"dataset [{dataset}] is not defined")
+
+def demo_test_assumptions():
+    """
+    reference: https://jeffmacaluso.github.io/post/LinearRegressionAssumptions/
+    """
+    from ..datasets import public_dataset
+    [boston_features, boston_target, boston_data] = public_dataset(name="boston")
+    print(f"{boston_data.head()}\n")
+    boston_linreg_model = linear_regression_sklearn().fit(boston_features, boston_target)
+    test_linear_regression_assumptions(boston_linreg_model, boston_features, boston_target)
+
+    from sklearn.datasets import make_regression
+    X, y = make_regression(n_samples=boston_data.shape[0], n_features=boston_data.shape[1]-1, noise=100, random_state=10)
+    model = linear_regression_sklearn().fit(X, y)
+    test_linear_regression_assumptions(model, X, y)

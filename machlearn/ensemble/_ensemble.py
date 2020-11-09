@@ -476,7 +476,7 @@ def _demo(dataset):
         GBM.fit(X_train, y_train)
         GBM.plot_loss_history()
         from ..model_evaluation import evaluate_continuous_prediction
-        R_squared, RMSE = evaluate_continuous_prediction(y_test, GBM.predict(X_test))
+        RMSE, R_squared = evaluate_continuous_prediction(y_test, GBM.predict(X_test))
         print(f"R_squared = {R_squared:.3f}, RMSE = {RMSE:.3f}")
 
     if dataset == 'Social_Network_Ads':

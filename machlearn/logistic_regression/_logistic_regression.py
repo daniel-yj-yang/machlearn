@@ -10,7 +10,7 @@ def logistic_regression_classifier(*args, **kwargs):
     return LogisticRegression(*args, **kwargs)
 
 
-class logisticReg_statsmodels(object):
+class logistic_regression_statsmodels(object):
     def __init__(self):
         super().__init__()
     
@@ -29,7 +29,7 @@ class logisticReg_statsmodels(object):
         return result.params.values
 
 
-class logisticReg_sklearn(object):
+class logistic_regression_sklearn(object):
     def __init__(self):
         super().__init__()
     
@@ -70,7 +70,7 @@ def _demo(dataset="Social_Network_Ads"):
         y = data['Purchased']
         y_classes = ['not_purchased (y=0)', 'purchased (y=1)']
 
-        for model in [logisticReg_statsmodels, logisticReg_sklearn]:
+        for model in [logistic_regression_statsmodels, logistic_regression_sklearn]:
             print(f"---------------------------------------------------------------------------------------------------------\nmodel: {repr(model)}.\n")
             params_values = model().run(y, X)
             beta0 = params_values[0] # exp(beta0) = the baseline "odds_of_prob(y)" when X's=0:

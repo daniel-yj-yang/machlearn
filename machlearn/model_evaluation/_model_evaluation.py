@@ -53,7 +53,7 @@ def evaluate_continuous_prediction(y_true, y_pred):
     if type(y_pred) in [pd.DataFrame, pd.Series]:
         y_pred = y_pred.to_numpy()
     from sklearn.metrics import r2_score, mean_squared_error
-    return r2_score(y_true, y_pred), mean_squared_error(y_true, y_pred)**0.5
+    return mean_squared_error(y_true, y_pred)**0.5, r2_score(y_true, y_pred)
     #from statistics import mean
     #SSE = sum((y_true - y_pred) ** 2)
     #RMSE = ( SSE / len(y_true) ) ** 0.5

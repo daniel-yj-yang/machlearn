@@ -820,7 +820,7 @@ def demo_from_scratch(question_type="classification"):
             model.fit(X, y)
             y_pred = model.predict(X)
             from ..model_evaluation import evaluate_continuous_prediction
-            R_squared, RMSE = evaluate_continuous_prediction(y, y_pred)
+            RMSE, R_squared = evaluate_continuous_prediction(y, y_pred)
             print(f"R_squared = {R_squared:.3f}, RMSE = {RMSE:.3f}")
     
     if question_type == "classification":

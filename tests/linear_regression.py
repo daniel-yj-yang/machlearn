@@ -4,8 +4,8 @@
 #
 # License: BSD 3 clause
 
-from machlearn import linear_regression as LinearReg
+from machlearn import linear_regression as linreg
 
-LinearReg.demo()
-LinearReg.demo_regularization()
-
+linreg.demo()
+linreg.demo_regularization()
+linreg.demo_test_assumptions()

@@ -142,8 +142,8 @@ Example 3: Decision Boundary Comparison (Classification with Two Features)
    from machlearn import decision_tree as DT
    DT.demo("Social_Network_Ads", classifier_func = "DT")
 
-   from machlearn import logistic_regression as log_reg
-   log_reg.demo("Social_Network_Ads")
+   from machlearn import logistic_regression as logreg
+   logreg.demo("Social_Network_Ads")
 
    from machlearn import neural_network as NN
    NN.demo("Social_Network_Ads")
@@ -486,8 +486,8 @@ module: logistic_regression
    :header: "function", "description"
    :widths: 10, 20
 
-   "LogisticReg_sklearn()", "solutions using sklearn"
-   "LogisticReg_statsmodels()", "solutions using statsmodels"
+   "logistic_regression_sklearn()", "solutions using sklearn"
+   "logistic_regression_statsmodels()", "solutions using statsmodels"
    "demo()", "provides a demo of selected functions in this module"
 
 
@@ -500,12 +500,14 @@ module: linear_regression
    :header: "function", "description"
    :widths: 10, 20
 
-   "Lasso_regression()", "lasso_regression"
-   "Ridge_regression()", "ridge_regression"
+   "test_assumptions", "tests the assumptions of linear regression"
+   "lasso_regression()", "lasso_regression"
+   "ridge_regression()", "ridge_regression"
    "demo_regularization()", "provides a demo of selected functions in this module"
-   "Linear_regression_normal_equation()", "linear_regression_normal_equation"
-   "Linear_regression()", "linear_regression"
+   "linear_regression_normal_equation()", "linear_regression_normal_equation"
+   "linear_regression()", "linear_regression"
    "demo()", "provides a demo of selected functions in this module"
+   "demo_test_assumptions", "provides a demo of selected functions in this module"
 
 
 -----
