@@ -147,7 +147,6 @@ def demo_probability():
 
 
 def demo_distance():
-    dist = distance()
     from ..datasets import public_dataset
     data = public_dataset(name="iris")
     x = data.iloc[:, 0]
@@ -155,8 +154,8 @@ def demo_distance():
     print("Minkowski distance of the 'sepal length(cm)' and 'sepal width(cm)' from the iris data:")
     for p_power in [-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]:
         p = 2**p_power
-        print(f"order p={p: .3f}, Minkowski distance = {dist.Minkowski(x=x, y=y, p=p): .3f}")
-    print(f"Euclidean distance = {dist.Euclidean(x=x, y=y): .3f}")
+        print(f"order p={p: .3f}, Minkowski distance = {distance(p=p).Minkowski(x=x, y=y): .3f}")
+    print(f"Euclidean distance = {distance().Euclidean(x=x, y=y): .3f}")
 
 
 def demo():

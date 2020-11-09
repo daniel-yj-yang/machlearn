@@ -32,8 +32,8 @@ class kNN_classifier_from_scratch(object):
     def predict(self, X_test):
         y_pred = []
         for this_x_test_sample in X_test:
-            train_list = [[self.distance_func(self.X_train[train_index,:], this_x_test_sample), self.y_train[train_index]] for train_index in range(self.X_train.shape[0])]
-            train_list.sort() # sorted by the first element
+            train_list = [[self.distance_func(self.X_train[train_index,:], this_x_test_sample), self.y_train[train_index]] for train_index in range(self.X_train.shape[0])].sort() # sorted by the first element
+            train_list.sort() 
             y_pred_candidates = [data[1] for data in train_list[:self.n_neighbors]]
             y_pred_mode = Counter(y_pred_candidates).most_common(1)
             y_pred.append(y_pred_mode[0][0])
