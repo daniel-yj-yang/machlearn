@@ -14,6 +14,7 @@ import pandas as pd
 from ..DSA import the_most_frequent_item_in_a_list
 
 class kNN_classifier_from_scratch(object):
+    
     def __init__(self, n_neighbors=5, distance_func=distance(p=2).Minkowski):
         self.X_train = None
         self.y_train = None
@@ -34,10 +35,15 @@ class kNN_classifier_from_scratch(object):
             X_test = X_test.to_numpy()
         y_pred = []
         for this_x_test_sample in X_test:
+            # calculate the distance from this_x_test_sample to all training samples, while tagging along the y_train label
             train_list = [[self.distance_func(self.X_train[train_index], this_x_test_sample), self.y_train[train_index]] for train_index in range(self.X_train.shape[0])] 
-            train_list.sort()  # sorted by the first element
+            # sorted by the first element, the distance from low to high
+            train_list.sort()  
+            # keep the closet k neighbors and retain their y_train labels
             y_pred_candidates = [data[1] for data in train_list[:self.n_neighbors]]
+            # find the mode of the y_train labels, which will be the y_pred
             y_pred_mode = the_most_frequent_item_in_a_list(y_pred_candidates).pythonic_naive_appraoch()
+            # and then repeat this procedure for the next x_test_sample
             y_pred.append(y_pred_mode)
         return y_pred
 
