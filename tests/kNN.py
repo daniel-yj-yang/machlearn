@@ -6,6 +6,7 @@
 
 from machlearn import kNN
 
+kNN.demo_from_scratch("iris")
 kNN.demo("Social_Network_Ads")
 kNN.demo("iris")
 

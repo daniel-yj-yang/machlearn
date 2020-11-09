@@ -12,6 +12,9 @@ import matplotlib.pyplot as plt
 
 class distance(object):
 
+    def __init__(self, p=1):
+        self.p = p # for Minkowski distance
+
     def Euclidean(self, x, y):
         """
         x is an array of (x_1, x_2, ..., x_n)
@@ -23,7 +26,7 @@ class distance(object):
         distance **= 0.5
         return distance
 
-    def Minkowski(self, x, y, p=1):
+    def Minkowski(self, x, y):
         """
         x is an array of (x_1, x_2, ..., x_n)
         y is an array of (y_1, y_2, ..., y_n)
@@ -31,8 +34,8 @@ class distance(object):
         """
         distance = 0
         for d in range(len(x)):
-            distance += abs(x[d] - y[d])**p
-        distance **= (1/p)
+            distance += abs(x[d] - y[d])**self.p
+        distance **= (1/self.p)
         return distance
 
 

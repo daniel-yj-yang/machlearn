@@ -39,6 +39,7 @@ Example 1: k-Nearest Neighbors
    
    from machlearn import kNN
    kNN.demo("iris")
+   kNN.demo_from_scratch("iris")
 
 
 Selected Output:

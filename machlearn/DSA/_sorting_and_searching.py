@@ -7,13 +7,59 @@
 import random
 import timeit
 
+import numpy as np
+
+from ..stats import distance
+
+class k_closet_points_to_a_reference_point(object):
+    def __init__(self, points_ndarray, reference_point, k, distance_func=distance().Euclidean):
+        """
+        points_array: 
+
+            points M x dims N
+        
+            [dim1_pt1, dim2_pt1, ... , dimN_pt1],
+            [dim1_pt2, dim2_pt2, ... , dimN_pt2],
+            ...,
+            [dim1_ptM, dim2_ptM, ... , dimN_ptM]
+
+        reference_point:
+
+            [dim1_ptR, dim2_ptR, ... , dimN_ptR]
+        """
+        self.points_ndarray = points_ndarray
+        self.reference_point = reference_point
+        if type(self.points_ndarray) == np.ndarray:
+            self.points_ndarray = self.points_ndarray.tolist()
+        if type(self.reference_point) == np.ndarray:
+            self.reference_point = self.reference_point.tolist()
+        self.k = k
+        self.distance_func = distance_func
+    
+    def heap_approach(self):
+        # min_heap solution
+        import heapq
+        heap = []  # https://docs.python.org/3/library/heapq.html
+        for this_point_row in self.points_ndarray:
+            if len(heap) < self.k:
+                heapq.heappush(heap,    [-self.distance_func(this_point_row, self.reference_point), this_point_row])
+            else:
+                heapq.heappushpop(heap, [-self.distance_func(this_point_row, self.reference_point), this_point_row])
+        return [pt for dist, pt in heap]
+
+    def sort_approach(self):
+        """
+        Time: O(N log N), Space: O(N)
+        """
+        self.points_ndarray.sort(key = lambda this_point_row: self.distance_func(this_point_row, self.reference_point)) # Time: O(N log N), Space: O(N)
+        return self.points_ndarray[:self.k]
+
 # Time complexity of comparison sort:
 # BubbleSort: n^2
 # TreeSort: nlogn
 # HeapSort: nlogn
 # MergeSort: nlogn
 # QuickSort: nlogn
-
 
 def brute_force_sort(array):
     unsorted_array = array.copy()
@@ -54,33 +100,36 @@ class heap_sort():
         self.array = array
         self.sort_inplace()
         
-    def heapify(self, arr, n, i):
+    def max_heapify(self, arr, n, i):
+        # https://www.geeksforgeeks.org/heap-sort/
+        # https://www.geeksforgeeks.org/binary-heap/
         # Find largest among root and children
-        largest = i
-        l = 2 * i + 1
-        r = 2 * i + 2
 
-        if l < n and arr[i] < arr[l]:
-            largest = l
+        max_index = i
+        left_index = 2 * i + 1
+        right_index = 2 * i + 2
 
-        if r < n and arr[largest] < arr[r]:
-            largest = r
+        if left_index < n and arr[max_index] < arr[left_index]:
+            max_index = left_index
+
+        if right_index < n and arr[max_index] < arr[right_index]:
+            max_index = right_index
 
         # If root is not largest, swap with largest and continue heapifying
-        if largest != i:
-            arr[i], arr[largest] = arr[largest], arr[i]
-            self.heapify(arr, n, largest)
+        if max_index != i:
+            arr[i], arr[max_index] = arr[max_index], arr[i]
+            self.max_heapify(arr, n, max_index)
 
     def sort_inplace(self):
         n = len(self.array)
 
         # Build max heap
         for i in range(n//2, -1, -1):
-            self.heapify(self.array, n, i)
+            self.max_heapify(self.array, n, i)
 
         for i in range(n-1, 0, -1):
             self.array[i], self.array[0] = self.array[0], self.array[i] # swap
-            self.heapify(self.array, i, 0)  # Heapify root element
+            self.max_heapify(self.array, i, 0)  # Heapify root element
 
 
 def merge_sort_inplace(array):
@@ -259,6 +308,12 @@ def sort_profiling():
 
 
 def sort_demo():
+
+    from sklearn.datasets import make_classification
+    X, y = make_classification(n_samples = 10000, n_features = 20, random_state=1)
+    print(k_closet_points_to_a_reference_point(points_ndarray=X[1:,:], reference_point=X[0,:], k=3).heap_approach())
+    print(k_closet_points_to_a_reference_point(points_ndarray=X[1:,:], reference_point=X[0,:], k=3).sort_approach())
+
     test_array = random.sample(range(1, 1000000), 10)
     print("\nmerge_sort():")
     print(f"before sorting: {test_array}")
