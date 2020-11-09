@@ -534,6 +534,18 @@ module: stats
 
 -----
 
+module: pipeline
+----------------
+
+.. csv-table::
+   :header: "class/function", "description"
+   :widths: 10, 20
+
+   "demo()", "provides a demo of selected functions in this module"
+   
+
+-----
+
 module: imbalanced_data
 -----------------------
 

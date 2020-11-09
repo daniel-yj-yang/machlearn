@@ -28,3 +28,4 @@ script:
   - "python tests/gradient_descent.py"
   - "python tests/ensemble.py"
   - "python tests/stats.py"
+  - "python tests/pipeline.py"

@@ -47,6 +47,7 @@ def kNN_classifier_from_sklearn(*args, **kwargs):
     """
     return KNeighborsClassifier(*args, **kwargs)
 
+kNN_classifier = kNN_classifier_from_sklearn
 
 def _kNN_demo_Social_Network_Ads():
     from ..datasets import public_dataset
@@ -68,7 +69,7 @@ def _kNN_demo_Social_Network_Ads():
     pipeline = Pipeline(steps=[('scaler',
                                 StandardScaler(with_mean=True, with_std=True)),
                                ('classifier',
-                                kNN_classifier_from_sklearn(n_neighbors=5, weights='uniform', p=2, metric='minkowski')),
+                                kNN_classifier(n_neighbors=5, weights='uniform', p=2, metric='minkowski')),
                                ])
 
     # pipeline parameters to tune
@@ -93,7 +94,7 @@ def _kNN_demo_Social_Network_Ads():
     print(
         f"Using a grid search and a kNN classifier, the best hyperparameters were found as following:\n"
         f"Step1: scaler: StandardScaler(with_mean={repr(classifier_grid.best_params_['scaler__with_mean'])}, with_std={repr(classifier_grid.best_params_['scaler__with_std'])});\n"
-        f"Step2: classifier: kNN_classifier_from_sklearn(n_neighbors={repr(k)}, weights={repr(classifier_grid.best_params_['classifier__weights'])}, p={classifier_grid.best_params_['classifier__p']:.2f}, metric={repr(classifier_grid.best_params_['classifier__metric'])}).\n")
+        f"Step2: classifier: kNN_classifier(n_neighbors={repr(k)}, weights={repr(classifier_grid.best_params_['classifier__weights'])}, p={classifier_grid.best_params_['classifier__p']:.2f}, metric={repr(classifier_grid.best_params_['classifier__metric'])}).\n")
 
     y_pred = classifier_grid.predict(X_test)
     y_pred_score = classifier_grid.predict_proba(X_test)
@@ -131,7 +132,7 @@ def _kNN_demo_iris():
     pipeline = Pipeline(steps=[('scaler',
                                 StandardScaler(with_mean=True, with_std=True)),
                                ('classifier',
-                                kNN_classifier_from_sklearn(n_neighbors=5, weights='uniform', p=2, metric='minkowski')),
+                                kNN_classifier(n_neighbors=5, weights='uniform', p=2, metric='minkowski')),
                                ])
 
     # pipeline parameters to tune
@@ -156,7 +157,7 @@ def _kNN_demo_iris():
     print(
         f"Using a grid search and a kNN classifier, the best hyperparameters were found as following:\n"
         f"Step1: scaler: StandardScaler(with_mean={repr(classifier_grid.best_params_['scaler__with_mean'])}, with_std={repr(classifier_grid.best_params_['scaler__with_std'])});\n"
-        f"Step2: classifier: kNN_classifier_from_sklearn(n_neighbors={repr(k)}, weights={repr(classifier_grid.best_params_['classifier__weights'])}, p={classifier_grid.best_params_['classifier__p']:.2f}, metric={repr(classifier_grid.best_params_['classifier__metric'])}).\n")
+        f"Step2: classifier: kNN_classifier(n_neighbors={repr(k)}, weights={repr(classifier_grid.best_params_['classifier__weights'])}, p={classifier_grid.best_params_['classifier__p']:.2f}, metric={repr(classifier_grid.best_params_['classifier__metric'])}).\n")
 
     y_pred = classifier_grid.predict(X_test)
     y_pred_score = classifier_grid.predict_proba(X_test)
