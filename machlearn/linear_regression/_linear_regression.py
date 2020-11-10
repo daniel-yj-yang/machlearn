@@ -287,7 +287,7 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
     print(f"best alpha for lasso regression: {best_lasso_regression_alpha}")
 
     from ..model_evaluation import test_for_multicollinearity
-    test_for_multicollinearity(X)
+    test_for_multicollinearity(X, feature_names=X.design_info.column_names)
 
     train = data.sample(frac=0.50, random_state=123)
     test = data[~data.isin(train).iloc[:, 0]]
@@ -390,14 +390,15 @@ def demo(dataset="marketing", use_statsmodels=False):
 def demo_assumption_test():
 
     from ..datasets import public_dataset
-    [boston_features, boston_target, boston_data] = public_dataset(name="boston")
-    print(f"{boston_data.head()}\n")
-    boston_linreg_model = linear_regression_sklearn().fit(boston_features, boston_target)
+    [X, y, data] = public_dataset(name="boston")
+    print(f"{data.head()}\n")
+    linreg_model = linear_regression_sklearn().fit(X, y)
     print("\nData1: boston")
-    linear_regression_assumption_test(boston_linreg_model, boston_features, boston_target, feature_names=boston_data.columns.drop('MEDV'))
+    linear_regression_assumption_test(linreg_model, X, y, feature_names=data.columns.drop('MEDV'))
 
     from sklearn.datasets import make_regression
-    X, y = make_regression(n_samples=boston_data.shape[0], n_features=boston_data.shape[1]-1, noise=50, random_state=10)
+    X, y = make_regression(n_samples=data.shape[0], n_features=data.shape[1]-1, noise=200, random_state=10)
     model = linear_regression_sklearn().fit(X, y)
     print("\nData2: make-up data using make_regression()")
     linear_regression_assumption_test(model, X, y)
+
