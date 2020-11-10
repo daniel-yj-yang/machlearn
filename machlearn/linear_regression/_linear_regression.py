@@ -35,7 +35,7 @@ def linear_regression_assumption_test(model, X, y):
     import matplotlib.pyplot as plt
     diagnoal_line_coords = np.arange(data[['y_true','y_pred']].min().min(), data[['y_true','y_pred']].max().max())
     plt.plot(diagnoal_line_coords, diagnoal_line_coords, color='darkorange', linestyle='--')
-    plt.title('y_pred vs. y_true -- test for linearity between X and y')
+    plt.title('Assumption 1: linearity in the relationship between X and y')
     plt.suptitle('the dots should be scattered around the diagonal')
     plt.show()
 
@@ -336,7 +336,7 @@ def demo(dataset="marketing", use_statsmodels=False):
     else:
         raise TypeError(f"dataset [{dataset}] is not defined")
 
-def demo_test_assumption():
+def demo_assumption_test():
     """
     reference: https://jeffmacaluso.github.io/post/LinearRegressionAssumptions/
     """
