@@ -1,6 +1,8 @@
 .. -*- mode: rst -*-
 
+
 |BuildTest|_ |PythonVersion|_ |PyPi_version|_ |Downloads|_ |License|_
+
 
 .. |BuildTest| image:: https://travis-ci.com/daniel-yj-yang/machlearn.svg?branch=master
 .. _BuildTest: https://travis-ci.com/daniel-yj-yang/machlearn
