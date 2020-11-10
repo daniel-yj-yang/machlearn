@@ -101,6 +101,7 @@ def linear_regression_assumption_test(X, y, feature_names=None):
     # If violated, issues with interpretability of the coefficients and the standard errors of the coefficients.
     from ..model_evaluation import test_for_multicollinearity
     test_for_multicollinearity(X, feature_names=feature_names)
+    print("------------------------------------------------------------------------------------------------")
 
 
 class OLS(object):
