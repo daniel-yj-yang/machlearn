@@ -399,7 +399,7 @@ Summary of output:
 Selected output:
 
 .. list-table::
-   :widths: 25 25
+   :widths: 25 30
    :header-rows: 0
 
    * - |image_linreg_assumption_test_linearity|
@@ -410,7 +410,7 @@ Selected output:
    :width: 400px
 
 .. |image_linreg_assumption_test_homoscedasticity| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/linear_regression/images/assumption_test_homoscedasticity.png
-   :width: 400px
+   :width: 500px
 
 
 -----
