@@ -381,8 +381,8 @@ Summary of output:
 
 -----
 
-Example 9: Testing Assumptions
-------------------------------
+Example 9: Assumption Testing
+-----------------------------
 
 .. code-block:: python
    
