@@ -207,8 +207,8 @@ def _demo(dataset, classifier_func, learning_rate=None, num_iter=None):
     if classifier_func == "logistic_regression":
         # comparison
         if dataset != "iris_binarized":
-            from ..logistic_regression import logisticReg_statsmodels
-            params_values = logisticReg_statsmodels().run(y, X)
+            from ..logistic_regression import logistic_regression_statsmodels
+            params_values = logistic_regression_statsmodels().run(y, X)
             print(params_values)
         # gradient descent classifier
         classifier = logistic_regression_BGD_classifier(learning_rate=learning_rate, num_iter=num_iter)
