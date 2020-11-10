@@ -381,6 +381,47 @@ Summary of output:
 
 -----
 
+Example 9: Testing Assumptions
+------------------------------
+
+.. code-block:: python
+   
+   from machlearn import linear_regression as linreg
+   linreg.demo_assumption_test()
+
+Summary of output: 
+
+.. code-block::
+
+   The assumptions of linear regression include (1) linear relationship between X and y, (2) I.I.D. of the residuals (residuals are independently and identically distributed as normal), (3) little or no multicollineaity in multiple regression.
+
+
+.. list-table::
+   :widths: 25 25
+   :header-rows: 0
+
+
+   * - |image_linreg_assumption_test_linearity|
+     - |image_linreg_assumption_test_homoscedasticity|
+   * - |image_linreg_assumption_test_normality|
+     - |image_linreg_assumption_test_multicollinearity|
+
+
+.. |image_linreg_assumption_test_linearity| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/linear_regression/images/assumption_test_linearity.png
+   :width: 400px
+
+.. |image_linreg_assumption_test_homoscedasticity| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/linear_regression/images/assumption_test_homoscedasticity.png
+   :width: 400px
+
+.. |image_linreg_assumption_test_normality| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/linear_regression/images/assumption_test_normality.png
+   :width: 400px
+
+.. |image_linreg_assumption_test_multicollinearity| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/linear_regression/images/assumption_test_multicollinearity.png
+   :width: 400px
+
+
+-----
+
 module: model_evaluation
 ------------------------
 
