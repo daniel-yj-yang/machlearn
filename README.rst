@@ -396,15 +396,14 @@ Summary of output:
    The assumptions of linear regression include (1) linear relationship between X and y, (2) I.I.D. of the residuals (residuals are independently and identically distributed as normal), (3) little or no multicollineaity in multiple regression.
 
 
+Selected output:
+
 .. list-table::
    :widths: 25 25
    :header-rows: 0
 
-
    * - |image_linreg_assumption_test_linearity|
      - |image_linreg_assumption_test_homoscedasticity|
-   * - |image_linreg_assumption_test_normality|
-     - |image_linreg_assumption_test_multicollinearity|
 
 
 .. |image_linreg_assumption_test_linearity| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/linear_regression/images/assumption_test_linearity.png
