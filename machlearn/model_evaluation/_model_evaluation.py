@@ -37,7 +37,7 @@ def test_for_multicollinearity(X, feature_names=None):
     import seaborn as sns
     plt.figure(figsize=(10, 8))
     sns.heatmap(X.corr(), annot=True, cmap=sns.cm.rocket_r)
-    plt.title("Correlation of X's")
+    plt.title("Correlations among X's")
     plt.show()
 
 

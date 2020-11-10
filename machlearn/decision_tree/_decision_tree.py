@@ -808,12 +808,11 @@ def demo_from_scratch(question_type="classification"):
         raise ValueError('question_type should be either classification or regression')
 
     if question_type == "regression":
-        from sklearn.datasets import load_boston
-        boston = load_boston()
-        X = pd.DataFrame(data=boston.data,columns=boston.feature_names)
-        y = pd.DataFrame(data=boston.target,columns=['MEDV'])
-        data = pd.concat([y, X], axis=1)
-        print(f"{data.head()}\n")
+        from ..datasets import public_dataset
+        df = public_dataset(name="boston")
+        print(f"{df.head()}\n")
+        feature_names = df.columns.drop('MEDV')
+        X, y = df[feature_names], df['MEDV']
 
         for model in [decision_tree_regressor_from_scratch(min_samples_leaf=5), decision_tree_regressor(min_samples_leaf=5)]:
             print(f"------ model: {repr(model)} ------")

@@ -107,7 +107,7 @@ def public_dataset(name=None):
         boston = load_boston()
         X = pd.DataFrame(data=boston.data, columns=boston.feature_names)
         y = pd.DataFrame(data=boston.target, columns=['MEDV'])
-        df = pd.concat([y, X], axis=1)
+        df = pd.concat([X, y], axis=1)
         print("The dataset of boston is a publicly available dataset, including 506 cases of housing price in the area of Boston, Mass.")
         print("Here are the 13 X features:")
         print("1. CRIM - per capita crime rate by town")
@@ -126,7 +126,7 @@ def public_dataset(name=None):
         print("")
         print("Here is the y target variable:")
         print("14. MEDV - Median value of owner-occupied homes in $1000's\n")
-        return [boston.data, boston.target, df]
+        return df
 
     if name == "Fashion_MNIST":
         # this part of the code is modeled after https://github.com/zalandoresearch/fashion-mnist/blob/master/utils/mnist_reader.py

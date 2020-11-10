@@ -468,8 +468,10 @@ def _demo(dataset):
         # regressor example
         GBM = gradient_boosting_regressor_from_scratch(max_iter=100)
         from ..datasets import public_dataset
-        [X, y, df] = public_dataset('boston')
+        df = public_dataset(name="boston")
         print(f"{df.head()}\n")
+        feature_names = df.columns.drop('MEDV')
+        X, y = df[feature_names], df['MEDV']
         from sklearn.model_selection import train_test_split
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
         print("In GBM, the model updates ŷ to minimize the loss, which is MSE/0.5 between y and ŷ.")

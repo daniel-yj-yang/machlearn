@@ -30,28 +30,36 @@ def linear_regression_assumption_test(X, y, feature_names=None):
     """
 
     model = linear_regression_sklearn().fit(X, y)
-
     y_pred = model.predict(X)
     data = pd.DataFrame({'y_true': y, 'y_pred': y_pred})
-    data['residuals'] = y - y_pred
+    residuals = y - y_pred
+
+    from sklearn.preprocessing import scale
+    X_scaled, y_scaled = scale(X), scale(y)
+    model_scaled = linear_regression_sklearn().fit(X_scaled, y_scaled)
+    y_pred_scaled = model_scaled.predict(X_scaled)
+    data_scaled = pd.DataFrame({'y_true_scaled': y_scaled, 'y_pred_scaled': y_pred_scaled})
+    residuals_scaled = y_scaled - y_pred_scaled
 
     print("------------------------------------------------------------------------------------------------")
     print("Assumption 1: Linearity in the relationship between X and y")
     print("to test this, make a scatter plot of y_pred vs. y_true, and check for linear relationship")
     import seaborn as sns
-    sns.lmplot(x='y_true', y='y_pred', data=data, fit_reg=False, height=8)
+    sns.lmplot(x='y_true_scaled', y='y_pred_scaled', data=data_scaled, fit_reg=False, height=8)
     import matplotlib.pyplot as plt
-    diagnoal_line_coords = np.arange(data[['y_true','y_pred']].min().min(), data[['y_true','y_pred']].max().max())
+    diagnoal_line_coords = np.linspace(min(min(y_scaled), min(y_pred_scaled)), max(max(y_scaled), max(y_pred_scaled)), 2)
     plt.plot(diagnoal_line_coords, diagnoal_line_coords, color='darkorange', linestyle='--')
     plt.title('Assumption 1: Linearity in the relationship between X and y')
     plt.suptitle('The dots should be scattered around the diagonal')
+    plt.xlabel('Standardized y_true')
+    plt.ylabel('Standardized y_pred')
     plt.tight_layout()
     plt.show()
 
     print("------------------------------------------------------------------------------------------------")
-    print("Assumption 2: Residuals are independently distributed")
+    print("Assumption 2: Residuals should be independently distributed")
     from statsmodels.stats.stattools import durbin_watson
-    DW_stat = durbin_watson(data['residuals']) # 0-4: range, 0-2: positive autocorrelation, 2-4: negative autocorrelation, 1.5-2.5: normal
+    DW_stat = durbin_watson(residuals_scaled) # 0-4: range, 0-2: positive autocorrelation, 2-4: negative autocorrelation, 1.5-2.5: normal
     if DW_stat < 1.5:
         print(f"Durbin-Watson stat = {DW_stat:.2f} < 1.5, indicating positive autocorrelation present. Assumption was not met.")
     elif DW_stat > 2.5:
@@ -60,30 +68,33 @@ def linear_regression_assumption_test(X, y, feature_names=None):
         print(f"Durbin-Watson stat = {DW_stat:.2f} is between 1.5 and 2.5, indicating little autocorrelation present. Assumption was met.")
 
     print("------------------------------------------------------------------------------------------------")
-    print("Assumption 3: Residuals are identically distributed (homoscedasticity)")
+    print("Assumption 3: Residuals should be identically distributed for all predicted DV scores (homoscedasticity)")
     plt.subplots(figsize=(12, 6))
     ax = plt.subplot(111)
-    plt.scatter(x=data.index, y=data['residuals'], alpha=0.5)
-    plt.plot(np.repeat(0, data.index.max()), color='darkorange', linestyle='--')
+    plt.scatter(x=y_pred_scaled, y=residuals_scaled, alpha=1.0)
+    ref_line_coords = np.linspace(y_pred_scaled.min(), y_pred_scaled.max(), 2)
+    print(ref_line_coords)
+    plt.plot(ref_line_coords, np.repeat(0, ref_line_coords.shape[0]), color='darkorange', linestyle='--')
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
-    plt.xlabel('Sample index')
-    plt.ylabel('Residuals')
+    plt.xlabel('Standardized y_pred')
+    plt.ylabel('Standardized Residuals')
     plt.title('Assumption 3: Homoscedasticity')
-    plt.suptitle('The variance of residuals should be a constant')
+    plt.suptitle('Residuals should vary randomly around 0 and have a constant variance for all values of y_pred')
     plt.show()
 
     print("------------------------------------------------------------------------------------------------")
-    print("Assumption 4: Residuals are normally distributed")
+    print("Assumption 4: Residuals should be normally distributed")
     from statsmodels.stats.diagnostic import normal_ad  # the Anderson-Darling test
-    p_value = normal_ad(data['residuals'])[1]
+    p_value = normal_ad(residuals_scaled)[1]
     if p_value < 0.05:
-        print(f"p-value for the Anderson-Darling test was {p_value:.2f} < 0.05; residuals are not normally distributed. Assumption was not met.")
+        print(f"p-value for the Anderson-Darling test was {p_value:.4f} < 0.05; residuals are not normally distributed. Assumption was not met.")
     else:
-        print(f"p-value for the Anderson-Darling test was {p_value:.2f} >= 0.05, residuals are normally distributed. Assumption was met.")
+        print(f"p-value for the Anderson-Darling test was {p_value:.4f} >= 0.05, residuals are normally distributed. Assumption was met.")
     plt.subplots(figsize=(12, 6))
-    plt.title('Assumption 4: Residuals are normally distributed')
-    sns.histplot(data=data['residuals'], kde=True)
+    plt.title('Assumption 4: Residuals should be normally distributed')
+    sns.histplot(data=residuals_scaled, kde=True)
+    plt.xlabel('Standardized Residuals')
     plt.show()
 
     print("------------------------------------------------------------------------------------------------")
@@ -256,7 +267,7 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
 
     if dataset == "boston":
         from ..datasets import public_dataset
-        [boston_features, boston_target, data] = public_dataset(name="boston")
+        data = public_dataset(name="boston")
         print(f"{data.head()}\n")
         formula = 'MEDV ~ CRIM + ZN + INDUS + CHAS + NOX + RM + AGE + DIS + RAD + TAX + PTRATIO + B + LSTAT - 1'
 
@@ -393,13 +404,14 @@ def demo(dataset="marketing", use_statsmodels=False):
 def demo_assumption_test():
 
     from ..datasets import public_dataset
-    [X, y, data] = public_dataset(name="boston")
-    print(f"{data.head()}\n")
+    df = public_dataset(name="boston")
+    print(f"{df.head()}\n")
     print("\nData1: boston")
-    linear_regression_assumption_test(X, y, feature_names=data.columns.drop('MEDV'))
+    feature_names = df.columns.drop('MEDV')
+    linear_regression_assumption_test(df[feature_names], df['MEDV'], feature_names=feature_names)
 
     from sklearn.datasets import make_regression
-    X, y = make_regression(n_samples=data.shape[0], n_features=data.shape[1]-1, noise=200, random_state=10)
+    X, y = make_regression(n_samples=df.shape[0], n_features=df.shape[1]-1, noise=100, random_state=10)
     print("\nData2: make-up data using make_regression()")
     linear_regression_assumption_test(X, y)
 
