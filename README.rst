@@ -393,7 +393,7 @@ Summary of output:
 
 .. code-block::
 
-   The assumptions of linear regression include (1) linear relationship between X and y, (2) I.I.D. of the residuals (residuals are independently and identically distributed as normal), (3) little or no multicollineaity in multiple regression.
+   The assumptions of linear regression include (1) linear relationship between X and y, (2) I.I.D. of the residuals (residuals are independently and identically distributed as normal), (3) little or no multicollineaity if multiple IVs.
 
 
 Selected output:

@@ -69,7 +69,7 @@ def linear_regression_assumption_test(X, y, feature_names=None):
 
     print("------------------------------------------------------------------------------------------------")
     print("Assumption 3: Residuals should be identically distributed for all predicted DV scores (homoscedasticity)")
-    plt.subplots(figsize=(8, 5))
+    plt.subplots(figsize=(8, 6))
     ax = plt.subplot(111)
     plt.scatter(x=y_pred_scaled, y=residuals_scaled, alpha=1.0)
     ref_line_coords = np.linspace(y_pred_scaled.min(), y_pred_scaled.max(), 2)
@@ -90,7 +90,7 @@ def linear_regression_assumption_test(X, y, feature_names=None):
         print(f"p-value for the Anderson-Darling test was {p_value:.4f} < 0.05; residuals are not normally distributed. Assumption was not met.")
     else:
         print(f"p-value for the Anderson-Darling test was {p_value:.4f} >= 0.05, residuals are normally distributed. Assumption was met.")
-    plt.subplots(figsize=(8, 5))
+    plt.subplots(figsize=(8, 6))
     plt.title('Assumption 4: Residuals should be normally distributed')
     sns.histplot(data=residuals_scaled, kde=True)
     plt.xlabel('Standardized Residuals')
