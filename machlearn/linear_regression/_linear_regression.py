@@ -18,7 +18,7 @@ class linear_regression_torch(nn.Module):
         return self.model(x)
 
 
-def linear_regression_assumptions_test(model, X, y):
+def linear_regression_assumption_test(model, X, y):
     """
     1. linearity in the relationship between X and y
     2. I.I.D. in residuals: residuals are Independently, Identically Distributed as normal
@@ -336,7 +336,7 @@ def demo(dataset="marketing", use_statsmodels=False):
     else:
         raise TypeError(f"dataset [{dataset}] is not defined")
 
-def demo_test_assumptions():
+def demo_test_assumption():
     """
     reference: https://jeffmacaluso.github.io/post/LinearRegressionAssumptions/
     """
@@ -344,9 +344,9 @@ def demo_test_assumptions():
     [boston_features, boston_target, boston_data] = public_dataset(name="boston")
     print(f"{boston_data.head()}\n")
     boston_linreg_model = linear_regression_sklearn().fit(boston_features, boston_target)
-    linear_regression_assumptions_test(boston_linreg_model, boston_features, boston_target)
+    linear_regression_assumption_test(boston_linreg_model, boston_features, boston_target)
 
     from sklearn.datasets import make_regression
     X, y = make_regression(n_samples=boston_data.shape[0], n_features=boston_data.shape[1]-1, noise=100, random_state=10)
     model = linear_regression_sklearn().fit(X, y)
-    linear_regression_assumptions_test(model, X, y)
+    linear_regression_assumption_test(model, X, y)

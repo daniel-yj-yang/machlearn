@@ -8,4 +8,4 @@ from machlearn import linear_regression as linreg
 
 linreg.demo()
 linreg.demo_regularization()
-linreg.demo_assumptions_test()
+linreg.demo_assumption_test()

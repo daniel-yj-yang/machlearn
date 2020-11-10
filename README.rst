@@ -500,7 +500,7 @@ module: linear_regression
    :header: "function", "description"
    :widths: 10, 20
 
-   "test_assumptions", "tests the assumptions of linear regression"
+   "assumption_test()", "tests the assumptions of linear regression"
    "lasso_regression()", "lasso_regression"
    "ridge_regression()", "ridge_regression"
    "demo_regularization()", "provides a demo of selected functions in this module"
