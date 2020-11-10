@@ -277,17 +277,18 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
         #formula = 'Salary ~ League + NewLeague + Division + AtBat + Hits + HmRun + Runs + RBI + Walks + Years + CAtBat + CHits + CHmRun + CRuns + CRBI + CWalks + PutOuts + Assists + Errors - 1' # -1 means no intercept
     
     y, X = patsy.dmatrices(formula, data)
-    X = pd.DataFrame(X, columns = X.design_info.column_names )
+    feature_names = X.design_info.column_names
+    X = pd.DataFrame(X, columns=feature_names)
 
     import numpy as np
     best_ridge_regression_alpha = identify_best_alpha_for_ridge_regression(y.ravel(), sm.add_constant(X), alphas=np.exp(np.linspace(-7,15,100000)))
-    print(f"best alpha for ridge regression: {best_ridge_regression_alpha}")
+    print(f"best alpha for ridge regression: {best_ridge_regression_alpha:.2f}")
 
     best_lasso_regression_alpha = identify_best_alpha_for_lasso_regression(y.ravel(), sm.add_constant(X), alphas=np.exp(np.linspace(-7,15, 10000)))
-    print(f"best alpha for lasso regression: {best_lasso_regression_alpha}")
+    print(f"best alpha for lasso regression: {best_lasso_regression_alpha:.2f}")
 
     from ..model_evaluation import test_for_multicollinearity
-    test_for_multicollinearity(X, feature_names=X.design_info.column_names)
+    test_for_multicollinearity(X, feature_names=feature_names)
 
     train = data.sample(frac=0.50, random_state=123)
     test = data[~data.isin(train).iloc[:, 0]]
