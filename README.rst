@@ -413,12 +413,6 @@ Summary of output:
 .. |image_linreg_assumption_test_homoscedasticity| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/linear_regression/images/assumption_test_homoscedasticity.png
    :width: 400px
 
-.. |image_linreg_assumption_test_normality| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/linear_regression/images/assumption_test_normality.png
-   :width: 400px
-
-.. |image_linreg_assumption_test_multicollinearity| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/linear_regression/images/assumption_test_multicollinearity.png
-   :width: 400px
-
 
 -----
 
