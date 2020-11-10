@@ -503,11 +503,11 @@ module: linear_regression
    "assumption_test()", "tests the assumptions of linear regression"
    "lasso_regression()", "lasso_regression"
    "ridge_regression()", "ridge_regression"
-   "demo_regularization()", "provides a demo of selected functions in this module"
    "linear_regression_normal_equation()", "linear_regression_normal_equation"
    "linear_regression()", "linear_regression"
    "demo()", "provides a demo of selected functions in this module"
-   "demo_test_assumptions", "provides a demo of selected functions in this module"
+   "demo_regularization()", "provides a demo of selected functions in this module"
+   "demo_assumption_test()", "provides a demo of selected functions in this module"
 
 
 -----
