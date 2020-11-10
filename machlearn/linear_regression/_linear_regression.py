@@ -18,7 +18,7 @@ class linear_regression_torch(nn.Module):
         return self.model(x)
 
 
-def linear_regression_assumption_test(model, X, y, feature_names=None):
+def linear_regression_assumption_test(X, y, feature_names=None):
     """
     1. linearity in the relationship between X and y
     2. I.I.D. in residuals: residuals are Independently, Identically Distributed as normal
@@ -28,6 +28,9 @@ def linear_regression_assumption_test(model, X, y, feature_names=None):
     - https: // jeffmacaluso.github.io/post/LinearRegressionAssumptions/
     - https: // towardsdatascience.com/assumptions-of-linear-regression-algorithm-ed9ea32224e1
     """
+
+    model = linear_regression_sklearn().fit(X, y)
+
     y_pred = model.predict(X)
     data = pd.DataFrame({'y_true': y, 'y_pred': y_pred})
     data['residuals'] = y - y_pred
@@ -40,7 +43,7 @@ def linear_regression_assumption_test(model, X, y, feature_names=None):
     import matplotlib.pyplot as plt
     diagnoal_line_coords = np.arange(data[['y_true','y_pred']].min().min(), data[['y_true','y_pred']].max().max())
     plt.plot(diagnoal_line_coords, diagnoal_line_coords, color='darkorange', linestyle='--')
-    plt.title('Assumption 1: linearity in the relationship between X and y')
+    plt.title('Assumption 1: Linearity in the relationship between X and y')
     plt.suptitle('The dots should be scattered around the diagonal')
     plt.tight_layout()
     plt.show()
@@ -66,7 +69,7 @@ def linear_regression_assumption_test(model, X, y, feature_names=None):
     ax.spines['top'].set_visible(False)
     plt.xlabel('Sample index')
     plt.ylabel('Residuals')
-    plt.title('Residuals')
+    plt.title('Assumption 3: Homoscedasticity')
     plt.suptitle('The variance of residuals should be a constant')
     plt.show()
 
@@ -79,7 +82,7 @@ def linear_regression_assumption_test(model, X, y, feature_names=None):
     else:
         print(f"p-value for the Anderson-Darling test was {p_value:.2f} >= 0.05, residuals are normally distributed. Assumption was met.")
     plt.subplots(figsize=(12, 6))
-    plt.title('Distribution of Residuals')
+    plt.title('Assumption 4: Residuals are normally distributed')
     sns.histplot(data=data['residuals'], kde=True)
     plt.show()
 
@@ -346,8 +349,7 @@ def _demo(dataset="marketing", use_statsmodels = False):
         X = data[['youtube', 'facebook', 'newspaper']]
         y = data['sales']
 
-    from ..model_evaluation import test_for_multicollinearity
-    test_for_multicollinearity(X)
+    linear_regression_assumption_test(X, y, feature_names=['youtube', 'facebook', 'newspaper'])
     
     print("----------------------------------\n\n*** Solutions using python package ***\n")
     linear_regression(print_summary = True, use_statsmodels=use_statsmodels).run(y, X, standardized_estimate=True)
@@ -393,13 +395,11 @@ def demo_assumption_test():
     from ..datasets import public_dataset
     [X, y, data] = public_dataset(name="boston")
     print(f"{data.head()}\n")
-    linreg_model = linear_regression_sklearn().fit(X, y)
     print("\nData1: boston")
-    linear_regression_assumption_test(linreg_model, X, y, feature_names=data.columns.drop('MEDV'))
+    linear_regression_assumption_test(X, y, feature_names=data.columns.drop('MEDV'))
 
     from sklearn.datasets import make_regression
     X, y = make_regression(n_samples=data.shape[0], n_features=data.shape[1]-1, noise=200, random_state=10)
-    model = linear_regression_sklearn().fit(X, y)
     print("\nData2: make-up data using make_regression()")
-    linear_regression_assumption_test(model, X, y)
+    linear_regression_assumption_test(X, y)
 
