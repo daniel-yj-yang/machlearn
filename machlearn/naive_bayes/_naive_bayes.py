@@ -266,9 +266,9 @@ class _naive_bayes_demo_20newsgroups(_naive_bayes_demo):
             f"The goal is to use 'term frequency in document' to predict which category a document belongs to.\n")
         from sklearn.datasets import fetch_20newsgroups
         from ..datasets import public_dataset
-        twenty_train = fetch_20newsgroups( data_home=public_dataset("scikit_learn_data_path"),
+        twenty_train = fetch_20newsgroups( #data_home=public_dataset("scikit_learn_data_path"),
             subset='train', categories=self.y_classes, random_state=self.random_state)
-        twenty_test = fetch_20newsgroups( data_home=public_dataset("scikit_learn_data_path"),
+        twenty_test = fetch_20newsgroups( #data_home=public_dataset("scikit_learn_data_path"),
             subset='test', categories=self.y_classes, random_state=self.random_state)
         self.X_train = twenty_train.data
         self.y_train = twenty_train.target
