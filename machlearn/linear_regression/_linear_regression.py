@@ -73,7 +73,6 @@ def linear_regression_assumption_test(X, y, feature_names=None):
     ax = plt.subplot(111)
     plt.scatter(x=y_pred_scaled, y=residuals_scaled, alpha=1.0)
     ref_line_coords = np.linspace(y_pred_scaled.min(), y_pred_scaled.max(), 2)
-    print(ref_line_coords)
     plt.plot(ref_line_coords, np.repeat(0, ref_line_coords.shape[0]), color='darkorange', linestyle='--')
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
