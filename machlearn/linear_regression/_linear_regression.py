@@ -18,26 +18,76 @@ class linear_regression_torch(nn.Module):
         return self.model(x)
 
 
-def linear_regression_assumption_test(model, X, y):
+def linear_regression_assumption_test(model, X, y, feature_names=None):
     """
     1. linearity in the relationship between X and y
     2. I.I.D. in residuals: residuals are Independently, Identically Distributed as normal
     3. for multiple linear regression, little or no multicollinearity
+
+    References:
+    - https: // jeffmacaluso.github.io/post/LinearRegressionAssumptions/
+    - https: // towardsdatascience.com/assumptions-of-linear-regression-algorithm-ed9ea32224e1
     """
     y_pred = model.predict(X)
     data = pd.DataFrame({'y_true': y, 'y_pred': y_pred})
     data['residuals'] = y - y_pred
 
-    print("assumption 1: linearity in the relationship between X and y")
+    print("------------------------------------------------------------------------------------------------")
+    print("Assumption 1: Linearity in the relationship between X and y")
     print("to test this, make a scatter plot of y_pred vs. y_true, and check for linear relationship")
     import seaborn as sns
-    sns.lmplot(x='y_true', y='y_pred', data=data, fit_reg=False, height=7)
+    sns.lmplot(x='y_true', y='y_pred', data=data, fit_reg=False, height=8)
     import matplotlib.pyplot as plt
     diagnoal_line_coords = np.arange(data[['y_true','y_pred']].min().min(), data[['y_true','y_pred']].max().max())
     plt.plot(diagnoal_line_coords, diagnoal_line_coords, color='darkorange', linestyle='--')
     plt.title('Assumption 1: linearity in the relationship between X and y')
-    plt.suptitle('the dots should be scattered around the diagonal')
+    plt.suptitle('The dots should be scattered around the diagonal')
+    plt.tight_layout()
     plt.show()
+
+    print("------------------------------------------------------------------------------------------------")
+    print("Assumption 2: Residuals are independently distributed")
+    from statsmodels.stats.stattools import durbin_watson
+    DW_stat = durbin_watson(data['residuals']) # 0-4: range, 0-2: positive autocorrelation, 2-4: negative autocorrelation, 1.5-2.5: normal
+    if DW_stat < 1.5:
+        print(f"Durbin-Watson stat = {DW_stat:.2f} < 1.5, indicating positive autocorrelation present. Assumption was not met.")
+    elif DW_stat > 2.5:
+        print(f"Durbin-Watson stat = {DW_stat:.2f} > 2.5, indicating negative autocorrelation present. Assumption was not met.")
+    else:
+        print(f"Durbin-Watson stat = {DW_stat:.2f} is between 1.5 and 2.5, indicating little autocorrelation present. Assumption was met.")
+
+    print("------------------------------------------------------------------------------------------------")
+    print("Assumption 3: Residuals are identically distributed (homoscedasticity)")
+    plt.subplots(figsize=(12, 6))
+    ax = plt.subplot(111)
+    plt.scatter(x=data.index, y=data['residuals'], alpha=0.5)
+    plt.plot(np.repeat(0, data.index.max()), color='darkorange', linestyle='--')
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
+    plt.xlabel('Sample index')
+    plt.ylabel('Residuals')
+    plt.title('Residuals')
+    plt.suptitle('The variance of residuals should be a constant')
+    plt.show()
+
+    print("------------------------------------------------------------------------------------------------")
+    print("Assumption 4: Residuals are normally distributed")
+    from statsmodels.stats.diagnostic import normal_ad  # the Anderson-Darling test
+    p_value = normal_ad(data['residuals'])[1]
+    if p_value < 0.05:
+        print(f"p-value for the Anderson-Darling test was {p_value:.2f} < 0.05; residuals are not normally distributed. Assumption was not met.")
+    else:
+        print(f"p-value for the Anderson-Darling test was {p_value:.2f} >= 0.05, residuals are normally distributed. Assumption was met.")
+    plt.subplots(figsize=(12, 6))
+    plt.title('Distribution of Residuals')
+    sns.histplot(data=data['residuals'], kde=True)
+    plt.show()
+
+    print("------------------------------------------------------------------------------------------------")
+    print("Assumption 5: For multiple linear regression, little or no multicollinearity")
+    # If violated, issues with interpretability of the coefficients and the standard errors of the coefficients.
+    from ..model_evaluation import test_for_multicollinearity
+    test_for_multicollinearity(X, feature_names=feature_names)
 
 
 class OLS(object):
@@ -336,17 +386,18 @@ def demo(dataset="marketing", use_statsmodels=False):
     else:
         raise TypeError(f"dataset [{dataset}] is not defined")
 
+
 def demo_assumption_test():
-    """
-    reference: https://jeffmacaluso.github.io/post/LinearRegressionAssumptions/
-    """
+
     from ..datasets import public_dataset
     [boston_features, boston_target, boston_data] = public_dataset(name="boston")
     print(f"{boston_data.head()}\n")
     boston_linreg_model = linear_regression_sklearn().fit(boston_features, boston_target)
-    linear_regression_assumption_test(boston_linreg_model, boston_features, boston_target)
+    print("\nData1: boston")
+    linear_regression_assumption_test(boston_linreg_model, boston_features, boston_target, feature_names=boston_data.columns.drop('MEDV'))
 
     from sklearn.datasets import make_regression
-    X, y = make_regression(n_samples=boston_data.shape[0], n_features=boston_data.shape[1]-1, noise=100, random_state=10)
+    X, y = make_regression(n_samples=boston_data.shape[0], n_features=boston_data.shape[1]-1, noise=50, random_state=10)
     model = linear_regression_sklearn().fit(X, y)
+    print("\nData2: make-up data using make_regression()")
     linear_regression_assumption_test(model, X, y)

@@ -16,15 +16,29 @@ from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, average_
 
 from sklearn.model_selection import KFold
 
-def test_for_multicollinearity(X):
+
+def test_for_multicollinearity(X, feature_names=None):
     """
     X: pd_DataFrame
     """
+    if type(X) != pd.DataFrame:
+        X = pd.DataFrame(X, columns=feature_names)
+
     from statsmodels.stats.outliers_influence import variance_inflation_factor as VIF
     vif_data = pd.DataFrame()
     vif_data["feature"] = X.columns
     vif_data["VIF"] = [VIF(X.values, i) for i in range(len(X.columns))]
-    print(f"If Variance Inflation Factor (VIF) > 5, the 2+ numbers are collinear of each other and may be reduced to fewer using PCA.\n{vif_data}")
+    print(f"If Variance Inflation Factor (VIF) > 5-10, the 2+ numbers are likely collinear of each other")
+    print(f"If VIF > 100, definitely multicollinearity present")
+    print(f"Multicollinearity may be reduced by dropping varibles or regularization or using PCA.\n")
+    print(f"{vif_data}")
+
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(X.corr(), annot=True, cmap=sns.cm.rocket_r)
+    plt.title("Correlation of X's")
+    plt.show()
 
 
 class K_Fold_CV(KFold):
