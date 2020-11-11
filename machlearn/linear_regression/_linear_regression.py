@@ -92,7 +92,8 @@ def linear_regression_assumption_test(X, y, feature_names=None):
         print(f"p-value for the Anderson-Darling test was {p_value:.4f} >= 0.05, residuals are normally distributed. Assumption was met.")
     plt.subplots(figsize=(8, 6))
     plt.title('Assumption 4: Residuals should be normally distributed')
-    sns.histplot(data=residuals_scaled, kde=True)
+    sns.histplot(data=residuals_scaled, stat="density")
+    sns.kdeplot(data=residuals_scaled, color="darkorange")
     plt.xlabel('Standardized Residuals')
     plt.show()
 
