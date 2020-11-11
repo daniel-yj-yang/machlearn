@@ -109,7 +109,9 @@ class heap_sort():
     def __init__(self, array):
         self.array = array
         self.sort_inplace()
-        
+    
+    # To heapify subtree rooted at index i.
+    # # n is size of heap
     def max_heapify(self, arr, n, i):
         # https://www.geeksforgeeks.org/heap-sort/
         # https://www.geeksforgeeks.org/binary-heap/
@@ -137,6 +139,7 @@ class heap_sort():
         for i in range(n//2, -1, -1):
             self.max_heapify(self.array, n, i)
 
+        # One by one extract elements
         for i in range(n-1, 0, -1):
             self.array[i], self.array[0] = self.array[0], self.array[i] # swap
             self.max_heapify(self.array, i, 0)  # Heapify root element
