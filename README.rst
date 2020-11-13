@@ -464,8 +464,9 @@ module: naive_bayes
    :header: "class/function", "description"
    :widths: 10, 20
 
+   "Multinomial_NB_classifier_from_scratch()", "Multinomial NB classifier developed from scratch"
    "naive_bayes_Gaussian()", "when X are continuous variables"
-   "naive_bayes_multinomial()", "when X are independent discrete variables with 3+ levels (e.g., term frequency in the document)"
+   "naive_bayes_Multinomial()", "when X are independent discrete variables with 3+ levels (e.g., term frequency in the document)"
    "naive_bayes_Bernoulli()", "when X are independent binary variables (e.g., whether a word occurs in a document or not)"
    "demo()", "provides a demo of selected functions in this module"
 

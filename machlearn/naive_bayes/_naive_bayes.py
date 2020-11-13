@@ -15,6 +15,47 @@ from textblob import TextBlob
 import pandas as pd
 
 
+class Multinomial_NB_classifier_from_scratch(object):
+
+    def __init__(self, alpha=1):
+        self.alpha = alpha # Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).
+
+    def fit(self, X_train, y_train):
+        n_samples, n_features = X_train.shape
+        self.y_classes = np.unique(y_train)
+        n_classes = len(self.y_classes)
+
+        # init: Prior & Likelihood
+        self._priors = np.zeros(n_classes)
+        self._likelihoods = np.zeros((n_classes, n_features))
+
+        # Get Prior and Likelihood
+        for idx, c in enumerate(self._classes):
+            X_train_c = X_train[c == y_train]
+            self._priors[idx] = X_train_c.shape[0] / n_samples
+            self._likelihoods[idx, :] = ((X_train_c.sum(axis=0)) + self.alpha) / (np.sum(X_train_c.sum(axis=0) + self.alpha))
+
+    def predict(self, X_test):
+        return [self._predict(x_test) for x_test in X_test]
+
+    def _predict(self, x_test):
+        # Calculate posterior for each class
+        posteriors = []
+        for idx, c in enumerate(self.y_classes):
+            prior_c = np.log(self._priors[idx])
+            likelihoods_c = self.calc_likelihood(self._likelihoods[idx,:], x_test)
+            posteriors_c = np.sum(likelihoods_c) + prior_c
+            posteriors.append(posteriors_c)
+        return self._classes[np.argmax(posteriors)]
+
+    def calc_likelihood(self, cls_likeli, x_test):
+        return np.log(cls_likeli) * x_test
+
+    def score(self, X_test, y_test):
+        y_pred = self.predict(X_test)
+        return np.sum(y_pred == y_test)/len(y_test)
+
+
 #class naive_bayes_Bernoulli(BernoulliNB):
 #    """
 #    This class is used when X are independent binary variables (e.g., whether a word occurs in a document or not).
@@ -47,7 +88,7 @@ def naive_bayes_Bernoulli(*args, **kwargs):
     return BernoulliNB(*args, **kwargs)
 
 
-def naive_bayes_multinomial(*args, **kwargs):
+def naive_bayes_Multinomial(*args, **kwargs):
     """
     This function is used when X are independent discrete variables with 3+ levels (e.g., term frequency in the document).
     """
@@ -120,7 +161,7 @@ class _naive_bayes_demo():
                                    ('count_matrix_normalizer',
                                     TfidfTransformer(use_idf=True)),
                                    ('classifier',
-                                    naive_bayes_multinomial()),
+                                    naive_bayes_Multinomial()),
                                    ])
         # pipeline parameters to tune
         hyperparameters = {
