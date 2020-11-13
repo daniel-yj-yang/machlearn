@@ -12,48 +12,94 @@ from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.model_selection import train_test_split, GridSearchCV
 from textblob import TextBlob
-import pandas as pd
 
+import pandas as pd
+import numpy as np
 
 class Multinomial_NB_classifier_from_scratch(object):
+    # reference: https://geoffruddock.com/naive-bayes-from-scratch-with-numpy/
 
-    def __init__(self, alpha=1):
-        self.alpha = alpha # Additive (Laplace/Lidstone) smoothing parameter (0 for no smoothing).
+    def __init__(self, alpha=1.0, verbose=True):
+        self.alpha = alpha # to avoid having zero probabilities for words not seen in our training sample.
+        self.y_classes = None  # e.g., spam vs. no spam
+        self.prob_y = None # Our prior belief in the probability of any randomly selected message belonging to a particular class
+        self.prob_x_i_given_y = None # The likelihood of each word, conditional on message class.
+        self.is_fitted = False
+        self.verbose = verbose
 
-    def fit(self, X_train, y_train):
+    def fit(self, X_train: np.ndarray, y_train: np.ndarray, feature_names=None):
+        """
+        X_train: a matrix of samples x features, such as documents (row) x words (col)
+        """
+        from sklearn.utils import check_X_y
+        self.X_train, self.y_train = check_X_y(X_train, y_train)
         n_samples, n_features = X_train.shape
+
+        if feature_names is None:
+            self.feature_names = [f"word_{i}" for i in range(1,n_features+1)]
+        else:
+            self.feature_names = feature_names
+
         self.y_classes = np.unique(y_train)
-        n_classes = len(self.y_classes)
+        columns = [f"y={c}" for c in self.y_classes]
 
-        # init: Prior & Likelihood
-        self._priors = np.zeros(n_classes)
-        self._likelihoods = np.zeros((n_classes, n_features))
+        X_train_by_y_class = np.array([X_train[y_train == this_y_class] for this_y_class in self.y_classes], dtype=object)
+        self.prob_y = np.array([X_train_for_this_y_class.shape[0] / n_samples for X_train_for_this_y_class in X_train_by_y_class])
+        if self.verbose:
+            print(f"\nthe prior probability of y, before X is observed\nprior prob(y):\n{pd.DataFrame(self.prob_y.reshape(1,-1), columns=columns).to_string(index=False)}")
 
-        # Get Prior and Likelihood
-        for idx, c in enumerate(self._classes):
-            X_train_c = X_train[c == y_train]
-            self._priors[idx] = X_train_c.shape[0] / n_samples
-            self._likelihoods[idx, :] = ((X_train_c.sum(axis=0)) + self.alpha) / (np.sum(X_train_c.sum(axis=0) + self.alpha))
+        # axis=0 means column-wise, axis=1 means row-wise
+        self.X_train_colSum_by_y_class = np.array([ X_train_for_this_y_class.sum(axis=0) for X_train_for_this_y_class in X_train_by_y_class ]) + self.alpha
+        self.prob_x_i_given_y = self.X_train_colSum_by_y_class / self.X_train_colSum_by_y_class.sum(axis=1).reshape(-1,1)
+        if self.verbose:
+            print(f"\nprob(word_i|y):\n{pd.concat([ pd.DataFrame(feature_names, columns=['word_i',]), pd.DataFrame(self.prob_x_i_given_y.T, columns = columns)], axis=1).to_string(index=False)}")
 
-    def predict(self, X_test):
-        return [self._predict(x_test) for x_test in X_test]
+        self.is_fitted = True
 
-    def _predict(self, x_test):
-        # Calculate posterior for each class
-        posteriors = []
-        for idx, c in enumerate(self.y_classes):
-            prior_c = np.log(self._priors[idx])
-            likelihoods_c = self.calc_likelihood(self._likelihoods[idx,:], x_test)
-            posteriors_c = np.sum(likelihoods_c) + prior_c
-            posteriors.append(posteriors_c)
-        return self._classes[np.argmax(posteriors)]
+        if self.verbose:
+            self.predict_proba(self.X_train)
 
-    def calc_likelihood(self, cls_likeli, x_test):
-        return np.log(cls_likeli) * x_test
+        return self
 
-    def score(self, X_test, y_test):
-        y_pred = self.predict(X_test)
-        return np.sum(y_pred == y_test)/len(y_test)
+    def predict_proba(self, X_test: np.ndarray) -> np.ndarray:
+        """
+        p(y|X) = p(X|y)*p(y)/p(X)
+        p(X|y) = p(x_1|y) * p(x_2|y) * ... * p(x_J|y)
+        X: message (document), X_i: word
+        """
+        from sklearn.utils import check_array
+        self.X_test = check_array(X_test)
+        assert self.is_fitted, "model should be fitted first before predicting"
+
+        #class_numerators = np.zeros(shape=(X_test.shape[0], self.prob_y.shape[0]))
+        self.prob_X_given_y = np.zeros(shape=(X_test.shape[0], self.prob_y.shape[0]))
+
+        # loop over each row to calcuate the posterior probability
+        for row_index, this_x_sample in enumerate(X_test):
+            feature_presence_columns = this_x_sample.astype(bool)
+            prob_x_i_given_y_for_feature_present = self.prob_x_i_given_y[:, feature_presence_columns] ** this_x_sample[feature_presence_columns] # the "**" is likely a scaling factor to normalize prob_x_i
+            # axis=0 means column-wise, axis=1 means row-wise
+            self.prob_X_given_y[row_index] = (prob_x_i_given_y_for_feature_present).prod(axis=1)
+
+        self.prob_X = (self.prob_X_given_y * self.prob_y).sum(axis=1).reshape(-1, 1)
+        self.prob_y_given_X_test = self.prob_X_given_y * self.prob_y / self.prob_X  # the posterior probability of y, after X is observed
+        assert (self.prob_y_given_X_test.sum(axis=1)-1 < 1e-9).all(), "each row should sum to 1"
+
+        if self.verbose:
+            columns = [f"y={c}" for c in self.y_classes]
+            print(f"\nprob(X_message|y), where p(word_1|y) * p(word_2|y) * ... * p(word_J|y):\n{pd.DataFrame(self.prob_X_given_y, columns=columns).to_string(index=False)}")
+            print(f"\nprob(X_message) across all possible y classes:\n{self.prob_X}")
+            print(f"\nthe posterior prob of y after X is observed:\nprob(y|X) via p(y|X) = p(X|y)*p(y)/p(X):\n{pd.DataFrame(self.prob_y_given_X_test, columns=columns).to_string(index=False)}")
+
+        return self.prob_y_given_X_test
+
+    def predict(self, X_test: np.ndarray) -> np.ndarray:
+        """ Predict class with highest probability """
+        return self.predict_proba(X_test).argmax(axis=1)
+
+
+
+
 
 
 #class naive_bayes_Bernoulli(BernoulliNB):
@@ -447,3 +493,77 @@ def demo(dataset="SMS_spam"):
     else:
         raise TypeError(f"dataset [{dataset}] is not defined")
     return nb_demo.run()
+
+
+def demo_from_scratch():
+
+    max_df = 1.0
+
+    import numpy as np
+    from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, _document_frequency
+    vectorizer = CountVectorizer(max_df = max_df)
+    X = document = ['BB AA', 'BB CC']
+    y = ['spam', 'ham']
+    print(f"1. document = {document}")
+    transformed_data = vectorizer.fit_transform(X)
+    term_frequency = transformed_data
+    print(f"\n2. Term frequency (tf) (the number of times a word appears in the document):\n{pd.DataFrame(term_frequency.toarray(), columns = vectorizer.get_feature_names()).to_string(index=False)}")
+
+    document_frequency = _document_frequency(term_frequency)
+    document_frequency_divided_by_n_documents = np.divide(document_frequency, len(X))
+    print(f"\n3a. Document frequency (df) (the number of times a word appears in the corpus):\n{pd.DataFrame(document_frequency.reshape(1,-1), columns = vectorizer.get_feature_names()).to_string(index=False)}")
+    print(f"\n3b. Document frequency (df) / n_documents (this is where min_df and max_df could affect):\n{pd.DataFrame(document_frequency_divided_by_n_documents.reshape(1,-1), columns = vectorizer.get_feature_names()).to_string(index=False)}")
+
+    # max_df: If float in range [0.0, 1.0], the parameter represents a proportion of documents
+    tfidf_vectorizer = TfidfVectorizer(max_df=max_df)
+    transformed_data = tfidf_vectorizer.fit_transform(X)
+    inverse_document_frequency = tfidf_vectorizer._tfidf._idf_diag
+    #print(f"\n3. Inverse document frequency (adjust for the fact that some words appear more frequently in the corpus):\n{list(zip(tfidf_vectorizer.get_feature_names(), np.ravel(tfidf_vectorizer.idf_)))}")
+    print(f"\n4a. Inverse document frequency (idf) (adjust for the fact that some words appear more frequently in the corpus):\n{pd.DataFrame(tfidf_vectorizer.idf_.reshape(1,-1), columns = tfidf_vectorizer.get_feature_names()).to_string(index=False)}")
+    print(f"\n4b. Inverse document frequency (diag):\n{inverse_document_frequency.toarray()}")
+
+    tf_times_idf = term_frequency * inverse_document_frequency
+    print(f"\n5. Term frequency * Inverse document frequency (diag):\n{tf_times_idf.toarray()}")
+    from sklearn.preprocessing import normalize
+    normalized_tf_times_idf = normalize(tf_times_idf, norm = 'l2', axis=1) # axis=0 means column-wise, axis=1 means row-wise
+    print(f"\n6.Document-wise normalized TF * IDF (each document has a unit length):\n{normalized_tf_times_idf.toarray()}")
+    X_train = pd.DataFrame(transformed_data.toarray(), columns = tfidf_vectorizer.get_feature_names())
+    print(f"\n7.Compared to transformed matrix from TfidfVectorizer() [should be the same]:\n{X_train.to_string(index=False)}")
+
+    y_train = pd.DataFrame(y, columns = ['y',])
+    print(f"\n8.y_train and X_train together:\n{pd.concat([y_train, X_train], axis=1).to_string(index=False)}")
+
+    #################
+
+    X_train = transformed_data.toarray()
+    y_train = np.array(y)
+    model_sklearn = naive_bayes_Multinomial()
+    model_sklearn.fit(X_train, y_train)
+    print(f"\nprob(y|X) from sklearn:\n{model_sklearn.predict_proba(X_train)}")
+
+    model_from_scratch = Multinomial_NB_classifier_from_scratch()
+    model_from_scratch.fit(X_train, y_train, feature_names=tfidf_vectorizer.get_feature_names())
+    return model_from_scratch, X_train, y_train
+    #print(f"\nprediction:{model_from_scratch.predict(X_test)}")
+
+    #################
+
+    # reference: https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html#sphx-glr-auto-examples-text-plot-document-classification-20newsgroups-py
+    # reference: https://scikit-learn.org/stable/auto_examples/applications/plot_out_of_core_classification.html#sphx-glr-auto-examples-applications-plot-out-of-core-classification-py
+    y_classes = ['comp.graphics', 'sci.med']
+    from sklearn.datasets import fetch_20newsgroups
+    from ..datasets import public_dataset
+    # no need to specify # data_home=public_dataset("scikit_learn_data_path"),
+    twenty_train = fetch_20newsgroups( subset='train', categories=y_classes, random_state=1 )
+    twenty_test  = fetch_20newsgroups( subset='test',  categories=y_classes, random_state=1 )
+    
+    vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5, stop_words='english')
+    X_train = vectorizer.fit_transform(twenty_train.data)
+    X_test =  vectorizer.transform(twenty_test.data)
+    y_train, y_test = twenty_train.target, twenty_test.target
+
+    model_sklearn = naive_bayes_Multinomial()
+    model_sklearn.fit(X_train, y_train)
+    print(f"\nprediction:{model_sklearn.predict(X_test)}")
+
+

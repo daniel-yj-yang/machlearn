@@ -9,4 +9,5 @@ from machlearn import naive_bayes as nb
 nb.demo(dataset="SMS_spam")
 nb.demo(dataset="20newsgroups")
 nb.demo(dataset="Social_Network_Ads")
+nb.demo_from_scratch()
 
