@@ -27,7 +27,7 @@ class Multinomial_NB_classifier_from_scratch(object):
         self.is_fitted = False
         self.verbose = verbose
 
-    def fit(self, X_train: np.ndarray, y_train: np.ndarray, feature_names=None):
+    def fit(self, X_train: np.ndarray, y_train: np.ndarray, feature_names: list = None, document: list = None):
         """
         X_train: a matrix of samples x features, such as documents (row) x words (col)
         """
@@ -42,26 +42,29 @@ class Multinomial_NB_classifier_from_scratch(object):
 
         self.y_classes = np.unique(y_train)
         columns = [f"y={c}" for c in self.y_classes]
+        self.y_mapper = {}
+        for idx, y_class in enumerate(self.y_classes):
+            self.y_mapper[idx] = f"{idx}={y_class}"
 
         X_train_by_y_class = np.array([X_train[y_train == this_y_class] for this_y_class in self.y_classes], dtype=object)
         self.prob_y = np.array([X_train_for_this_y_class.shape[0] / n_samples for X_train_for_this_y_class in X_train_by_y_class])
         if self.verbose:
-            print(f"\nthe prior probability of y, before X is observed\nprior prob(y):\n{pd.DataFrame(self.prob_y.reshape(1,-1), columns=columns).to_string(index=False)}")
+            print(f"\nStep 1. the prior probability of y, before X is observed\nprior prob(y):\n{pd.DataFrame(self.prob_y.reshape(1,-1), columns=columns).to_string(index=False)}")
 
         # axis=0 means column-wise, axis=1 means row-wise
         self.X_train_colSum_by_y_class = np.array([ X_train_for_this_y_class.sum(axis=0) for X_train_for_this_y_class in X_train_by_y_class ]) + self.alpha
         self.prob_x_i_given_y = self.X_train_colSum_by_y_class / self.X_train_colSum_by_y_class.sum(axis=1).reshape(-1,1)
         if self.verbose:
-            print(f"\nprob(word_i|y):\n{pd.concat([ pd.DataFrame(feature_names, columns=['word_i',]), pd.DataFrame(self.prob_x_i_given_y.T, columns = columns)], axis=1).to_string(index=False)}")
+            print(f"\nStep 2. prob(word_i|y):\n{pd.concat([ pd.DataFrame(feature_names, columns=['word_i',]), pd.DataFrame(self.prob_x_i_given_y.T, columns = columns)], axis=1).to_string(index=False)}")
 
         self.is_fitted = True
 
         if self.verbose:
-            self.predict_proba(self.X_train)
+            self.predict_proba(self.X_train, document)
 
         return self
 
-    def predict_proba(self, X_test: np.ndarray) -> np.ndarray:
+    def predict_proba(self, X_test: np.ndarray, document: list = None) -> np.ndarray:
         """
         p(y|X) = p(X|y)*p(y)/p(X)
         p(X|y) = p(x_1|y) * p(x_2|y) * ... * p(x_J|y)
@@ -77,7 +80,8 @@ class Multinomial_NB_classifier_from_scratch(object):
         # loop over each row to calcuate the posterior probability
         for row_index, this_x_sample in enumerate(X_test):
             feature_presence_columns = this_x_sample.astype(bool)
-            prob_x_i_given_y_for_feature_present = self.prob_x_i_given_y[:, feature_presence_columns] ** this_x_sample[feature_presence_columns] # the "**" is likely a scaling factor to normalize prob_x_i
+            # recall that this_x_sample is term frequency, and if a word appears twice, it should be prob_x_i_given_y ** 2, hence the "**" below
+            prob_x_i_given_y_for_feature_present = self.prob_x_i_given_y[:, feature_presence_columns] ** this_x_sample[feature_presence_columns]
             # axis=0 means column-wise, axis=1 means row-wise
             self.prob_X_given_y[row_index] = (prob_x_i_given_y_for_feature_present).prod(axis=1)
 
@@ -87,9 +91,9 @@ class Multinomial_NB_classifier_from_scratch(object):
 
         if self.verbose:
             columns = [f"y={c}" for c in self.y_classes]
-            print(f"\nprob(X_message|y), where p(word_1|y) * p(word_2|y) * ... * p(word_J|y):\n{pd.DataFrame(self.prob_X_given_y, columns=columns).to_string(index=False)}")
-            print(f"\nprob(X_message) across all possible y classes:\n{self.prob_X}")
-            print(f"\nthe posterior prob of y after X is observed:\nprob(y|X) via p(y|X) = p(X|y)*p(y)/p(X):\n{pd.DataFrame(self.prob_y_given_X_test, columns=columns).to_string(index=False)}")
+            print(f"\nStep 3. prob(X_message|y), where p(word_1|y) * p(word_2|y) * ... * p(word_J|y):\n{pd.concat([pd.DataFrame(document, columns=['message_j',]),pd.DataFrame(self.prob_X_given_y, columns=columns)], axis=1).to_string(index=False)}")
+            print(f"\nStep 4. prob(X_message) across all possible y classes:\n{pd.concat([pd.DataFrame(document, columns=['message_j', ]),pd.DataFrame(self.prob_X,columns=['prob(X)',])], axis=1).to_string(index=False)}")
+            print(f"\nStep 5. the posterior prob of y after X is observed:\nprob(y|X_message) via p(y|X_message) = p(X_message|y) * p(y) / p(X_message):\n{pd.concat([pd.DataFrame(document, columns=['message_j', ]),pd.DataFrame(self.prob_y_given_X_test, columns=columns),pd.Series(self.prob_y_given_X_test.argmax(axis=1),name='predict').map(self.y_mapper)],axis=1).to_string(index=False)}")
 
         return self.prob_y_given_X_test
 
@@ -502,8 +506,8 @@ def demo_from_scratch():
     import numpy as np
     from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, _document_frequency
     vectorizer = CountVectorizer(max_df = max_df)
-    X = document = ['BB AA', 'BB CC']
-    y = ['spam', 'ham']
+    X = document = ['BB AA', 'BB CC', 'AA BB AA']
+    y = ['spam', 'ham', 'spam']
     print(f"1. document = {document}")
     transformed_data = vectorizer.fit_transform(X)
     term_frequency = transformed_data
@@ -531,7 +535,7 @@ def demo_from_scratch():
     print(f"\n7.Compared to transformed matrix from TfidfVectorizer() [should be the same]:\n{X_train.to_string(index=False)}")
 
     y_train = pd.DataFrame(y, columns = ['y',])
-    print(f"\n8.y_train and X_train together:\n{pd.concat([y_train, X_train], axis=1).to_string(index=False)}")
+    print(f"\n8.y_train (target) and X_train (term frequency) together:\n{pd.concat([y_train, X_train], axis=1).to_string(index=False)}")
 
     #################
 
@@ -542,9 +546,11 @@ def demo_from_scratch():
     print(f"\nprob(y|X) from sklearn:\n{model_sklearn.predict_proba(X_train)}")
 
     model_from_scratch = Multinomial_NB_classifier_from_scratch()
-    model_from_scratch.fit(X_train, y_train, feature_names=tfidf_vectorizer.get_feature_names())
-    return model_from_scratch, X_train, y_train
-    #print(f"\nprediction:{model_from_scratch.predict(X_test)}")
+    model_from_scratch.fit(X_train, y_train, feature_names=tfidf_vectorizer.get_feature_names(), document=document)
+
+    X_test_doc = ['dd ee', 'cc ff']
+    X_test = tfidf_vectorizer.transform(X_test_doc).toarray()
+    print(f"\nprediction:\n{model_from_scratch.predict_proba(X_test, X_test_doc)}")
 
     #################
 
