@@ -16,8 +16,10 @@ from textblob import TextBlob
 import pandas as pd
 import numpy as np
 
+
 class Multinomial_NB_classifier_from_scratch(object):
     # reference: https://geoffruddock.com/naive-bayes-from-scratch-with-numpy/
+    # reference: http://kenzotakahashi.github.io/naive-bayes-from-scratch-in-python.html
 
     def __init__(self, alpha=1.0, verbose=True):
         self.alpha = alpha # to avoid having zero probabilities for words not seen in our training sample.
@@ -31,6 +33,10 @@ class Multinomial_NB_classifier_from_scratch(object):
         """
         X_train: a matrix of samples x features, such as documents (row) x words (col)
         """
+
+        if type(X_train) not in [np.ndarray,]:
+            X_train = X_train.toarray() 
+
         from sklearn.utils import check_X_y
         self.X_train, self.y_train = check_X_y(X_train, y_train)
         n_samples, n_features = X_train.shape
@@ -70,6 +76,10 @@ class Multinomial_NB_classifier_from_scratch(object):
         p(X|y) = p(x_1|y) * p(x_2|y) * ... * p(x_J|y)
         X: message (document), X_i: word
         """
+
+        if type(X_test) not in [np.ndarray, ]:
+            X_test = X_test.toarray()
+
         from sklearn.utils import check_array
         self.X_test = check_array(X_test)
         assert self.is_fitted, "model should be fitted first before predicting"
@@ -85,15 +95,17 @@ class Multinomial_NB_classifier_from_scratch(object):
             # axis=0 means column-wise, axis=1 means row-wise
             self.prob_X_given_y[row_index] = (prob_x_i_given_y_for_feature_present).prod(axis=1)
 
-        self.prob_X = (self.prob_X_given_y * self.prob_y).sum(axis=1).reshape(-1, 1)
-        self.prob_y_given_X_test = self.prob_X_given_y * self.prob_y / self.prob_X  # the posterior probability of y, after X is observed
+        normalizer = (self.prob_X_given_y * self.prob_y).sum(axis=1).reshape(-1, 1) # this term is not prob(X)
+        # prob(X_message) is a constant and do not need to be estimated
+
+        self.prob_y_given_X_test = self.prob_X_given_y * self.prob_y / normalizer  # the posterior probability of y, after X is observed
         assert (self.prob_y_given_X_test.sum(axis=1)-1 < 1e-9).all(), "each row should sum to 1"
 
         if self.verbose:
             columns = [f"y={c}" for c in self.y_classes]
-            print(f"\nStep 3. prob(X_message|y), where p(word_1|y) * p(word_2|y) * ... * p(word_J|y):\n{pd.concat([pd.DataFrame(document, columns=['message_j',]),pd.DataFrame(self.prob_X_given_y, columns=columns)], axis=1).to_string(index=False)}")
-            print(f"\nStep 4. prob(X_message) across all possible y classes:\n{pd.concat([pd.DataFrame(document, columns=['message_j', ]),pd.DataFrame(self.prob_X,columns=['prob(X)',])], axis=1).to_string(index=False)}")
-            print(f"\nStep 5. the posterior prob of y after X is observed:\nprob(y|X_message) via p(y|X_message) = p(X_message|y) * p(y) / p(X_message):\n{pd.concat([pd.DataFrame(document, columns=['message_j', ]),pd.DataFrame(self.prob_y_given_X_test, columns=columns),pd.Series(self.prob_y_given_X_test.argmax(axis=1),name='predict').map(self.y_mapper)],axis=1).to_string(index=False)}")
+            print(f"\nStep 3. prob(X_message|y) = p(word_1|y) * p(word_2|y) * ... * p(word_J|y):\nNote. colSum could be = 1\n{pd.concat([pd.DataFrame(document, columns=['message_j',]),pd.DataFrame(self.prob_X_given_y, columns=columns)], axis=1).to_string(index=False)}")
+            #print(f"\nStep 4. normalizer:\n{pd.concat([pd.DataFrame(document, columns=['message_j', ]),pd.DataFrame(normalizer,columns=['normalizer)',])], axis=1).to_string(index=False)}")
+            print(f"\nStep 4. the posterior prob of y after X is observed:\nprob(y|X_message) ∝ p(X_message|y) * p(y):\nNote: rowSum = 1\n{pd.concat([pd.DataFrame(document, columns=['message_j', ]),pd.DataFrame(self.prob_y_given_X_test, columns=columns),pd.Series(self.prob_y_given_X_test.argmax(axis=1),name='predict').map(self.y_mapper)],axis=1).to_string(index=False)}")
 
         return self.prob_y_given_X_test
 
@@ -506,8 +518,8 @@ def demo_from_scratch():
     import numpy as np
     from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, _document_frequency
     vectorizer = CountVectorizer(max_df = max_df)
-    X = document = ['BB AA', 'BB CC', 'AA BB AA']
-    y = ['spam', 'ham', 'spam']
+    X = document = ['BB AA', 'BB CC', 'AA BB AA', 'CC DD']
+    y = ['spam', 'ham', 'spam', 'ham']
     print(f"1. document = {document}")
     transformed_data = vectorizer.fit_transform(X)
     term_frequency = transformed_data
@@ -539,20 +551,25 @@ def demo_from_scratch():
 
     #################
 
-    X_train = transformed_data.toarray()
+    print("------------------------------------------------------------------------------------------------------")
+
+    X_train = transformed_data
     y_train = np.array(y)
+    X_test_doc = ['aa', 'bb', 'cc', 'dd']
+    X_test = tfidf_vectorizer.transform(X_test_doc)
+
     model_sklearn = naive_bayes_Multinomial()
     model_sklearn.fit(X_train, y_train)
-    print(f"\nprob(y|X) from sklearn:\n{model_sklearn.predict_proba(X_train)}")
+    print(f"\nprob(y|X) from sklearn:\n{model_sklearn.predict_proba(X_test)}")
 
     model_from_scratch = Multinomial_NB_classifier_from_scratch()
     model_from_scratch.fit(X_train, y_train, feature_names=tfidf_vectorizer.get_feature_names(), document=document)
-
-    X_test_doc = ['dd ee', 'cc ff']
-    X_test = tfidf_vectorizer.transform(X_test_doc).toarray()
-    print(f"\nprediction:\n{model_from_scratch.predict_proba(X_test, X_test_doc)}")
+    print("------------------------------------------------------------------------------------------------------")
+    print(f"\nprob(y|X) via from_scratch:\n{model_from_scratch.predict_proba(X_test, X_test_doc)}")
 
     #################
+
+    print("------------------------------------------------------------------------------------------------------")
 
     # reference: https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html#sphx-glr-auto-examples-text-plot-document-classification-20newsgroups-py
     # reference: https://scikit-learn.org/stable/auto_examples/applications/plot_out_of_core_classification.html#sphx-glr-auto-examples-applications-plot-out-of-core-classification-py
@@ -570,6 +587,10 @@ def demo_from_scratch():
 
     model_sklearn = naive_bayes_Multinomial()
     model_sklearn.fit(X_train, y_train)
-    print(f"\nprediction:{model_sklearn.predict(X_test)}")
+    print(f"\nprob(y|X) from sklearn:\n{model_sklearn.predict_proba(X_test)}")
+
+    model_from_scratch = Multinomial_NB_classifier_from_scratch(verbose=False)
+    model_from_scratch.fit(X_train, y_train, feature_names=vectorizer.get_feature_names())
+    print(f"\nprob(y|X) via from_scratch:\n{model_from_scratch.predict_proba(X_test)}")
 
 
