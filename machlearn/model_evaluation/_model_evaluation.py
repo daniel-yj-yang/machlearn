@@ -415,8 +415,8 @@ def demo():
     from sklearn.model_selection import train_test_split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=1)
 
-    from ..naive_bayes import naive_bayes_Gaussian
-    model = naive_bayes_Gaussian().fit(X_train, y_train)
+    from ..naive_bayes import Gaussian_NB_classifier
+    model = Gaussian_NB_classifier().fit(X_train, y_train)
     y_pred_score = model.predict_proba(X_test)
     y_pred = model.predict(X_test)
     accuracy = plot_confusion_matrix(y_true=y_test, y_pred=y_pred)
