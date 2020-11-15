@@ -76,7 +76,7 @@ class Multinomial_NB_classifier_from_scratch(classifier):
         self.is_fitted = True
 
         if self.verbose:
-            self.predict_proba(self.X_train, document)
+            self.predict_proba(X_test = self.X_train, document = document)
 
         return self
 
@@ -131,9 +131,9 @@ class Multinomial_NB_classifier_from_scratch(classifier):
 
         return self.prob_y_given_X
 
-    def predict(self, X_test: np.ndarray) -> np.ndarray:
+    def predict(self, X_test: np.ndarray, document: list = None) -> np.ndarray:
         """ Predict class with highest probability """
-        return self.predict_proba(X_test).argmax(axis=1)
+        return self.predict_proba(X_test, document = document).argmax(axis=1)
 
     def show_model_attributes(self, fitted_tfidf_vectorizer, y_classes, top_n=10):
         assert self.is_fitted, "model should be fitted first before predicting"
@@ -152,7 +152,7 @@ class Multinomial_NB_classifier_from_scratch(classifier):
                 print(f"   \"{term}\": {proba:4.2%}")
         self.verbose = verbose_old
 
-    def evaluate_model(self, X_test: np.ndarray, y_test: np.ndarray, y_pos_label = 1, y_classes = 'auto'):
+    def evaluate_model(self, X_test: np.ndarray, y_test: np.ndarray, y_pos_label = 1, y_classes = 'auto', document: list = None, skip_PR_curve: bool = False):
         if type(X_test) == csr_matrix:
             X_test = X_test.toarray() 
         from sklearn.utils import check_X_y
@@ -160,10 +160,12 @@ class Multinomial_NB_classifier_from_scratch(classifier):
     
         from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
         model_name = 'Multinomial NB from scratch'
-        y_pred = self.predict(X_test)
+        y_pred = self.predict(X_test, document = document)
         plot_confusion_matrix(y_test, y_pred, y_classes = y_classes, model_name = model_name)
-        plot_ROC_and_PR_curves(fitted_model=self, X=X_test, y_true=y_test, y_pred_score=self.y_pred_score[:,1], y_pos_label=y_pos_label, model_name = model_name)
-
+        verbose_old = self.verbose
+        self.verbose = False
+        plot_ROC_and_PR_curves(fitted_model=self, X=X_test, y_true=y_test, y_pred_score=self.y_pred_score[:, 1], y_pos_label=y_pos_label, model_name=model_name, skip_PR_curve = skip_PR_curve)
+        self.verbose = verbose_old
 
 
 #class naive_bayes_Bernoulli(BernoulliNB):
@@ -567,7 +569,7 @@ def demo_from_scratch():
     from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, _document_frequency
     vectorizer = CountVectorizer(max_df = max_df)
 
-    y_classes = ['0=ham', '1=spam']
+    y_classes = ['ham', 'spam']
 
     X = document = ['BB AA', 'BB CC']
     y = ['ham', 'spam']
@@ -605,17 +607,22 @@ def demo_from_scratch():
 
     #################
 
+    print("========================================================================================================================")
+
     X_train = transformed_data
     y_train = np.array(y)
-    X_test_doc = ['bb aa', 'bb aa aa', 'bb aa aa aa', 'bb aa aa aa aa', 'bb aa aa aa aa aa']
+    X_test_doc = ['bb cc', 'bb aa', 'bb aa aa', 'bb aa aa aa', 'bb aa aa aa aa', 'bb aa aa aa aa aa']
+    y_test = np.array([1, 0, 0, 0, 0, 1])
     X_test = tfidf_vectorizer.transform(X_test_doc)
 
     model_from_scratch = Multinomial_NB_classifier_from_scratch(verbose=True)
     model_from_scratch.fit(X_train, y_train, feature_names=tfidf_vectorizer.get_feature_names(), document=document)
     model_from_scratch.show_model_attributes(fitted_tfidf_vectorizer = tfidf_vectorizer, y_classes=y_classes)
-    #model_from_scratch.evaluate_model(X_test, y_test, y_classes=y_classes)
+    model_from_scratch.evaluate_model(X_test, y_test, y_classes=y_classes, document = X_test_doc, skip_PR_curve = True)
 
     #################
+
+    print("========================================================================================================================")
 
     # reference: https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html#sphx-glr-auto-examples-text-plot-document-classification-20newsgroups-py
     # reference: https://scikit-learn.org/stable/auto_examples/applications/plot_out_of_core_classification.html#sphx-glr-auto-examples-applications-plot-out-of-core-classification-py
@@ -634,5 +641,5 @@ def demo_from_scratch():
     model_from_scratch = Multinomial_NB_classifier_from_scratch()
     model_from_scratch.fit(X_train, y_train, feature_names=vectorizer.get_feature_names())
     model_from_scratch.show_model_attributes(fitted_tfidf_vectorizer = vectorizer, y_classes=y_classes)
-    model_from_scratch.evaluate_model(X_test, y_test, y_classes=y_classes)
+    model_from_scratch.evaluate_model(X_test, y_test, y_classes=y_classes, document= twenty_test.data)
 

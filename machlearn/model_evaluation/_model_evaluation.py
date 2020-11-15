@@ -366,9 +366,10 @@ def plot_ROC_and_PR_curves(fitted_model,
                            y_true,
                            y_pred_score,
                            y_pos_label=1,
-                           figsize=(8, 7),
-                           model_name='Binary Classifier',
-                           plot_threshold=True):
+                           figsize: tuple = (8, 7),
+                           model_name: str = 'Binary Classifier',
+                           plot_threshold: bool = True,
+                           skip_PR_curve: bool = False):
     """
 
     This function plots both the ROC and the precision-recall curves, along with statistics.
@@ -389,9 +390,10 @@ def plot_ROC_and_PR_curves(fitted_model,
     plot_ROC_curve(y_true=y_true, y_pred_score=y_pred_score,
                    y_pos_label=y_pos_label, figsize=figsize, model_name=model_name, plot_threshold=plot_threshold)
 
-    plot_PR_curve(fitted_model=fitted_model, X=X,
-                  y_true=y_true, y_pred_score=y_pred_score,
-                  y_pos_label=y_pos_label, figsize=figsize, model_name=model_name, plot_threshold=plot_threshold)
+    if not skip_PR_curve:
+        plot_PR_curve(fitted_model=fitted_model, X=X,
+                    y_true=y_true, y_pred_score=y_pred_score,
+                    y_pos_label=y_pos_label, figsize=figsize, model_name=model_name, plot_threshold=plot_threshold)
 
 
 def demo():
