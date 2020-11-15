@@ -10,6 +10,8 @@ from sklearn.tree import DecisionTreeRegressor
 import numpy as np
 import pandas as pd
 
+from ..base import classifier
+
 # Reduction in uncertainty = gain in information
 #def Information_Gain(y, X):
 #   IG(y, X) = Entropy(y) - Entropy(y | X)
@@ -167,7 +169,7 @@ class decision_tree_classifier_node(object):
         return {'curr_depth': self.curr_depth, 'curr_impurity': f"{self.curr_impurity:.3f}" if self.curr_impurity is not None else None, 'curr_sample_size': self.curr_sample_size, 'curr_y_distribution': self.curr_y_distribution, 'curr_dominant_y_class': self.y_dominant_class, 'curr_y_class1_prob': f"{self.y_class1_prob:.3f}" if self.y_class1_prob is not None else None, 'best_split_feature_i': self.best_split_feature_i if self.best_x_cutoff_value is not None else None, 'best_x_cutoff_value': f"{self.best_x_cutoff_value:.3f}" if self.best_x_cutoff_value is not None else None}
 
 
-class decision_tree_classifier_from_scratch(object):
+class decision_tree_classifier_from_scratch(classifier):
     """
     Shortcoming of DT:
     (1) biggest information gain locally, but globally; that is, there is always a better tree in the overall picture
@@ -179,6 +181,7 @@ class decision_tree_classifier_from_scratch(object):
         "features_indices_actually_used": limits the analysis on only these feature indices if not 'all'
             for example, if there are 30 features, then "features_indices_actually_used" = [2, 15] means that only the 3th and 16th features will be used for analysis
         """
+        super().__init__()
         self.features_indices_actually_used = features_indices_actually_used  # limits the analysis on only these feature indices
         self.max_depth = max_depth
         self.verbose=verbose
@@ -845,10 +848,10 @@ def demo_from_scratch(question_type="classification"):
 
         #print(DT_model.predict(X_train))
         #print(DT_model.predict_proba(X_train))
-        from ..model_evaluation import plot_confusion_matrix, plot_ROC_curve, plot_ROC_and_PR_curves
+        from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
         y_pred_score = DT_model.predict_proba(X_test)
         plot_confusion_matrix(y_true=y_test, y_pred=DT_model.predict(X_test), y_classes=y_classes)
-        plot_ROC_curve(y_true=y_test, y_pred_score=y_pred_score[:,1])
+        plot_ROC_and_PR_curves(fitted_model=DT_model, X=X_test, y_true=y_test, y_pred_score=y_pred_score[:,1], model_name = 'DT from scratch')
 
 #
 # References

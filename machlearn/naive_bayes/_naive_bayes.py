@@ -135,11 +135,11 @@ class Multinomial_NB_classifier_from_scratch(classifier):
         """ Predict class with highest probability """
         return self.predict_proba(X_test).argmax(axis=1)
 
-    def show_model_attributes(self, tfidf_vectorizer, y_classes, top_n=10):
+    def show_model_attributes(self, fitted_tfidf_vectorizer, y_classes, top_n=10):
         assert self.is_fitted, "model should be fitted first before predicting"
-        vocabulary_dict = tfidf_vectorizer.vocabulary_
+        vocabulary_dict = fitted_tfidf_vectorizer.vocabulary_
         terms = list(vocabulary_dict.keys())
-        X_test = tfidf_vectorizer.transform(terms)
+        X_test = fitted_tfidf_vectorizer.transform(terms)
         verbose_old = self.verbose
         self.verbose = False
         for i, y_class in enumerate(y_classes):
@@ -612,7 +612,7 @@ def demo_from_scratch():
 
     model_from_scratch = Multinomial_NB_classifier_from_scratch(verbose=True)
     model_from_scratch.fit(X_train, y_train, feature_names=tfidf_vectorizer.get_feature_names(), document=document)
-    model_from_scratch.show_model_attributes(tfidf_vectorizer = tfidf_vectorizer, y_classes=y_classes)
+    model_from_scratch.show_model_attributes(fitted_tfidf_vectorizer = tfidf_vectorizer, y_classes=y_classes)
     #model_from_scratch.evaluate_model(X_test, y_test, y_classes=y_classes)
 
     #################
@@ -633,6 +633,6 @@ def demo_from_scratch():
 
     model_from_scratch = Multinomial_NB_classifier_from_scratch()
     model_from_scratch.fit(X_train, y_train, feature_names=vectorizer.get_feature_names())
-    model_from_scratch.show_model_attributes(tfidf_vectorizer = vectorizer, y_classes=y_classes)
+    model_from_scratch.show_model_attributes(fitted_tfidf_vectorizer = vectorizer, y_classes=y_classes)
     model_from_scratch.evaluate_model(X_test, y_test, y_classes=y_classes)
 
