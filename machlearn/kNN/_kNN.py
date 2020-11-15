@@ -13,9 +13,14 @@ import pandas as pd
 
 from ..DSA import the_most_frequent_item_in_a_list
 
-class kNN_classifier_from_scratch(object):
+from ..base import classifier
+
+from collections import Counter
+
+class kNN_classifier_from_scratch(classifier):
     
     def __init__(self, n_neighbors=5, distance_func=distance(p=2).Minkowski):
+        super().__init__()
         self.X_train = None
         self.y_train = None
         self.n_neighbors = n_neighbors
@@ -28,6 +33,7 @@ class kNN_classifier_from_scratch(object):
             y_train = y_train.to_numpy()
         self.X_train = X_train
         self.y_train = y_train
+        self.classes_ = np.unique(self.y_train)
         return self
 
     def predict(self, X_test):
@@ -46,6 +52,23 @@ class kNN_classifier_from_scratch(object):
             # and then repeat this procedure for the next x_test_sample
             y_pred.append(y_pred_mode)
         return y_pred
+
+    def predict_proba(self, X_test):
+        if type(X_test) in [pd.DataFrame, pd.Series]:
+            X_test = X_test.to_numpy()
+        y_pred_score = np.zeros(shape=(X_test.shape[0], self.classes_.shape[0]))
+        for index_x, this_x_test_sample in enumerate(X_test):
+            # calculate the distance from this_x_test_sample to all training samples, while tagging along the y_train label
+            train_list = [[self.distance_func(self.X_train[train_index], this_x_test_sample), self.y_train[train_index]] for train_index in range(self.X_train.shape[0])] 
+            # sorted by the first element, the distance from low to high
+            train_list.sort()  
+            # keep the closet k neighbors and retain their y_train labels
+            y_pred_candidates = [data[1] for data in train_list[:self.n_neighbors]]
+            # count for each of the y_classes
+            y_pred_counts = Counter(y_pred_candidates)
+            for index_y, y_class in enumerate(self.classes_):
+                y_pred_score[index_x, index_y] = y_pred_counts[y_class]/self.n_neighbors
+        return y_pred_score
 
 
 def kNN_classifier_from_sklearn(*args, **kwargs):
@@ -194,20 +217,25 @@ def _kNN_demo_iris_from_scratch():
     X_test = scaler.transform(X_test)
 
     model_from_scratch = kNN_classifier_from_scratch(n_neighbors=n_neighbors)
-    model_from_sklearn = kNN_classifier_from_sklearn(n_neighbors=n_neighbors)
+    model_sklearn      = kNN_classifier_from_sklearn(n_neighbors=n_neighbors)
 
     model_from_scratch.fit(X_train, y_train)
-    model_from_sklearn.fit(X_train, y_train)
+    model_sklearn.fit(X_train, y_train)
 
-    y_pred_from_scratch = model_from_scratch.predict(X_test)
-    y_pred_from_sklearn = model_from_sklearn.predict(X_test)
+    y_pred_via_from_scratch = model_from_scratch.predict(X_test)
+    y_pred_via_sklearn      = model_sklearn.predict(X_test)
+    assert (y_pred_via_from_scratch - y_pred_via_sklearn < 1e-9).all(), "*** Warning *** difference pred between from_scratch and sklearn"
 
-    for i in range(len(y_pred_from_scratch)):
-        if y_pred_from_scratch[i] != y_pred_from_sklearn[i]:
-            print(f"difference between from_scratch and from_sklearn: {i}-th item")
+    for i in range(len(y_pred_via_from_scratch)):
+        if y_pred_via_from_scratch[i] != y_pred_via_sklearn[i]:
+            print(f"difference between from_scratch and sklearn: {i}-th item")
+
+    y_pred_score_via_from_scratch = model_from_scratch.predict_proba(X_test)
+    y_pred_score_via_sklearn = model_sklearn.predict_proba(X_test)
+    assert (y_pred_score_via_from_scratch - y_pred_score_via_sklearn < 1e-9).all(), "*** Warning *** difference pred_score between from_scratch and sklearn"
 
     from ..model_evaluation import plot_confusion_matrix
-    plot_confusion_matrix(y_true=y_test, y_pred=y_pred_from_scratch, y_classes=y_classes, figsize=(7,7), model_name=f"kNN (k={n_neighbors})")
+    plot_confusion_matrix(y_true=y_test, y_pred=y_pred_via_from_scratch, y_classes=y_classes, figsize=(7,7), model_name=f"kNN (k={n_neighbors})")
 
 
 def demo(dataset="Social_Network_Ads"):

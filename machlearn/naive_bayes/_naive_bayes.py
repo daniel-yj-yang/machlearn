@@ -18,7 +18,7 @@ import numpy as np
 
 from ..base import classifier
 
-from scipy.sparse.csr import csr_matrix
+from scipy.sparse import csr
 
 class Multinomial_NB_classifier_from_scratch(classifier):
     # reference: https://geoffruddock.com/naive-bayes-from-scratch-with-numpy/
@@ -87,7 +87,7 @@ class Multinomial_NB_classifier_from_scratch(classifier):
         X: message (document), X_i: word
         """
 
-        if type(X_test) == csr_matrix:
+        if type(X_test) == csr.csr_matrix:
             X_test = X_test.toarray()
 
         from sklearn.utils import check_array
@@ -153,7 +153,7 @@ class Multinomial_NB_classifier_from_scratch(classifier):
         self.verbose = verbose_old
 
     def evaluate_model(self, X_test: np.ndarray, y_test: np.ndarray, y_pos_label = 1, y_classes = 'auto', document: list = None, skip_PR_curve: bool = False):
-        if type(X_test) == csr_matrix:
+        if type(X_test) == csr.csr_matrix:
             X_test = X_test.toarray() 
         from sklearn.utils import check_X_y
         X_test, y_test = check_X_y(X_test, y_test)
