@@ -16,12 +16,14 @@ from textblob import TextBlob
 import pandas as pd
 import numpy as np
 
+from ..base import classifier
 
-class Multinomial_NB_classifier_from_scratch(object):
+class Multinomial_NB_classifier_from_scratch(classifier):
     # reference: https://geoffruddock.com/naive-bayes-from-scratch-with-numpy/
     # reference: http://kenzotakahashi.github.io/naive-bayes-from-scratch-in-python.html
 
-    def __init__(self, alpha=1.0, verbose=True):
+    def __init__(self, alpha=1.0, verbose=False):
+        super().__init__()
         self.alpha = alpha # to avoid having zero probabilities for words not seen in our training sample.
         self.y_classes = None  # e.g., spam vs. no spam
         self.prob_y = None # Our prior belief in the probability of any randomly selected message belonging to a particular class
@@ -47,21 +49,26 @@ class Multinomial_NB_classifier_from_scratch(object):
             self.feature_names = feature_names
 
         self.y_classes = np.unique(y_train)
+        self.classes_ = self.y_classes
+
         columns = [f"y={c}" for c in self.y_classes]
         self.y_mapper = {}
         for idx, y_class in enumerate(self.y_classes):
-            self.y_mapper[idx] = f"{idx}={y_class}"
+            self.y_mapper[idx] = f"class_idx[{idx}]=[{y_class}]"
 
         X_train_by_y_class = np.array([X_train[y_train == this_y_class] for this_y_class in self.y_classes], dtype=object)
         self.prob_y = np.array([X_train_for_this_y_class.shape[0] / n_samples for X_train_for_this_y_class in X_train_by_y_class])
         if self.verbose:
+            print(f"\n------------------------------------------ fit() ------------------------------------------")
             print(f"\nStep 1. the prior probability of y, before X is observed\nprior prob(y):\n{pd.DataFrame(self.prob_y.reshape(1,-1), columns=columns).to_string(index=False)}")
 
         # axis=0 means column-wise, axis=1 means row-wise
         self.X_train_colSum_by_y_class = np.array([ X_train_for_this_y_class.sum(axis=0) for X_train_for_this_y_class in X_train_by_y_class ]) + self.alpha
         self.prob_x_i_given_y = self.X_train_colSum_by_y_class / self.X_train_colSum_by_y_class.sum(axis=1).reshape(-1,1)
         if self.verbose:
-            print(f"\nStep 2. prob(word_i|y):\n{pd.concat([ pd.DataFrame(feature_names, columns=['word_i',]), pd.DataFrame(self.prob_x_i_given_y.T, columns = columns)], axis=1).to_string(index=False)}")
+            print(f"\nStep 2. prob(word_i|y):\ncolSum should be 1\n{pd.concat([ pd.DataFrame(feature_names, columns=['word_i',]), pd.DataFrame(self.prob_x_i_given_y.T, columns = columns)], axis=1).to_string(index=False)}")
+
+        assert (self.prob_x_i_given_y.T.sum(axis=0) - np.ones((1, len(self.y_classes))) < 1e-9).all(), "*** Error *** prob(word_i|y) colSum should be 1"
 
         self.is_fitted = True
 
@@ -84,38 +91,44 @@ class Multinomial_NB_classifier_from_scratch(object):
         self.X_test = check_array(X_test)
         assert self.is_fitted, "model should be fitted first before predicting"
 
-        #class_numerators = np.zeros(shape=(X_test.shape[0], self.prob_y.shape[0]))
+        # to figure out prob(X|y)
         self.prob_X_given_y = np.zeros(shape=(X_test.shape[0], self.prob_y.shape[0]))
-
         # loop over each row to calcuate the posterior probability
         for row_index, this_x_sample in enumerate(X_test):
             feature_presence_columns = this_x_sample.astype(bool)
-            # recall that this_x_sample is term frequency, and if a word appears twice, it should be prob_x_i_given_y ** 2, hence the "**" below
+            # recall that this_x_sample is term frequency, and if a word appears n_times, it should be prob_x_i_given_y ** n_times, hence the "**" below
             prob_x_i_given_y_for_feature_present = self.prob_x_i_given_y[:, feature_presence_columns] ** this_x_sample[feature_presence_columns]
             # axis=0 means column-wise, axis=1 means row-wise
             self.prob_X_given_y[row_index] = (prob_x_i_given_y_for_feature_present).prod(axis=1)
 
-        normalizer = (self.prob_X_given_y * self.prob_y).sum(axis=1).reshape(-1, 1) # this term is not prob(X)
-        # prob(X_message) is a constant and do not need to be estimated
+        columns = [f"y={c}" for c in self.y_classes]
+        self.prob_joint_X_and_y = self.prob_X_given_y * self.prob_y
+        self.prob_X = self.prob_joint_X_and_y.sum(axis=1).reshape(-1, 1) # rowSum gives prob(X_message), as it sums across all possible y classes that can divide X_message
+        
+        # normalization
+        self.prob_y_given_X = self.prob_joint_X_and_y / self.prob_X # the posterior probability of y, after X is observed
 
-        self.prob_y_given_X_test = self.prob_X_given_y * self.prob_y / normalizer  # the posterior probability of y, after X is observed
-        assert (self.prob_y_given_X_test.sum(axis=1)-1 < 1e-9).all(), "each row should sum to 1"
+        assert (self.prob_y_given_X.sum(axis=1)-1 < 1e-9).all(), "***Error*** each row should sum to 1"
 
         if self.verbose:
-            columns = [f"y={c}" for c in self.y_classes]
-            print(f"\nStep 3. prob(X_message|y) = p(word_1|y) * p(word_2|y) * ... * p(word_J|y):\nNote. colSum could be = 1\n{pd.concat([pd.DataFrame(document, columns=['message_j',]),pd.DataFrame(self.prob_X_given_y, columns=columns)], axis=1).to_string(index=False)}")
-            #print(f"\nStep 4. normalizer:\n{pd.concat([pd.DataFrame(document, columns=['message_j', ]),pd.DataFrame(normalizer,columns=['normalizer)',])], axis=1).to_string(index=False)}")
-            print(f"\nStep 4. the posterior prob of y after X is observed:\nprob(y|X_message) ∝ p(X_message|y) * p(y):\nNote: rowSum = 1\n{pd.concat([pd.DataFrame(document, columns=['message_j', ]),pd.DataFrame(self.prob_y_given_X_test, columns=columns),pd.Series(self.prob_y_given_X_test.argmax(axis=1),name='predict').map(self.y_mapper)],axis=1).to_string(index=False)}")
+            print(f"\n------------------------------------------ predict_proba() ------------------------------------------")
+            print(f"\nStep 1. the term frequency matrix of X_test:\nNote: Each row has unit norm\n{pd.concat([pd.DataFrame(document, columns=['X_message_j',]),pd.DataFrame(X_test, columns = self.feature_names)], axis=1).to_string(index=False)}")
+            print(f"\nStep 2. prob(X_message|y) = prob(word_1|y) * prob(word_2|y) * ... * prob(word_J|y):\nNote: colSum may not = 1\n{pd.concat([pd.DataFrame(document, columns=['X_message_j',]),pd.DataFrame(self.prob_X_given_y, columns=columns)], axis=1).to_string(index=False)}")
+            print(f"\nStep 3. prob(X_message ∩ y) = prob(X_message|y) * prob(y):\nNote: rowSum gives prob(X_message), as it sums across all possible y classes that can divide X_message\n{pd.concat([pd.DataFrame(document, columns=['X_message_j',]),pd.DataFrame(self.prob_joint_X_and_y,columns=columns)],axis=1).to_string(index=False)}")
+            print(f"\nStep 4. prob(X_message):\n{pd.concat([pd.DataFrame(document, columns=['X_message_j', ]),pd.DataFrame(self.prob_X,columns=['prob',])], axis=1).to_string(index=False)}")
+            print(f"\nStep 5. the posterior prob of y after X is observed:\nprob(y|X_message) = p(X_message|y) * p(y) / p(X_message):\nNote: rowSum = 1\n{pd.concat([pd.DataFrame(document, columns=['X_message_j', ]),pd.DataFrame(self.prob_y_given_X, columns=columns),pd.Series(self.prob_y_given_X.argmax(axis=1),name='predict').map(self.y_mapper)],axis=1).to_string(index=False)}")
 
-        return self.prob_y_given_X_test
+        # Compare to sklearn
+        model_sklearn = Multinomial_NB_classifier(alpha=self.alpha, class_prior=self.prob_y)
+        model_sklearn.fit(self.X_train, self.y_train)
+        prob_y_given_X_test_via_sklearn = model_sklearn.predict_proba(X_test)
+        assert (prob_y_given_X_test_via_sklearn - self.prob_y_given_X < 1e-9).all(), "*** Error *** different results via sklearn and from scratch"
+
+        return self.prob_y_given_X
 
     def predict(self, X_test: np.ndarray) -> np.ndarray:
         """ Predict class with highest probability """
         return self.predict_proba(X_test).argmax(axis=1)
-
-
-
-
 
 
 #class naive_bayes_Bernoulli(BernoulliNB):
@@ -143,21 +156,21 @@ class Multinomial_NB_classifier_from_scratch(object):
 #        super().__init__(priors=priors, var_smoothing=var_smoothing)
 
 
-def naive_bayes_Bernoulli(*args, **kwargs):
+def Bernoulli_NB_classifier(*args, **kwargs):
     """
     This function is used when X are independent binary variables (e.g., whether a word occurs in a document or not).
     """
     return BernoulliNB(*args, **kwargs)
 
 
-def naive_bayes_Multinomial(*args, **kwargs):
+def Multinomial_NB_classifier(*args, **kwargs):
     """
     This function is used when X are independent discrete variables with 3+ levels (e.g., term frequency in the document).
     """
     return MultinomialNB(*args, **kwargs)
 
 
-def naive_bayes_Gaussian(*args, **kwargs):
+def Gaussian_NB_classifier(*args, **kwargs):
     """
     This function is used when X are continuous variables.
     """
@@ -186,7 +199,7 @@ class _naive_bayes_demo():
         pipeline = Pipeline(steps=[('scaler',
                                     StandardScaler(with_mean=True, with_std=True)),
                                    ('classifier',
-                                    naive_bayes_Gaussian()),
+                                    Gaussian_NB_classifier()),
                                    ])
         # pipeline parameters to tune
         hyperparameters = {
@@ -223,7 +236,7 @@ class _naive_bayes_demo():
                                    ('count_matrix_normalizer',
                                     TfidfTransformer(use_idf=True)),
                                    ('classifier',
-                                    naive_bayes_Multinomial()),
+                                    Multinomial_NB_classifier()),
                                    ])
         # pipeline parameters to tune
         hyperparameters = {
@@ -518,8 +531,8 @@ def demo_from_scratch():
     import numpy as np
     from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, _document_frequency
     vectorizer = CountVectorizer(max_df = max_df)
-    X = document = ['BB AA', 'BB CC', 'AA BB AA', 'CC DD']
-    y = ['spam', 'ham', 'spam', 'ham']
+    X = document = ['BB AA', 'BB CC']
+    y = ['spam', 'ham']
     print(f"1. document = {document}")
     transformed_data = vectorizer.fit_transform(X)
     term_frequency = transformed_data
@@ -543,33 +556,27 @@ def demo_from_scratch():
     from sklearn.preprocessing import normalize
     normalized_tf_times_idf = normalize(tf_times_idf, norm = 'l2', axis=1) # axis=0 means column-wise, axis=1 means row-wise
     print(f"\n6.Document-wise normalized TF * IDF (each document has a unit length):\n{normalized_tf_times_idf.toarray()}")
-    X_train = pd.DataFrame(transformed_data.toarray(), columns = tfidf_vectorizer.get_feature_names())
-    print(f"\n7.Compared to transformed matrix from TfidfVectorizer() [should be the same]:\n{X_train.to_string(index=False)}")
+
+    sklearn_X_train = pd.DataFrame(transformed_data.toarray(), columns = tfidf_vectorizer.get_feature_names())
+    print(f"\n7.Compared to transformed matrix from TfidfVectorizer() [should be the same]:\n{sklearn_X_train.to_string(index=False)}")
+
+    assert (normalized_tf_times_idf.toarray() - transformed_data.toarray() < 1e-9).all(), "***Error*** Results of td-idf should be the same"
 
     y_train = pd.DataFrame(y, columns = ['y',])
-    print(f"\n8.y_train (target) and X_train (term frequency) together:\n{pd.concat([y_train, X_train], axis=1).to_string(index=False)}")
+    print(f"\n8.y_train (target) and X_train (term frequency) together:\n{pd.concat([y_train, sklearn_X_train], axis=1).to_string(index=False)}")
 
     #################
-
-    print("------------------------------------------------------------------------------------------------------")
 
     X_train = transformed_data
     y_train = np.array(y)
-    X_test_doc = ['aa', 'bb', 'cc', 'dd']
+    X_test_doc = ['bb aa', 'bb aa aa', 'bb aa aa aa', 'bb aa aa aa aa', 'bb aa aa aa aa aa']
     X_test = tfidf_vectorizer.transform(X_test_doc)
 
-    model_sklearn = naive_bayes_Multinomial()
-    model_sklearn.fit(X_train, y_train)
-    print(f"\nprob(y|X) from sklearn:\n{model_sklearn.predict_proba(X_test)}")
-
-    model_from_scratch = Multinomial_NB_classifier_from_scratch()
+    model_from_scratch = Multinomial_NB_classifier_from_scratch(verbose=True)
     model_from_scratch.fit(X_train, y_train, feature_names=tfidf_vectorizer.get_feature_names(), document=document)
-    print("------------------------------------------------------------------------------------------------------")
     print(f"\nprob(y|X) via from_scratch:\n{model_from_scratch.predict_proba(X_test, X_test_doc)}")
 
     #################
-
-    print("------------------------------------------------------------------------------------------------------")
 
     # reference: https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html#sphx-glr-auto-examples-text-plot-document-classification-20newsgroups-py
     # reference: https://scikit-learn.org/stable/auto_examples/applications/plot_out_of_core_classification.html#sphx-glr-auto-examples-applications-plot-out-of-core-classification-py
@@ -585,12 +592,11 @@ def demo_from_scratch():
     X_test =  vectorizer.transform(twenty_test.data)
     y_train, y_test = twenty_train.target, twenty_test.target
 
-    model_sklearn = naive_bayes_Multinomial()
-    model_sklearn.fit(X_train, y_train)
-    print(f"\nprob(y|X) from sklearn:\n{model_sklearn.predict_proba(X_test)}")
-
-    model_from_scratch = Multinomial_NB_classifier_from_scratch(verbose=False)
+    model_from_scratch = Multinomial_NB_classifier_from_scratch()
     model_from_scratch.fit(X_train, y_train, feature_names=vectorizer.get_feature_names())
-    print(f"\nprob(y|X) via from_scratch:\n{model_from_scratch.predict_proba(X_test)}")
-
+    y_pred = model_from_scratch.predict(X_test)
+    y_pred_score = model_from_scratch.predict_proba(X_test)
+    from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
+    plot_confusion_matrix(y_test, y_pred, y_classes = y_classes, model_name = 'Multinomial NB from scratch')
+    plot_ROC_and_PR_curves(fitted_model=model_from_scratch, X=X_test, y_true=y_test, y_pred_score=y_pred_score[:,1], y_pos_label=1, model_name = 'Multinomial NB from scratch')
 
