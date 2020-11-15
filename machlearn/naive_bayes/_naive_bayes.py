@@ -612,7 +612,7 @@ def demo_from_scratch():
     X_train = transformed_data
     y_train = np.array(y)
     X_test_doc = ['bb cc', 'bb aa', 'bb aa aa', 'bb aa aa aa', 'bb aa aa aa aa', 'bb aa aa aa aa aa']
-    y_test = np.array([1, 0, 0, 0, 0, 1])
+    y_test = np.array([1, 0, 0, 0, 0, 0])
     X_test = tfidf_vectorizer.transform(X_test_doc)
 
     model_from_scratch = Multinomial_NB_classifier_from_scratch(verbose=True)
@@ -626,7 +626,7 @@ def demo_from_scratch():
 
     # reference: https://scikit-learn.org/stable/auto_examples/text/plot_document_classification_20newsgroups.html#sphx-glr-auto-examples-text-plot-document-classification-20newsgroups-py
     # reference: https://scikit-learn.org/stable/auto_examples/applications/plot_out_of_core_classification.html#sphx-glr-auto-examples-applications-plot-out-of-core-classification-py
-    y_classes = ['comp.graphics', 'sci.med']
+    y_classes = ['sci.space', 'soc.religion.christian']
     from sklearn.datasets import fetch_20newsgroups
     from ..datasets import public_dataset
     # no need to specify # data_home=public_dataset("scikit_learn_data_path"),
