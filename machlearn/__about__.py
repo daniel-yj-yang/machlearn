@@ -5,4 +5,4 @@
 # License: BSD 3 clause
 
  
-__version__ = "1.2.15"
+__version__ = "1.2.dev16"
