@@ -38,8 +38,14 @@ class Multinomial_NB_classifier_from_scratch(classifier):
         X_train: a matrix of samples x features, such as documents (row) x words (col)
         """
 
+        if type(document) == pd.Series:
+            document = document.to_list()
+
         if type(X_train) not in [np.ndarray,]:
-            X_train = X_train.toarray() 
+            X_train = X_train.toarray()
+
+        if type(y_train) == pd.Series:
+            y_train = y_train.to_numpy()
 
         from sklearn.utils import check_X_y
         self.X_train, self.y_train = check_X_y(X_train, y_train)
@@ -87,6 +93,9 @@ class Multinomial_NB_classifier_from_scratch(classifier):
         X: message (document), X_i: word
         """
 
+        if type(document) == pd.Series:
+            document = document.to_list()
+
         if type(X_test) == csr.csr_matrix:
             X_test = X_test.toarray()
 
@@ -115,7 +124,8 @@ class Multinomial_NB_classifier_from_scratch(classifier):
 
         if self.verbose:
             print(f"\n------------------------------------------ predict_proba() ------------------------------------------")
-            print(f"\nStep 1. the 'term freq - inverse doc freq' matrix of X_test:\nNote: Each row has unit norm\n{pd.concat([pd.DataFrame(document, columns=['X_message_j',]),pd.DataFrame(X_test, columns = self.feature_names)], axis=1).to_string(index=False)}")
+            if len(self.feature_names) <= 10:
+                print(f"\nStep 1. the 'term freq - inverse doc freq' matrix of X_test:\nNote: Each row has unit norm\n{pd.concat([pd.DataFrame(document, columns=['X_message_j',]),pd.DataFrame(X_test, columns = self.feature_names)], axis=1).to_string(index=False)}")
             print(f"\nStep 2. prob(X_message|y) = prob(word_1|y) * prob(word_2|y) * ... * prob(word_J|y):\nNote: colSum may not = 1\n{pd.concat([pd.DataFrame(document, columns=['X_message_j',]),pd.DataFrame(self.prob_X_given_y, columns=columns)], axis=1).to_string(index=False)}")
             print(f"\nStep 3. prob(X_message ∩ y) = prob(X_message|y) * prob(y):\nNote: rowSum gives prob(X_message), as it sums across all possible y classes that can divide X_message\n{pd.concat([pd.DataFrame(document, columns=['X_message_j',]),pd.DataFrame(self.prob_joint_X_and_y,columns=columns)],axis=1).to_string(index=False)}")
             print(f"\nStep 4. prob(X_message):\n{pd.concat([pd.DataFrame(document, columns=['X_message_j', ]),pd.DataFrame(self.prob_X,columns=['prob',])], axis=1).to_string(index=False)}")
@@ -133,6 +143,8 @@ class Multinomial_NB_classifier_from_scratch(classifier):
 
     def predict(self, X_test: np.ndarray, document: list = None) -> np.ndarray:
         """ Predict class with highest probability """
+        if type(document) == pd.Series:
+            document = document.to_list()
         return self.predict_proba(X_test, document = document).argmax(axis=1)
 
     def show_model_attributes(self, fitted_tfidf_vectorizer, y_classes, top_n=10):
@@ -147,25 +159,35 @@ class Multinomial_NB_classifier_from_scratch(classifier):
             term_proba_df = term_proba_df.sort_values(by=['proba'], ascending=False)
             top_n = top_n
             df = pd.DataFrame.head(term_proba_df, n=top_n)
-            print(f"\nThe top {top_n} terms with highest probability of a document being a {y_class}:")
+            print(f"\nThe top {top_n} terms with highest probability of a document = {y_class}:")
             for term, proba in zip(df['term'], df['proba']):
                 print(f"   \"{term}\": {proba:4.2%}")
         self.verbose = verbose_old
 
-    def evaluate_model(self, X_test: np.ndarray, y_test: np.ndarray, y_pos_label = 1, y_classes = 'auto', document: list = None, skip_PR_curve: bool = False):
+    def evaluate_model(self, X_test: np.ndarray, y_test: np.ndarray, y_pos_label = 1, y_classes = 'auto', document: list = None, skip_PR_curve: bool = False, figsize_cm: tuple = None):
         if type(X_test) == csr.csr_matrix:
-            X_test = X_test.toarray() 
+            X_test = X_test.toarray()
+
+        if type(y_test) == pd.Series:
+            y_test = y_test.to_numpy()
+
         from sklearn.utils import check_X_y
         X_test, y_test = check_X_y(X_test, y_test)
     
         from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
         model_name = 'Multinomial NB from scratch'
         y_pred = self.predict(X_test, document = document)
-        plot_confusion_matrix(y_test, y_pred, y_classes = y_classes, model_name = model_name)
-        verbose_old = self.verbose
-        self.verbose = False
-        plot_ROC_and_PR_curves(fitted_model=self, X=X_test, y_true=y_test, y_pred_score=self.y_pred_score[:, 1], y_pos_label=y_pos_label, model_name=model_name, skip_PR_curve = skip_PR_curve)
-        self.verbose = verbose_old
+        if figsize_cm is None:
+            if len(y_classes) == 2:
+                figsize_cm = (10, 9)
+            if len(y_classes) > 2:
+                figsize_cm = (8, 8)
+        plot_confusion_matrix(y_test, y_pred, y_classes = y_classes, model_name = model_name, figsize = figsize_cm)
+        if len(y_classes) == 2:
+            verbose_old = self.verbose
+            self.verbose = False
+            plot_ROC_and_PR_curves(fitted_model=self, X=X_test, y_true=y_test, y_pred_score=self.y_pred_score[:, 1], y_pos_label=y_pos_label, model_name=model_name, skip_PR_curve = skip_PR_curve)
+            self.verbose = verbose_old
 
 
 #class naive_bayes_Bernoulli(BernoulliNB):
@@ -441,7 +463,7 @@ class _naive_bayes_demo_20newsgroups(_naive_bayes_demo):
             top_n = 10
             df = pd.DataFrame.head(term_proba_df, n=top_n)
             print(
-                f"The top {top_n} terms with highest probability of a document being a {repr(self.y_classes[i])}:")
+                f"The top {top_n} terms with highest probability of a document being {repr(self.y_classes[i])}:")
             for term, proba in zip(df['term'], df['proba']):
                 print(f"   \"{term}\": {proba:4.2%}")
 
