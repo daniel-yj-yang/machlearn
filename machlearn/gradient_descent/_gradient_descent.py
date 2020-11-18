@@ -5,6 +5,10 @@
 # License: BSD 3 clause
 
 import numpy as np
+import pandas as pd
+
+import torch
+import torch.nn as nn
 
 class batch_gradient_descent(object):
 
@@ -20,6 +24,7 @@ class batch_gradient_descent(object):
         self.num_iter = num_iter
         self.verbose = verbose
         self.use_simplified_cost = use_simplified_cost
+        self.n_features = None
 
     # the following three functions are the core of BGD:
     # θ = _y_pred
@@ -46,8 +51,14 @@ class batch_gradient_descent(object):
 
     def fit(self):
         # weights initialization
-        self.theta = np.zeros(self.X.shape[1]) # if X has an intercept and two features, then self.theta = array([0., 0., 0.])
-        self.training_history = []
+        #self.theta = np.random.rand(self.X.shape[1])
+        self.n_features = self.X.shape[1]
+        self.theta = np.zeros(shape = self.n_features) # if X has an intercept and two features, then self.theta = array([0., 0., 0.])
+        #self.theta = np.ones(shape=self.n_features)
+        #self.theta = np.array([0.69254314, -0.49262002,  0.19834042])
+        self.theta_history = np.zeros(shape = (self.num_iter, self.n_features))
+        self.cost_history = np.zeros(shape = self.num_iter)
+        self.gradient_history = np.zeros(shape = (self.num_iter, self.n_features))
 
         # Note:
         # Batch gradient descent means that we calculate the error for each example in the training dataset, but update the model only after the entire training set has been evaluated.
@@ -68,8 +79,9 @@ class batch_gradient_descent(object):
             self.theta -= self.alpha * self.gradient
 
             # self.theta = array([0., 0., 0.]) is not good for plotting, so starting from here
-            this_history_array = [self.theta.tolist(), self.cost, self.gradient.tolist()]
-            self.training_history.append(this_history_array)
+            self.theta_history[epoch,:] = self.theta
+            self.cost_history[epoch] = self.cost
+            self.gradient_history[epoch,:] = self.gradient
 
             if(self.verbose == True and epoch % 10000 == 0):
                 print(f"#epoch: {epoch}, cost: {self.cost:f}\n")
@@ -86,14 +98,26 @@ class batch_gradient_descent(object):
     def animate_decision_boundary(self):
         pass
 
-    def plot_loss_history(self):
+    def plot_training_history(self):
         import matplotlib.pyplot as plt
         # construct a figure that plots the loss over time
-        plt.figure(figsize=(5, 5))
-        plt.plot(np.arange(0, len(self.training_history)), np.array(self.training_history, dtype=object)[:, 1], label='BGD Training Loss')
+        plt.figure(figsize=(4, 4))
+        plt.plot(np.arange(0, self.num_iter), self.cost_history, label='BGD Training Loss')
         plt.legend(loc=1)
-        plt.xlabel("Training Epoch #")
+        plt.xlabel("Training Epoch/Iteration #")
         plt.ylabel("Error/Cost/Loss, J(θ)")
+        plt.tight_layout()
+        plt.show()
+
+        fig, axs = plt.subplots(nrows = 1, ncols = self.n_features, figsize=(self.n_features*4, 4))
+        fig.suptitle('Cost vs. Theta')
+        color_dict = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red']
+        for theta_idx in range(self.n_features):
+            axs[theta_idx].plot(self.theta_history[:, theta_idx], self.cost_history, color_dict[theta_idx%4])
+            axs[theta_idx].set_title(f"$\\theta_{theta_idx}$")
+            axs[theta_idx].set(xlabel=f"$\\theta_{theta_idx}$ values", ylabel='Error/Cost/Loss, J(θ)')
+            axs[theta_idx].label_outer()
+        plt.tight_layout()
         plt.show()
 
 
@@ -124,10 +148,13 @@ class logistic_regression_BGD_classifier(batch_gradient_descent):
         """
         loss based on self.h, self.y
         generally, the idea is (self.h - self.y) ** 2
+
+        one sample's error is called loss
+        the sum or average of loss across all the sample (batch) is called cost function
         """
         # cross-entropy, log loss function
-        #return (-self.y.T.dot(np.log(self.h)) - (1-self.y).T.dot(np.log(1-self.h))) / self.y.size
-        return (-self.y * np.log(self.h) - (1 - self.y) * np.log(1 - self.h)).mean()
+        return -1 * (self.y.T.dot(np.log(self.h)) + (1-self.y).T.dot(np.log(1-self.h))) / self.y.size
+        #return (-self.y * np.log(self.h) - (1 - self.y) * np.log(1 - self.h)).mean()
 
     def _gradient(self):
         """
@@ -147,6 +174,55 @@ class logistic_regression_BGD_classifier(batch_gradient_descent):
             X = self._add_intercept(X)
         return self._sigmoid(X.dot(self.theta))
 
+################## experimental start ##################
+
+class logistic_regression_torch_model(nn.Module):
+
+    def __init__(self, n_features):
+        super().__init__()
+        self.linear = nn.Linear(in_features = n_features, out_features = 1, bias = True)
+
+    def forward(self, x):
+        """
+        prediction
+        """
+        y_hat = torch.sigmoid(self.linear(x))
+        return y_hat
+
+class logistic_regression_torch_classifier(object):
+
+    def __init__(self, num_iter: int = 100, learning_rate: float = 0.01):
+        self.num_iter = num_iter
+        self.learning_rate = learning_rate
+
+    def fit(self, X_train: np.ndarray, y_train: np.ndarray):
+        model = logistic_regression_torch_model(X_train.shape[1])
+        optimizer = torch.optim.SGD(model.parameters(), lr = self.learning_rate)
+        for epoch in range(self.num_iter):
+            y_hat = model(X_train)
+            loss = self.loss(y_hat, y_train)
+            optimizer.zero_grad()
+            loss.backward() # gradient
+            optimizer.step()
+
+    def loss(self, y_hat, y):
+        output = -1 * torch.mean(y * torch.log(y_hat) + (1-y) * torch.log(1-y_hat))
+        return output
+
+# determine the supported device
+def get_device():
+    if torch.cuda.is_available():
+        device = torch.device('cuda:0')
+    else:
+        device = torch.device('cpu') # don't have GPU 
+    return device
+
+# convert a df to tensor to be used in pytorch
+def df_to_tensor(df):
+    device = get_device()
+    return torch.from_numpy(df.values).float().to(device)
+
+################## experimental end ##################
 
 def _demo(dataset, classifier_func, learning_rate=None, num_iter=None):
 
@@ -200,7 +276,7 @@ def _demo(dataset, classifier_func, learning_rate=None, num_iter=None):
     if learning_rate is None:
         learning_rate = learning_rate_dict[dataset]
 
-    num_iter_dict = {'Gender': 300, 'Social_Network_Ads': 300, 'iris_binarized': 300}
+    num_iter_dict = {'Gender': 3000, 'Social_Network_Ads': 300, 'iris_binarized': 300}
     if num_iter is None:
         num_iter = num_iter_dict[dataset]
 
@@ -208,14 +284,17 @@ def _demo(dataset, classifier_func, learning_rate=None, num_iter=None):
         # comparison
         if dataset != "iris_binarized":
             from ..logistic_regression import logistic_regression_statsmodels
-            params_values = logistic_regression_statsmodels().run(y, X)
-            print(params_values)
+            params_values = logistic_regression_statsmodels().run(X, y)
+            #print(params_values)
+        # torch version of logistic regression
+        #torch_model = logistic_regression_torch_classifier()
+        #torch_model.fit(df_to_tensor(X), df_to_tensor(pd.Series(y)))
         # gradient descent classifier
         classifier = logistic_regression_BGD_classifier(learning_rate=learning_rate, num_iter=num_iter)
 
     classifier.fit(X=X, y=y)
-    classifier.plot_loss_history()
-    print(f"Theta estimates from batch gradient descent: {classifier.theta}")
+    classifier.plot_training_history()
+    print(f"With learning_rate=[{learning_rate}] and num_iter=[{num_iter}], theta estimates from BGD: {classifier.theta} (may not be the same as algebra solution)")
     y_pred = classifier.predict(X)
     from sklearn.metrics import accuracy_score
     accuracy = accuracy_score(y, y_pred)

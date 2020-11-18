@@ -29,3 +29,4 @@ script:
   - "python tests/ensemble.py"
   - "python tests/stats.py"
   - "python tests/pipeline.py"
+  - "python tests/utils.py"

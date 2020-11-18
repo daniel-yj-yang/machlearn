@@ -299,7 +299,7 @@ Summary of output:
 
 .. code-block::
 
-   This example uses a batch gradient descent (BGD) procedure, a cost function of logistic regression and a learning rate of 0.00025, with Male (1, 0) as the target.
+   This example uses a batch gradient descent (BGD) procedure, a cost function of logistic regression, 300 # iterations, a learning rate of 0.00025, and with Male (1, 0) as the target.
    - Theta estimates of [const, Height (inch), Weight (lbs)]: [0.69254314, -0.49262002, 0.19834042]
    - Accuracy of prediction:  0.913
 

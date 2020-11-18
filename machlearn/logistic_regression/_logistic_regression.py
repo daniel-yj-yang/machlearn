@@ -4,6 +4,7 @@
 #
 # License: BSD 3 clause
 
+from ..utils import convert_to_numpy_ndarray
 from sklearn.linear_model import LogisticRegression
 
 def logistic_regression_classifier(*args, **kwargs):
@@ -14,10 +15,10 @@ class logistic_regression_statsmodels(object):
     def __init__(self):
         super().__init__()
     
-    def run(self, y_pd_series, X_pd_DataFrame):
+    def run(self, X_pd_DataFrame, y_pd_series):
         """
         - Required arguments:
-            y_pd_series, X_pd_DataFrame
+            X_pd_DataFrame, y_pd_series
         """
         from statsmodels.discrete.discrete_model import Logit
         from statsmodels.tools import add_constant
@@ -33,10 +34,10 @@ class logistic_regression_sklearn(object):
     def __init__(self):
         super().__init__()
     
-    def run(self, y_pd_series, X_pd_DataFrame):
+    def run(self, X_pd_DataFrame, y_pd_series):
         """
         - Required arguments:
-            y_pd_series, X_pd_DataFrame
+            X_pd_DataFrame, y_pd_series
         """
         model = logistic_regression_classifier(solver='liblinear', fit_intercept=True, max_iter=1e5, tol=1e-8, C=1e10)
         model.fit(X_pd_DataFrame, y_pd_series)
@@ -72,7 +73,7 @@ def _demo(dataset="Social_Network_Ads"):
 
         for model in [logistic_regression_statsmodels, logistic_regression_sklearn]:
             print(f"---------------------------------------------------------------------------------------------------------\nmodel: {repr(model)}.\n")
-            params_values = model().run(y, X)
+            params_values = model().run(X, y)
             beta0 = params_values[0] # exp(beta0) = the baseline "odds_of_prob(y)" when X's=0:
             beta2 = params_values[2] # Age
             import math
@@ -83,8 +84,8 @@ def _demo(dataset="Social_Network_Ads"):
             # beta < 0, meaning decrease
 
         print("---------------------------------------------------------------------------------------------------------")
-        X = data[['Age', 'EstimatedSalary']].to_numpy()
-        y = data['Purchased'].to_numpy()
+        X = convert_to_numpy_ndarray(data[['Age', 'EstimatedSalary']])
+        y = convert_to_numpy_ndarray(data['Purchased'])
         from sklearn.model_selection import train_test_split, GridSearchCV
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=123)
 

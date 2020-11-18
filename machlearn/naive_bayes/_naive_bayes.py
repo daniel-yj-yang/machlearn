@@ -17,6 +17,8 @@ import pandas as pd
 import numpy as np
 
 from ..base import classifier
+from ..utils import convert_to_numpy_ndarray, convert_to_list
+from sklearn.utils import check_X_y
 
 from scipy.sparse import csr
 
@@ -38,17 +40,11 @@ class Multinomial_NB_classifier_from_scratch(classifier):
         X_train: a matrix of samples x features, such as documents (row) x words (col)
         """
 
-        if type(document) == pd.Series:
-            document = document.to_list()
-
-        if type(X_train) not in [np.ndarray,]:
-            X_train = X_train.toarray()
-
-        if type(y_train) == pd.Series:
-            y_train = y_train.to_numpy()
-
-        from sklearn.utils import check_X_y
+        document = convert_to_list(document)
+        X_train = convert_to_numpy_ndarray(X_train)
+        y_train = convert_to_numpy_ndarray(y_train)
         self.X_train, self.y_train = check_X_y(X_train, y_train)
+        
         n_samples, n_features = X_train.shape
 
         if feature_names is None:
@@ -69,7 +65,7 @@ class Multinomial_NB_classifier_from_scratch(classifier):
         if self.verbose:
             print(f"\n------------------------------------------ fit() ------------------------------------------")
             print(f"\nStep 1. the input:\n{pd.concat([pd.DataFrame(document,columns=['X_message_j',]),pd.Series(y_train,name='y')],axis=1).to_string(index=False)}")
-            print(f"\nStep 2. the prior probability of y, before X is observed\nprior prob(y):\n{pd.DataFrame(self.prob_y.reshape(1,-1), columns=columns).to_string(index=False)}")
+            print(f"\nStep 2. the prior probability of y within the observed sample, before X is observed\nprior prob(y):\n{pd.DataFrame(self.prob_y.reshape(1,-1), columns=columns).to_string(index=False)}")
 
         # axis=0 means column-wise, axis=1 means row-wise
         self.X_train_colSum_by_y_class = np.array([ X_train_for_this_y_class.sum(axis=0) for X_train_for_this_y_class in X_train_by_y_class ]) + self.alpha
@@ -93,11 +89,8 @@ class Multinomial_NB_classifier_from_scratch(classifier):
         X: message (document), X_i: word
         """
 
-        if type(document) == pd.Series:
-            document = document.to_list()
-
-        if type(X_test) == csr.csr_matrix:
-            X_test = X_test.toarray()
+        document = convert_to_list(document)
+        X_test = convert_to_numpy_ndarray(X_test)
 
         from sklearn.utils import check_array
         self.X_test = check_array(X_test)
@@ -128,7 +121,7 @@ class Multinomial_NB_classifier_from_scratch(classifier):
                 print(f"\nStep 1. the 'term freq - inverse doc freq' matrix of X_test:\nNote: Each row has unit norm\n{pd.concat([pd.DataFrame(document, columns=['X_message_j',]),pd.DataFrame(X_test, columns = self.feature_names)], axis=1).to_string(index=False)}")
             print(f"\nStep 2. prob(X_message|y) = prob(word_1|y) * prob(word_2|y) * ... * prob(word_J|y):\nNote: colSum may not = 1\n{pd.concat([pd.DataFrame(document, columns=['X_message_j',]),pd.DataFrame(self.prob_X_given_y, columns=columns)], axis=1).to_string(index=False)}")
             print(f"\nStep 3. prob(X_message ∩ y) = prob(X_message|y) * prob(y):\nNote: rowSum gives prob(X_message), as it sums across all possible y classes that can divide X_message\n{pd.concat([pd.DataFrame(document, columns=['X_message_j',]),pd.DataFrame(self.prob_joint_X_and_y,columns=columns)],axis=1).to_string(index=False)}")
-            print(f"\nStep 4. prob(X_message):\n{pd.concat([pd.DataFrame(document, columns=['X_message_j', ]),pd.DataFrame(self.prob_X,columns=['prob',])], axis=1).to_string(index=False)}")
+            print(f"\nStep 4. prob(X_message), across all y_classes within the observed sample:\n{pd.concat([pd.DataFrame(document, columns=['X_message_j', ]),pd.DataFrame(self.prob_X,columns=['prob',])], axis=1).to_string(index=False)}")
             print(f"\nStep 5. the posterior prob of y after X is observed:\nprob(y|X_message) = p(X_message|y) * p(y) / p(X_message):\nNote: rowSum = 1\n{pd.concat([pd.DataFrame(document, columns=['X_message_j', ]),pd.DataFrame(self.prob_y_given_X, columns=columns),pd.Series(self.prob_y_given_X.argmax(axis=1),name='predict').map(self.y_mapper)],axis=1).to_string(index=False)}")
 
         # Compare with sklearn
@@ -143,8 +136,7 @@ class Multinomial_NB_classifier_from_scratch(classifier):
 
     def predict(self, X_test: np.ndarray, document: list = None) -> np.ndarray:
         """ Predict class with highest probability """
-        if type(document) == pd.Series:
-            document = document.to_list()
+        document = convert_to_list(document)
         return self.predict_proba(X_test, document = document).argmax(axis=1)
 
     def show_model_attributes(self, fitted_tfidf_vectorizer, y_classes, top_n=10):
@@ -165,13 +157,8 @@ class Multinomial_NB_classifier_from_scratch(classifier):
         self.verbose = verbose_old
 
     def evaluate_model(self, X_test: np.ndarray, y_test: np.ndarray, y_pos_label = 1, y_classes = 'auto', document: list = None, skip_PR_curve: bool = False, figsize_cm: tuple = None):
-        if type(X_test) == csr.csr_matrix:
-            X_test = X_test.toarray()
-
-        if type(y_test) == pd.Series:
-            y_test = y_test.to_numpy()
-
-        from sklearn.utils import check_X_y
+        X_test = convert_to_numpy_ndarray(X_test)
+        y_test = convert_to_numpy_ndarray(y_test)
         X_test, y_test = check_X_y(X_test, y_test)
     
         from ..model_evaluation import plot_confusion_matrix, plot_ROC_and_PR_curves
