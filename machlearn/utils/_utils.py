@@ -31,7 +31,7 @@ def convert_to_list(X):
     if type_X in [pd.Series,]:
         return X.to_list()
     if X is None:
-        return np.array([None])
+        return [X]
     raise TypeError(f"Unknown type of X: {type_X}")
 
 
