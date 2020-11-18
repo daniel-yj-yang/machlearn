@@ -101,9 +101,9 @@ class batch_gradient_descent(object):
     def plot_training_history(self):
         import matplotlib.pyplot as plt
         # construct a figure that plots the loss over time
-        plt.figure(figsize=(4, 4))
-        plt.plot(np.arange(0, self.num_iter), self.cost_history, label='BGD Training Loss')
-        plt.legend(loc=1)
+        plt.figure(figsize=(3, 3))
+        plt.plot(np.arange(0, self.num_iter), self.cost_history) #, label='BGD Training Loss')
+        #plt.legend(loc=1)
         plt.xlabel("Training Epoch/Iteration #")
         plt.ylabel("Error/Cost/Loss, J(θ)")
         plt.tight_layout()
