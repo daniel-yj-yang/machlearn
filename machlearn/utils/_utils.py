@@ -17,6 +17,10 @@ def convert_to_numpy_ndarray(X):
         return X.to_numpy()
     if type_X == csr.csr_matrix:
         return X.toarray()
+    if type_X == list:
+        return np.array(X)
+    if X is None:
+        return np.array([None])
     raise TypeError(f"Unknown type of X: {type_X}")
 
 
@@ -26,6 +30,8 @@ def convert_to_list(X):
         return X
     if type_X in [pd.Series,]:
         return X.to_list()
+    if X is None:
+        return np.array([None])
     raise TypeError(f"Unknown type of X: {type_X}")
 
 

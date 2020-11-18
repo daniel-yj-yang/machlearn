@@ -173,7 +173,7 @@ class Multinomial_NB_classifier_from_scratch(classifier):
         if len(y_classes) == 2:
             verbose_old = self.verbose
             self.verbose = False
-            plot_ROC_and_PR_curves(fitted_model=self, X=X_test, y_true=y_test, y_pred_score=self.y_pred_score[:, 1], y_pos_label=y_pos_label, model_name=model_name, skip_PR_curve = skip_PR_curve)
+            plot_ROC_and_PR_curves(fitted_model=self, X=X_test, y_true=y_test, y_pred_score=self.y_pred_score[:, 1], y_pos_label=y_pos_label, model_name=model_name, skip_PR_curve = skip_PR_curve, figsize=(8,8))
             self.verbose = verbose_old
 
 
@@ -619,7 +619,7 @@ def demo_from_scratch():
     print("========================================================================================================================")
 
     X_train = transformed_data
-    y_train = np.array(y)
+    y_train = convert_to_numpy_ndarray(y)
     X_test_doc = ['bb cc', 'bb aa', 'bb aa aa', 'bb aa aa aa', 'bb aa aa aa aa', 'bb aa aa aa aa aa']
     y_test = np.array([1, 0, 0, 0, 0, 0])
     X_test = tfidf_vectorizer.transform(X_test_doc)
