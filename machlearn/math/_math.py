@@ -4,7 +4,10 @@
 #
 # License: BSD 3 clause
 
-from sympy import *
+
+import inspect
+import numpy as np
+import sympy
 import torch
 import matplotlib.pylab as plt
 
@@ -15,18 +18,33 @@ class calculus(object):
         
     @staticmethod
     def derivative_using_sympy():
-        x = symbols('x')
-        for expr in [x, sin(x), exp(x), log(x), x**x]:
+        x = sympy.symbols('x')
+        for expr in [x, sympy.sin(x), sympy.exp(x), sympy.log(x), x**x]:
             for i in range(4):
-                expr = Derivative(expr, x)
+                expr = sympy.Derivative(expr, x)
                 print(f"{expr} = {expr.doit()}, when x=1.0, expression = {expr.doit().evalf(subs={x:1,})}")
 
     @staticmethod
+    def derivative_plot_using_sympy():
+        x = sympy.symbols('x')
+        expr = x ** 3
+        deriv = sympy.Derivative(expr, x).doit()
+        x_values = np.linspace(-5, 5, 1000)
+        expr_values  = np.array([expr.evalf(subs={x:x_value})  for x_value in x_values])
+        deriv_values = np.array([deriv.evalf(subs={x:x_value}) for x_value in x_values])
+        plt.plot(x_values, expr_values,  label = 'x ** 3')
+        plt.plot(x_values, deriv_values, label='derivative (3*x**2)')
+        plt.xlabel('x')
+        plt.legend()
+        plt.title(inspect.getframeinfo(inspect.currentframe()).function)
+        plt.show()
+
+    @staticmethod
     def integrate_using_sympy():
-        x = symbols('x')
-        for expr in [x, sin(x), exp(x), log(x), x**x]:
+        x = sympy.symbols('x')
+        for expr in [x, sympy.sin(x), sympy.exp(x), sympy.log(x), x**x]:
             for i in range(4):
-                expr = Integral(expr, x)
+                expr = sympy.Integral(expr, x)
                 print(f"{expr} = {expr.doit()}, when x=1.0, expression = {expr.doit().evalf(subs={x:1,})}")
     
     @staticmethod
@@ -46,11 +64,14 @@ class calculus(object):
         plt.plot(x.detach().numpy(), x.grad.detach().numpy(), label='derivative (3*x**2)')
         plt.xlabel('x')
         plt.legend()
+        plt.title(inspect.getframeinfo(inspect.currentframe()).function)
         plt.show()
 
 
 def demo():
+    calculus.derivative_plot_using_sympy()
     calculus.derivative_plot_using_torch()
+
     calculus.derivative_using_sympy()
     calculus.integrate_using_sympy()
     calculus.derivative_using_torch()
