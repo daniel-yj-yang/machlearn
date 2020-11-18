@@ -276,7 +276,7 @@ def _demo(dataset, classifier_func, learning_rate=None, num_iter=None):
     if learning_rate is None:
         learning_rate = learning_rate_dict[dataset]
 
-    num_iter_dict = {'Gender': 3000, 'Social_Network_Ads': 300, 'iris_binarized': 300}
+    num_iter_dict = {'Gender': 30000, 'Social_Network_Ads': 300, 'iris_binarized': 300}
     if num_iter is None:
         num_iter = num_iter_dict[dataset]
 

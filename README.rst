@@ -299,9 +299,10 @@ Summary of output:
 
 .. code-block::
 
-   This example uses a batch gradient descent (BGD) procedure, a cost function of logistic regression, 300 # iterations, a learning rate of 0.00025, and with Male (1, 0) as the target.
-   - Theta estimates of [const, Height (inch), Weight (lbs)]: [0.69254314, -0.49262002, 0.19834042]
-   - Accuracy of prediction:  0.913
+   This example uses a batch gradient descent (BGD) procedure, a cost function of logistic regression, 30,000 # iterations, a learning rate of 0.00025, and with Male (1, 0) as the target.
+   - Theta estimates of [const, Height (inch), Weight (lbs)]: [-0.00977953, -0.4779923, 0.19667817]
+   - Compared to estimates from statsmodels ([0.69254314, -0.49262002, 0.19834042]), the estimates associated with Height and Weight are very close
+   - Accuracy of prediction:  0.919
 
 
 .. list-table::
@@ -315,11 +316,17 @@ Summary of output:
      - |image_Gender_batch_gradient_descent_training_loss_plot|
 
 
+|image_Gender_batch_gradient_descent_training_cost_vs_theta_plot|
+
+
 .. |image_Gender_pairplot| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/gradient_descent/images/Gender_pairplot.png
    :width: 400px
 
 .. |image_Gender_batch_gradient_descent_training_loss_plot| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/gradient_descent/images/Gender_BGD_training_loss_history.png
    :width: 400px
+
+.. |image_Gender_batch_gradient_descent_training_cost_vs_theta_plot| image:: https://github.com/daniel-yj-yang/machlearn/raw/master/examples/gradient_descent/images/Gender_BGD_training_cost_vs_theta.png
+   :width: 600px
 
 
 -----
