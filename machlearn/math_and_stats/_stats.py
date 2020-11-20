@@ -158,6 +158,6 @@ def demo_distance():
     print(f"Euclidean distance = {distance().Euclidean(x=x, y=y): .3f}")
 
 
-def demo():
+def stats_demo():
     demo_probability()
     demo_distance()

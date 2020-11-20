@@ -68,7 +68,7 @@ class calculus(object):
         plt.show()
 
 
-def demo():
+def math_demo():
     calculus.derivative_plot_using_sympy()
     calculus.derivative_plot_using_torch()
 
