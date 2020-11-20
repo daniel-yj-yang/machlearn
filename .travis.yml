@@ -5,10 +5,10 @@ before_install:
   #- "if [[ \"$TRAVIS_OS_NAME\" == \"linux\" ]]; then CMAKE_INSTALLER=install-cmake.sh; curl -sSL https://cmake.org/files/v3.18/cmake-3.18.4-Linux-x86_64.sh -o ${CMAKE_INSTALLER}; chmod +x ${CMAKE_INSTALLER}; sudo ./${CMAKE_INSTALLER} --prefix=/usr/local --skip-license; export PATH=/usr/local/bin:${PATH}; fi"
   - "CMAKE_INSTALLER=.travis.dependencies/install-cmake-3.18.4-Linux-x86_64.sh; chmod +x ${CMAKE_INSTALLER}; sudo ${CMAKE_INSTALLER} --prefix=/usr/local --skip-license; export PATH=/usr/local/bin:${PATH}"
   - "sudo apt-get -y install graphviz"
-  - "python -m pip install --upgrade pip"
+  - "python3 -m pip install --upgrade pip"
 install:
-  - "pip install -r requirements.txt"
-  - "python setup.py install"
+  - "pip3 install -r requirements.txt"
+  - "python3 setup.py install"
 language: python
 python: 
   - "3.6"
