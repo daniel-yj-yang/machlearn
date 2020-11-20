@@ -36,7 +36,7 @@ class calculus(object):
         plt.plot(x_values, deriv_values, label='derivative (3*x**2)')
         plt.xlabel('x')
         plt.legend()
-        plt.title(inspect.getframeinfo(inspect.currentframe()).function)
+        plt.title(f"{inspect.getframeinfo(inspect.currentframe()).function}()")
         plt.show()
 
     @staticmethod
