@@ -6,7 +6,7 @@
 
 from sklearn.neighbors import KNeighborsClassifier
 
-from ..stats import distance
+from ..math_and_stats import distance
 
 import numpy as np
 import pandas as pd

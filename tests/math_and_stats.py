@@ -4,7 +4,7 @@
 #
 # License: BSD 3 clause
 
-from ._math import demo
+from machlearn import math_and_stats
 
-# this is for "from <package_name>.math import *"
-__all__ = ["demo",]
+math_and_stats.math_demo()
+math_and_stats.stats_demo()

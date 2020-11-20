@@ -9,7 +9,7 @@ import timeit
 
 import numpy as np
 
-from ..stats import distance
+from ..math_and_stats import distance
 
 
 class the_most_frequent_item_in_a_list(object):

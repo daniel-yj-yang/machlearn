@@ -29,7 +29,6 @@ script:
   - "python3 tests/decomposition.py"
   - "python3 tests/gradient_descent.py"
   - "python3 tests/ensemble.py"
-  - "python3 tests/math.py"
-  - "python3 tests/stats.py"
+  - "python3 tests/math_and_stats.py"
   - "python3 tests/pipeline.py"
   - "python3 tests/utils.py"
