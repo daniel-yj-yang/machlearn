@@ -4,5 +4,6 @@
 #
 # License: BSD 3 clause
 
- 
-__version__ = "1.3.dev1"
+from machlearn import database
+
+database.demo()

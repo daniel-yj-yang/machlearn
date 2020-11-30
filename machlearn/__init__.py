@@ -27,6 +27,7 @@ __all__ = ["base",
            "math_and_stats",
            "pipeline",
            "utils",
+           "database",
            ]
 
 # this was originally for _naive_bayes.py and is more widely applicable to other modules
