@@ -8,11 +8,37 @@ import numpy as np
 from scipy import stats
 import random
 import matplotlib.pyplot as plt
+import pandas as pd
+
+
+class correlation(object):
+    def __init__(self):
+        super().__init__()
+
+
+    def _Pearson_pvalues(self, df):
+        df = df.dropna()._get_numeric_data()
+        dfcols = pd.DataFrame(columns=df.columns)
+        pvalues = dfcols.transpose().join(dfcols, how='outer') # forming the matrix with NaN in cells
+        for r in df.columns:
+            for c in df.columns:
+                pvalues[r][c] = stats.pearsonr(df[r], df[c])[1]
+        return pvalues
+
+    def Pearson(self, df):
+        # https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.corr.html
+        return {'r': df.corr(method='pearson'), 'p-value': self._Pearson_pvalues(df=df), 'df': len(df)-2}
+
+    def Pearson_xy(self, x, y):
+        # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html?highlight=pearsonr#scipy.stats.pearsonr
+        # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.mstats.pearsonr.html?highlight=pearsonr
+        return stats.pearsonr(x=x, y=y)
 
 
 class distance(object):
 
     def __init__(self, p=1):
+        super().__init__()
         self.p = p # for Minkowski distance
 
     def Euclidean(self, x, y):
@@ -158,6 +184,16 @@ def demo_distance():
     print(f"Euclidean distance = {distance().Euclidean(x=x, y=y): .3f}")
 
 
+def demo_correlation():
+    from ..datasets import public_dataset
+    data = public_dataset(name="iris")
+    x = data.iloc[:, 0]
+    y = data.iloc[:, 1]
+    print(correlation().Pearson(data))
+    print(correlation().Pearson_xy(x, y))
+
+
 def stats_demo():
     demo_probability()
     demo_distance()
+    demo_correlation()

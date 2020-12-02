@@ -29,15 +29,15 @@ def linear_regression_assumption_test(X, y, feature_names=None):
     - https: // towardsdatascience.com/assumptions-of-linear-regression-algorithm-ed9ea32224e1
     """
 
-    model = linear_regression_sklearn().fit(X, y)
-    y_pred = model.predict(X)
+    model = linear_regression_sklearn().fit(X=X, y=y)
+    y_pred = model.predict(X=X)
     data = pd.DataFrame({'y_true': y, 'y_pred': y_pred})
     residuals = y - y_pred
 
     from sklearn.preprocessing import scale
     X_scaled, y_scaled = scale(X), scale(y)
-    model_scaled = linear_regression_sklearn().fit(X_scaled, y_scaled)
-    y_pred_scaled = model_scaled.predict(X_scaled)
+    model_scaled = linear_regression_sklearn().fit(X=X_scaled, y=y_scaled)
+    y_pred_scaled = model_scaled.predict(X=X_scaled)
     data_scaled = pd.DataFrame({'y_true_scaled': y_scaled, 'y_pred_scaled': y_pred_scaled})
     residuals_scaled = y_scaled - y_pred_scaled
 
@@ -115,12 +115,12 @@ class OLS(object):
         self.alpha = alpha
         self.max_iter = 200000
 
-    def model(self, y, X):
+    def model(self, X, y):
         pass
         
     def unstandardized_estimate(self):
         X_with_intercept = sm.add_constant(self.X)  # fit_intercept
-        fitted_model = self.model(self.y, X_with_intercept)
+        fitted_model = self.model(X=X_with_intercept, y=self.y)
         if self.print_summary:
             if self.use_statsmodels:
                 try:
@@ -140,7 +140,7 @@ class OLS(object):
         import pandas as pd
         X_scaled = pd.DataFrame(scale(self.X), columns=self.X.columns)
         y_scaled = pd.Series(scale(self.y), name=self.y.name)
-        fitted_model_scaled = self.model(y_scaled, X_scaled)
+        fitted_model_scaled = self.model(X=X_scaled, y=y_scaled)
         if self.print_summary:
             if self.use_statsmodels:
                 try:
@@ -155,14 +155,14 @@ class OLS(object):
             print(f"RMSE = {RMSE:.3f}, R-squared = {R_squared:.3f}.\n")
         return fitted_model_scaled
     
-    def run(self, y, X, standardized_estimate=False):
+    def run(self, X, y, standardized_estimate=False):
         """
         - Required arguments:
             y: pandas series (1-dim)
             X: pandas data frame
         """
-        self.y = y
         self.X = X
+        self.y = y
         import pandas as pd
         if isinstance(self.y, pd.DataFrame):
             self.y = self.y.squeeze()  # convert to data series
@@ -180,11 +180,11 @@ class linear_regression(OLS):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def model(self, y, X):
+    def model(self, X, y):
         if self.use_statsmodels:
-            return sm.OLS(y, X).fit()
+            return sm.OLS(y=y, X=X).fit()
         else:
-            return linear_regression_sklearn(fit_intercept=False).fit(X, y)
+            return linear_regression_sklearn(fit_intercept=False).fit(X=X, y=y)
 
 
 class linear_regression_normal_equation(OLS):
@@ -192,8 +192,8 @@ class linear_regression_normal_equation(OLS):
         super().__init__(*args, **kwargs)
         self.use_statsmodels = False
 
-    def model(self, y, X):
-        return normal_equation().fit(X, y)
+    def model(self, X, y):
+        return normal_equation().fit(X=X, y=y)
 
 
 class normal_equation(object):
@@ -216,11 +216,11 @@ class ridge_regression(OLS):
         self.alpha = alpha
         print(f"alpha = [{alpha}]")
 
-    def model(self, y, X):
+    def model(self, X, y):
         if self.use_statsmodels:
-            return sm.OLS(y, X).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=0, refit = False)
+            return sm.OLS(y=y, X=X).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=0, refit = False)
         else:
-            return linear_model.Ridge(alpha=self.alpha, fit_intercept=False).fit(X, y)
+            return linear_model.Ridge(alpha=self.alpha, fit_intercept=False).fit(X=X, y=y)
 
 
 class lasso_regression(OLS):
@@ -229,24 +229,24 @@ class lasso_regression(OLS):
         self.alpha = alpha
         print(f"alpha = [{alpha}]")
 
-    def model(self, y, X):
+    def model(self, X, y):
         if self.use_statsmodels:
-            return sm.OLS(y, X).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=1, maxiter=self.max_iter, refit = False)
+            return sm.OLS(y=y, X=X).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=1, maxiter=self.max_iter, refit = False)
         else:
-            return linear_model.Lasso(alpha=self.alpha, max_iter=self.max_iter, fit_intercept=False).fit(X, y)
+            return linear_model.Lasso(alpha=self.alpha, max_iter=self.max_iter, fit_intercept=False).fit(X=X, y=y)
 
 
-def identify_best_alpha_for_ridge_regression(y, X, alphas = [0.1, 1.0, 10.0]):
+def identify_best_alpha_for_ridge_regression(X, y, alphas = [0.1, 1.0, 10.0]):
     from sklearn.linear_model import RidgeCV
     ridge_regression_cv = RidgeCV(alphas=alphas, fit_intercept=False)
-    model_cv = ridge_regression_cv.fit(X, y)
+    model_cv = ridge_regression_cv.fit(X=X, y=y)
     return model_cv.alpha_
 
 
-def identify_best_alpha_for_lasso_regression(y, X, alphas=[0.1, 1.0, 10.0]):
+def identify_best_alpha_for_lasso_regression(X, y, alphas=[0.1, 1.0, 10.0]):
     from sklearn.linear_model import LassoCV
     lasso_regression_cv = LassoCV(alphas=alphas, fit_intercept=False, max_iter=200000)
-    model_cv = lasso_regression_cv.fit(X, y)
+    model_cv = lasso_regression_cv.fit(X=X, y=y)
     return model_cv.alpha_
 
 
@@ -296,10 +296,10 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
     X = pd.DataFrame(X, columns=feature_names)
 
     import numpy as np
-    best_ridge_regression_alpha = identify_best_alpha_for_ridge_regression(y.ravel(), sm.add_constant(X), alphas=np.exp(np.linspace(-7,15,100000)))
+    best_ridge_regression_alpha = identify_best_alpha_for_ridge_regression(X=sm.add_constant(X), y=y.ravel(), alphas=np.exp(np.linspace(-7, 15, 100000)))
     print(f"best alpha for ridge regression: {best_ridge_regression_alpha:.2f}")
 
-    best_lasso_regression_alpha = identify_best_alpha_for_lasso_regression(y.ravel(), sm.add_constant(X), alphas=np.exp(np.linspace(-7,15, 10000)))
+    best_lasso_regression_alpha = identify_best_alpha_for_lasso_regression(X=sm.add_constant(X), y=y.ravel(), alphas=np.exp(np.linspace(-7,15, 10000)))
     print(f"best alpha for lasso regression: {best_lasso_regression_alpha:.2f}")
 
     from ..model_evaluation import test_for_multicollinearity
@@ -321,7 +321,7 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
     for i, model in enumerate([linear_regression, ridge_regression, lasso_regression]):
         print(f"------------------------------------------------------------------------------")
         print(f"{repr(model)}\n")
-        #fitted_model = model.run(y, X)
+        #fitted_model = model.run(X, y)
 
         if i == 0:
             alpha = None
@@ -330,8 +330,8 @@ def _demo_regularization(dataset="Hitters", use_statsmodels=False):
         elif i == 2:
             alpha = best_lasso_regression_alpha
 
-        fitted_model = model(print_summary = False, use_statsmodels = use_statsmodels, alpha = alpha).run(y_train, X_train)
-        y_test_pred = fitted_model.predict(sm.add_constant(X_test))
+        fitted_model = model(print_summary = False, use_statsmodels = use_statsmodels, alpha = alpha).run(X=X_train, y=y_train)
+        y_test_pred = fitted_model.predict(X=sm.add_constant(X_test))
         
         from ..model_evaluation import evaluate_continuous_prediction
         RMSE, R_squared = evaluate_continuous_prediction(y_test.squeeze(), y_test_pred)
@@ -364,10 +364,10 @@ def _demo(dataset="marketing", use_statsmodels = False):
     linear_regression_assumption_test(X, y, feature_names=['youtube', 'facebook', 'newspaper'])
     
     print("----------------------------------\n\n*** Solutions using python package ***\n")
-    linear_regression(print_summary = True, use_statsmodels=use_statsmodels).run(y, X, standardized_estimate=True)
+    linear_regression(print_summary = True, use_statsmodels=use_statsmodels).run(X=X, y=y, standardized_estimate=True)
 
     print("---------------------------------------\n\n*** Solutions using normal equation ***\n")
-    linear_regression_normal_equation(print_summary = True).run(y, X, standardized_estimate=True)
+    linear_regression_normal_equation(print_summary = True).run(X=X, y=y, standardized_estimate=True)
 
 
 def demo_regularization(dataset="Hitters", use_statsmodels = False):

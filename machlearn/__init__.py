@@ -28,6 +28,8 @@ __all__ = ["base",
            "pipeline",
            "utils",
            "database",
+           "clustering",
+           "anomaly_detection",
            ]
 
 # this was originally for _naive_bayes.py and is more widely applicable to other modules
