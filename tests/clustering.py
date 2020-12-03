@@ -4,6 +4,6 @@
 #
 # License: BSD 3 clause
 
-from machlearn import cluster
+from machlearn import clustering
 
-cluster.demo()
+clustering.demo()
