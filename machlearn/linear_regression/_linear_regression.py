@@ -182,7 +182,7 @@ class linear_regression(OLS):
 
     def model(self, X, y):
         if self.use_statsmodels:
-            return sm.OLS(y=y, X=X).fit()
+            return sm.OLS(exog=X, endog=y).fit()
         else:
             return linear_regression_sklearn(fit_intercept=False).fit(X=X, y=y)
 
@@ -218,7 +218,7 @@ class ridge_regression(OLS):
 
     def model(self, X, y):
         if self.use_statsmodels:
-            return sm.OLS(y=y, X=X).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=0, refit = False)
+            return sm.OLS(exog=X, endog=y).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=0, refit=False)
         else:
             return linear_model.Ridge(alpha=self.alpha, fit_intercept=False).fit(X=X, y=y)
 
@@ -231,7 +231,7 @@ class lasso_regression(OLS):
 
     def model(self, X, y):
         if self.use_statsmodels:
-            return sm.OLS(y=y, X=X).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=1, maxiter=self.max_iter, refit = False)
+            return sm.OLS(exog=X, endog=y).fit_regularized(method='elastic_net', alpha=self.alpha, L1_wt=1, maxiter=self.max_iter, refit=False)
         else:
             return linear_model.Lasso(alpha=self.alpha, max_iter=self.max_iter, fit_intercept=False).fit(X=X, y=y)
 

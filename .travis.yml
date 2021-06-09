@@ -35,3 +35,4 @@ script:
   - "python3 tests/database.py"
   - "python3 tests/clustering.py"
   - "python3 tests/anomaly_detection.py"
+  - "python3 tests/network_analysis.py"

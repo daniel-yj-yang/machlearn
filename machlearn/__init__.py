@@ -11,7 +11,7 @@ from .__about__ import (
 # this is for "from <package_name> import *"
 __all__ = ["base",
            "model_evaluation",
-            "datasets",
+           "datasets",
            # supervised
            "kNN",
            "naive_bayes",
@@ -30,6 +30,7 @@ __all__ = ["base",
            "database",
            "clustering",
            "anomaly_detection",
+           "network_analysis",
            ]
 
 # this was originally for _naive_bayes.py and is more widely applicable to other modules

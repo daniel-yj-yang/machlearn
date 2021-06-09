@@ -9,6 +9,8 @@
 
 def demo():
     # reference: https://scikit-learn.org/stable/auto_examples/miscellaneous/plot_anomaly_comparison.html?highlight=anomaly%20detection
+    #            https://scikit-learn.org/stable/auto_examples/miscellaneous/plot_anomaly_comparison.html?highlight=anomaly%20detection
     # auto encoder
+    # https://scikit-learn.org/stable/modules/outlier_detection.html
     # https://towardsdatascience.com/anomaly-detection-with-autoencoder-b4cdce4866a6
     pass
